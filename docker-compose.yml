@@ -1,0 +1,35 @@
+version: '3.7'
+services:
+  nginx:
+    build:
+      context: docker/development/nginx
+    volumes:
+    - "./app:/app"
+    ports:
+    - "${APP_PORT}:80"
+
+  php-fpm:
+    build:
+      context: docker/development
+      dockerfile: php-fpm/Dockerfile
+    volumes:
+    - "./app:/app"
+
+  php-cli:
+    build:
+      context: docker/development
+      dockerfile: php-cli/Dockerfile
+      args:
+        - GIT_USER_NAME=${GIT_USER_NAME}
+        - GIT_USER_EMAIL=${GIT_USER_EMAIL}
+        - USER_ID=${USER_ID}
+        - GROUP_ID=${GROUP_ID}
+    volumes:
+    - "./app:/app"
+
+  node-js:
+    build:
+      context: docker/development
+      dockerfile: node-js/Dockerfile
+    volumes:
+      - "./app:/app"
