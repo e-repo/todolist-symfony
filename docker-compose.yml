@@ -15,6 +15,13 @@ services:
     volumes:
     - "./app:/app"
 
+  node-js:
+    build:
+      context: docker/development
+      dockerfile: node-js/Dockerfile
+    volumes:
+      - "./app:/app"
+
   php-cli:
     build:
       context: docker/development
@@ -26,10 +33,3 @@ services:
         - GROUP_ID=${GROUP_ID}
     volumes:
     - "./app:/app"
-
-  node-js:
-    build:
-      context: docker/development
-      dockerfile: node-js/Dockerfile
-    volumes:
-      - "./app:/app"
