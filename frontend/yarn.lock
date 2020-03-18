@@ -6448,9 +6448,9 @@ regenerator-runtime@^0.13.4:
   integrity sha1-2Hih0JS0MG0QuQlkhLM+vVXiZpc=
 
 regenerator-transform@^0.14.2:
-  version "0.14.3"
-  resolved "https://registry.npm.taobao.org/regenerator-transform/download/regenerator-transform-0.14.3.tgz?cache=0&sync_timestamp=1584052954871&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fregenerator-transform%2Fdownload%2Fregenerator-transform-0.14.3.tgz#54aebff2ef58c0ae61e695ad1b9a9d65995fff78"
-  integrity sha1-VK6/8u9YwK5h5pWtG5qdZZlf/3g=
+  version "0.14.4"
+  resolved "https://registry.npm.taobao.org/regenerator-transform/download/regenerator-transform-0.14.4.tgz#5266857896518d1616a78a0479337a30ea974cc7"
+  integrity sha1-UmaFeJZRjRYWp4oEeTN6MOqXTMc=
   dependencies:
     "@babel/runtime" "^7.8.4"
     private "^0.1.8"

@@ -9,4 +9,4 @@ RUN mv $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
 
 COPY ./php/conf.d /usr/local/etc/php/conf.d
 
-WORKDIR /app
+WORKDIR /backend
