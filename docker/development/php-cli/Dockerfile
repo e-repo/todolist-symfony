@@ -35,4 +35,4 @@ USER www-data
 RUN git config --global user.name "$GIT_USER_NAME" \
     && git config --global user.email "$GIT_USER_EMAIL"
 
-WORKDIR /app
+WORKDIR /backend

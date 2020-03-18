@@ -13,4 +13,4 @@ RUN usermod -u $USER_ID node
 
 USER node
 
-WORKDIR /app/frontend
+WORKDIR /frontend
