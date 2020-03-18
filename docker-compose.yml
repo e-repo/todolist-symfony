@@ -19,8 +19,13 @@ services:
     build:
       context: docker/development
       dockerfile: node-js/Dockerfile
+      args:
+        - USER_ID=${USER_ID}
+        - GROUP_ID=${GROUP_ID}
     volumes:
       - "./app:/app"
+    ports:
+      - "9080:7080"
 
   php-cli:
     build:
