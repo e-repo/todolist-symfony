@@ -31,3 +31,9 @@ docker-shell:
 run-serve:
 	@docker-compose run -p ${FRONTEND_EXTERNAL_PORT}:${FRONTEND_DOKER_PORT} \
 	--rm  -u $$(id -u) node-js npm run serve
+
+y-install-packages:
+	@docker-compose run --rm node-js yarn install
+
+y-add:
+	@docker-compose run --rm node-js yarn add $(package)
