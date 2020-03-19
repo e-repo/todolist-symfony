@@ -36,4 +36,4 @@ y-install-packages:
 	@docker-compose run --rm node-js yarn install
 
 y-add:
-	@docker-compose run --rm node-js yarn add $(package)
+	@docker-compose run --rm node-js yarn add $(packag)
