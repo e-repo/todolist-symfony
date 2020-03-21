@@ -1,60 +1,113 @@
 <template>
   <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
 
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
+
+    <div>
+
+      <v-app-bar
+        color="primary"
+        dark
+      >
+      <v-app-bar-nav-icon
+        @click="drawer = !drawer"
+      >
+      </v-app-bar-nav-icon>
+
+      <v-toolbar-title>{{title}}</v-toolbar-title>
 
       <v-spacer></v-spacer>
 
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
-    </v-app-bar>
+      <v-toolbar-items>
+
+        <v-btn
+          v-for="(link, index) in links"
+          :key="index"
+          text
+        >
+          <v-icon left>mdi-{{link.icon}}</v-icon>
+          {{link.title}}
+        </v-btn>
+
+      </v-toolbar-items>
+
+      </v-app-bar>
+
+    </div>
 
     <v-content>
-      <HelloWorld/>
+
+      <v-navigation-drawer
+        v-model="drawer"
+        absolute
+        left
+      >
+        <template v-slot:prepend>
+
+          <v-list-item two-line>
+
+            <v-list-item-avatar>
+              <img :src="currentUser.avatarLink">
+            </v-list-item-avatar>
+
+            <v-list-item-content>
+              <v-list-item-title>{{currentUser.name}}</v-list-item-title>
+              <v-list-item-subtitle>{{currentUser.role}}</v-list-item-subtitle>
+            </v-list-item-content>
+
+          </v-list-item>
+
+        </template>
+
+        <v-divider></v-divider>
+
+        <v-list dense>
+          <v-list-item-group>
+            <v-list-item
+                    v-for="(link, index) in links"
+                    :key="index"
+            >
+              <v-list-item-icon>
+                <v-icon>mdi-{{link.icon}}</v-icon>
+              </v-list-item-icon>
+
+              <v-list-item-content>
+                <v-list-item-title>{{link.title}}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-item-group>
+        </v-list>
+
+      </v-navigation-drawer>
+
     </v-content>
+
+
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
 
 export default {
   name: 'App',
 
-  components: {
-    HelloWorld,
-  },
-
   data: () => ({
-    //
+    title: 'ToDo',
+    drawer: null,
   }),
+  computed: {
+    links() {
+      return [
+        {title: 'Войти', icon: 'login'},
+        {title: 'Регистрация', icon: 'account'},
+      ]
+    },
+    currentUser() {
+      return {
+        avatarLink: 'https://i.pravatar.cc/300',
+        name: 'John Smith',
+        role: 'administrator',
+      }
+    },
+  }
 };
 </script>
