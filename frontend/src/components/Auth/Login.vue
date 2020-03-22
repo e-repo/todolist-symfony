@@ -1,23 +1,9 @@
 <template>
-    <v-container
-            class="fill-height"
-            fluid
-    >
-        <v-row
-            align="center"
-            justify="center"
-        >
-            <v-col
-                cols="12"
-                sm="8"
-                md="6"
-            >
+    <v-container class="fill-height justify-center">
+        <v-row class="justify-center">
+            <v-col class="col-12 col-sm-8 col-md-6">
                 <v-card class="elevation-12">
-                    <v-toolbar
-                        color="primary"
-                        dark
-                        flat
-                    >
+                    <v-toolbar color="primary" dark flat>
                         <v-toolbar-title>{{formTitle}}</v-toolbar-title>
                     </v-toolbar>
                     <v-card-text>
@@ -26,6 +12,7 @@
                             v-model="valid"
                             lazy-validation
                         >
+
                             <v-text-field
                                     label="Логин"
                                     v-model="login"
@@ -54,6 +41,7 @@
                                     type="password"
                                     required
                             />
+
                         </v-form>
                     </v-card-text>
                     <v-card-actions>
