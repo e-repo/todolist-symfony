@@ -12,17 +12,17 @@ export default new VueRouter({
     routes: [
         {
             path: '/',
-            name: 'Home',
+            name: 'home',
             component: Home
         },
         {
             path: '/registration',
-            name: 'Registration',
+            name: 'registration',
             component: Registration
         },
         {
             path: '/login',
-            name: 'Login',
+            name: 'login',
             component: Login
         }
     ],
