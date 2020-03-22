@@ -1,5 +1,8 @@
 <template>
-    <v-container>
+    <v-container
+        class="main-page container--fluid"
+        style="background-image: url('/img/banners/banner-main-1.jpg');"
+    >
         <v-row>
             <v-col>
                 <h2 class="text-center">Home page</h2>
