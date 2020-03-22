@@ -21,7 +21,7 @@
                 <v-spacer></v-spacer>
 
                 <v-toolbar-items
-                        class="hidden-md-and-down"
+                        class="hidden-sm-and-down"
                 >
 
                     <v-btn
@@ -72,6 +72,7 @@
                         <v-list-item
                                 v-for="(link, index) in links"
                                 :key="index"
+                                :to="link.url"
                         >
                             <v-list-item-icon>
                                 <v-icon>mdi-{{link.icon}}</v-icon>
