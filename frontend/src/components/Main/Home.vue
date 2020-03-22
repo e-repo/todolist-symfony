@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <v-row class="text-center">
+        <v-row>
             <v-col>
                 <h2 class="text-center">Home page</h2>
             </v-col>
@@ -15,5 +15,8 @@
         data: () => ({
 
         }),
+        mounted() {
+            console.log(process.env)
+        }
     }
 </script>

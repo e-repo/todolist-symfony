@@ -103,7 +103,7 @@
 
         data: () => ({
             title: 'ToDo',
-            drawer: null,
+            drawer: false,
         }),
         computed: {
             links() {
