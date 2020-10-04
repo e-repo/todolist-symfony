@@ -20,7 +20,7 @@ docker-pull:
 	docker-compose pull
 
 shell:
-	@docker-compose exec $(PHP_SERVICE_NAME) /bin/bash
+	@docker-compose exec $(PHP_SERVICE_NAME) /bin/sh
 	@$(MAKE) -s chown
 
 docker-build:
