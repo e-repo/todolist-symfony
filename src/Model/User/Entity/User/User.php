@@ -174,7 +174,7 @@ class User
     /**
      * @return bool
      */
-    public function isWait()
+    public function isWait(): bool
     {
         return $this->status === self::STATUS_WAIT;
     }
@@ -183,7 +183,7 @@ class User
      */
     public function confirmSignUp(): void
     {
-        if (!$this->isWait()) {
+        if (! $this->isWait()) {
             throw new \DomainException('User is already confirmed.');
         }
 
@@ -200,9 +200,9 @@ class User
     /**
      * @return \DateTimeImmutable
      */
-    public function getCreatedAt(): \DateTimeImmutable
+    public function getDate(): \DateTimeImmutable
     {
-        return $this->createdAt;
+        return $this->date;
     }
     /**
      * @return Email|null
@@ -210,6 +210,14 @@ class User
     public function getEmail(): ?Email
     {
         return $this->email;
+    }
+
+    /**
+     * @return Role
+     */
+    public function getRole(): Role
+    {
+        return $this->role;
     }
     /**
      * @return string
