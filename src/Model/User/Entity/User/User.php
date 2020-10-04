@@ -101,7 +101,7 @@ class User
      * @param string $identity
      * @return $this
      */
-    public function signUpByNetwork(Id $id, \DateTimeImmutable $createdAt, string $network, string $identity): self
+    public static function signUpByNetwork(Id $id, \DateTimeImmutable $createdAt, string $network, string $identity): self
     {
         $user = new self($id, $createdAt);
         $user->attachNetwork($network, $identity);
