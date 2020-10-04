@@ -179,8 +179,7 @@ class User
         return $this->status === self::STATUS_WAIT;
     }
     /**
-     * Метод для установки статуса пользователя в
-     * ожидание подтверждения регистрации
+     * Метод для установки статуса пользователя "Активен"
      */
     public function confirmSignUp(): void
     {
