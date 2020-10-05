@@ -39,9 +39,9 @@ class ResetRequestTest extends TestCase
             ->confirmed()
             ->buildByEmail();
 
-        self::requestPasswordReset($token, $now);
+        $user->requestPasswordReset($token, $now);
         self::expectExceptionMessage('Resetting is already request.');
-        self::requestPasswordReset($token, $now);
+        $user->requestPasswordReset($token, $now);
     }
 
     public function testExpired(): void
@@ -65,7 +65,7 @@ class ResetRequestTest extends TestCase
         self::assertEquals($token2, $user->getRequestToken());
     }
 
-    public function testWithoutConfirmed(\DateTimeImmutable $date, string $hash): void
+    public function testWithoutConfirmed(): void
     {
         $now = new \DateTimeImmutable();
         $token = new ResetToken('token', $now->modify('+1 day'));
