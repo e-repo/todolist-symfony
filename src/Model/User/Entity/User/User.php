@@ -16,35 +16,20 @@ class User
     public const STATUS_ACTIVE = 'active';
     private const STATUS_NEW = 'new';
 
-    /**
-     * @var Id
-     */
     private Id $id;
-    /**
-     * @var \DateTimeImmutable
-     */
+
     private \DateTimeImmutable $date;
-    /**
-     * @var Role
-     */
+
     private Role $role;
-    /**
-     * @var ArrayCollection
-     */
+
     private ArrayCollection $networks;
-    /**
-     * @var Email
-     */
+
     private Email $email;
-    /**
-     * @var string
-     */
+
     private string $passwordHash;
     /**
      * Токен для подтвержения пользователя
      * через email, соцсети и тп.
-     *
-     * @var string | null
      */
     private ?string $confirmToken;
     /**
@@ -52,7 +37,7 @@ class User
      *
      * @var ResetToken | null
      */
-    private ?ResetToken $resetToken;
+    private ?ResetToken $resetToken = null;
     /**
      * @var string
      */
