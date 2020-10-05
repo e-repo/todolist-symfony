@@ -24,14 +24,14 @@ class User
 
     private ArrayCollection $networks;
 
-    private Email $email;
+    private ?Email $email = null;
 
     private string $passwordHash;
     /**
      * Токен для подтвержения пользователя
      * через email, соцсети и тп.
      */
-    private ?string $confirmToken;
+    private ?string $confirmToken = null;
     /**
      * Токен для сброса пароля
      *
