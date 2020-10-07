@@ -13,14 +13,14 @@ class UserBuilder
     private Id $id;
     private \DateTimeImmutable $date;
 
-    private ?Email $email;
-    private ?string $hash;
-    private ?string $token;
+    private ?Email $email = null;
+    private ?string $hash = null;
+    private ?string $token = null;
 
     private bool $confirmed = false;
 
-    private ?string $network;
-    private ?string $identity;
+    private ?string $network = null;
+    private ?string $identity = null;
 
     /**
      * UserBuilder constructor.
@@ -29,11 +29,42 @@ class UserBuilder
     {
         $this->id       = Id::next();
         $this->date     = new \DateTimeImmutable();
-        $this->email    = new Email('test@test.ru');
-        $this->hash     = 'hash';
-        $this->token    = 'token';
-        $this->network  = 'vk';
-        $this->identity = '0000001';
+    }
+
+    /**
+     * Возвращает дефолтные параметры
+     * для сущности User
+     *
+     * @return array
+     */
+    private function paramsList(): array
+    {
+        return [
+            'id'            => $this->id,
+            'date'          => $this->date,
+            'email'         => 'test@test.ru',
+            'passwordHash'  => 'hash',
+            'token'         => 'token',
+            'network'       => 'vk',
+            'identity'      => '0000001'
+        ];
+    }
+
+    /**
+     * Возвращает параметры сущности User
+     *
+     * @param string $paramsName
+     * @return mixed
+     */
+    public function defaultParams(string $paramsName)
+    {
+        $paramsList = self::paramsList();
+
+        if (!isset($paramsList[$paramsName])) {
+            throw new \DomainException(sprintf("Param '%s' not set.", $paramsName));
+        }
+
+        return $paramsList[$paramsName];
     }
 
     public function confirmed(): self
@@ -42,43 +73,14 @@ class UserBuilder
         $clone->confirmed = true;
         return $clone;
     }
-    /**
-     * @param Email|null $email
-     * @param string|null $hash
-     * @param string|null $token
-     * @return $this
-     */
-    public function viaEmail(
-        Email $email = null,
-        string $hash = null,
-        string $token = null
-    ): self
-    {
-        $clone = clone $this;
-        $clone->email = $email ?? $this->email;
-        $clone->hash = $hash ?? $this->hash;
-        $clone->token = $token ?? $this->token;
-        return $clone;
-    }
-
-    /**
-     * @param string|null $network
-     * @param string|null $identity
-     * @return $this
-     */
-    public function viaNetwork(string $network = null, string $identity = null): self
-    {
-        $clone = clone $this;
-        $clone->network = $network ?? $this->network;
-        $clone->identity = $identity ?? $this->identity;
-        return $clone;
-    }
 
     /**
      * @return User
      */
     public function buildByEmail(): User
     {
+        $this->viaEmail();
+
         $user = User::signUpByEmail(
             $this->id,
             $this->date,
@@ -96,6 +98,7 @@ class UserBuilder
 
     public function buildByNetwork(): User
     {
+        $this->viaNetwork();
         return User::signUpByNetwork(
             $this->id,
             $this->date,
@@ -158,5 +161,35 @@ class UserBuilder
     public function getIdentity(): ?string
     {
         return $this->identity;
+    }
+
+    /**
+     * @param Email|null $email
+     * @param string|null $hash
+     * @param string|null $token
+     * @return $this
+     */
+    private function viaEmail(
+        Email $email = null,
+        string $hash = null,
+        string $token = null
+    ): self
+    {
+        $this->email = $email ?? new Email($this->defaultParams('email'));
+        $this->hash = $hash ?? $this->defaultParams('passwordHash');
+        $this->token = $token ?? $this->defaultParams('token');
+        return $this;
+    }
+
+    /**
+     * @param string|null $network
+     * @param string|null $identity
+     * @return $this
+     */
+    private function viaNetwork(string $network = null, string $identity = null): self
+    {
+        $this->network = $network ?? $this->defaultParams('network');
+        $this->identity = $identity ?? $this->defaultParams('identity');
+        return $this;
     }
 }
