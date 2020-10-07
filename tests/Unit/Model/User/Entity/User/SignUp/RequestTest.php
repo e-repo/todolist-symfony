@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Model\User\Entity\User\SignUp;
 
+use App\Model\User\Entity\User\Email;
 use App\Tests\Builder\User\UserBuilder;
 use PHPUnit\Framework\TestCase;
 
@@ -14,18 +15,17 @@ class RequestTest extends TestCase
         $userBuilder = new UserBuilder();
 
         $user = $userBuilder
-            ->viaEmail()
             ->buildByEmail();
 
         self::assertTrue($user->isWait());
         self::assertFalse($user->isNew());
         self::assertFalse($user->isActive());
 
-        self::assertEquals($user->getId(), $userBuilder->getId());
-        self::assertEquals($user->getEmail(), $userBuilder->getEmail());
-        self::assertEquals($user->getDate(), $userBuilder->getDate());
-        self::assertEquals($user->getPasswordHash(), $userBuilder->getHash());
-        self::assertEquals($user->getConfirmToken(), $userBuilder->getToken());
+        self::assertEquals($user->getId(), $userBuilder->defaultParams('id'));
+        self::assertEquals($user->getEmail(), new Email($userBuilder->defaultParams('email')));
+        self::assertEquals($user->getDate(), $userBuilder->defaultParams('date'));
+        self::assertEquals($user->getPasswordHash(), $userBuilder->defaultParams('passwordHash'));
+        self::assertEquals($user->getConfirmToken(), $userBuilder->defaultParams('token'));
 
         self::assertTrue($user->getRole()->isUser());
     }
