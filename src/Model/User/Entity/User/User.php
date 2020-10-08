@@ -5,10 +5,20 @@ declare(strict_types=1);
 namespace App\Model\User\Entity\User;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Class User
  * @package App\Model\User\Entity\User
+ * @ORM\Entity()
+ * @ORM\HasLifecycleCallbacks()
+ * @ORM\Table(
+ *     name="user_users",
+ *     uniqueConstraints={
+ *          @ORM\UniqueConstraint(columns={"email"}),
+ *          @ORM\UniqueConstraint(columns={"user_reset_token"})
+ *     }
+ * )
  */
 class User
 {
@@ -16,14 +26,31 @@ class User
     public const STATUS_ACTIVE = 'active';
     private const STATUS_NEW = 'new';
 
+    /**
+     * @ORM\Column(type="user_user_id")
+     */
     private Id $id;
 
+    /**
+     * @ORM\Column(type="date_immutable")
+     */
     private \DateTimeImmutable $date;
 
+    /**
+     * @ORM\Column(type="user_user_role")
+     */
     private Role $role;
 
+    /**
+     * Доступные соцсети в отдельной таблице
+     *
+     * @var ArrayCollection
+     */
     private ArrayCollection $networks;
 
+    /**
+     * @ORM\Column(type="user_user_email")
+     */
     private ?Email $email;
 
     private ?string $passwordHash;
@@ -37,7 +64,7 @@ class User
     /**
      * Токен для сброса пароля
      *
-     * @var ResetToken | null
+     * @ORM\Embedded(class="ResetToken", columnPrefix="reset_")
      */
     private ?ResetToken $resetToken;
 
@@ -247,13 +274,14 @@ class User
      * ResetToken::expires = null
      * (Меняем дефолтное поведение)
      *
+     * @ORM\PostLoad()
      */
-//    public function CheckEmbeds()
-//    {
-//        if ($this->resetToken->isEmpty()) {
-//            $this->resetToken = null;
-//        }
-//    }
+    public function CheckEmbeds()
+    {
+        if ($this->resetToken->isEmpty()) {
+            $this->resetToken = null;
+        }
+    }
     /**
      * @return Network[]|ArrayCollection
      */
