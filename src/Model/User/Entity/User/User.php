@@ -24,20 +24,23 @@ class User
 
     private ArrayCollection $networks;
 
-    private ?Email $email = null;
+    private ?Email $email;
 
-    private string $passwordHash;
+    private ?string $passwordHash;
+
     /**
      * Токен для подтвержения пользователя
      * через email, соцсети и тп.
      */
-    private ?string $confirmToken = null;
+    private ?string $confirmToken;
+
     /**
      * Токен для сброса пароля
      *
      * @var ResetToken | null
      */
-    private ?ResetToken $resetToken = null;
+    private ?ResetToken $resetToken;
+
     /**
      * @var string
      */
@@ -54,6 +57,11 @@ class User
         $this->date = $date;
         $this->role = Role::user();
         $this->networks = new ArrayCollection();
+
+        $this->email = null;
+        $this->passwordHash = null;
+        $this->resetToken = null;
+        $this->confirmToken = null;
     }
 
     /**
@@ -61,15 +69,15 @@ class User
      * при помощи токена
      *
      * @param Id $id
-     * @param \DateTimeImmutable $createdAt
+     * @param \DateTimeImmutable $date
      * @param Email $email
      * @param string $hash
      * @param string $token
      * @return static
      */
-    public static function signUpByEmail(Id $id, \DateTimeImmutable $createdAt, Email $email, string $hash, string $token): self
+    public static function signUpByEmail(Id $id, \DateTimeImmutable $date, Email $email, string $hash, string $token): self
     {
-        $user = new self($id, $createdAt);
+        $user = new self($id, $date);
         $user->email = $email;
         $user->passwordHash = $hash;
         $user->confirmToken = $token;
@@ -81,14 +89,14 @@ class User
      * Регистрация через соцсети
      *
      * @param Id $id
-     * @param \DateTimeImmutable $createdAt
+     * @param \DateTimeImmutable $date
      * @param string $network
      * @param string $identity
      * @return $this
      */
-    public static function signUpByNetwork(Id $id, \DateTimeImmutable $createdAt, string $network, string $identity): self
+    public static function signUpByNetwork(Id $id, \DateTimeImmutable $date, string $network, string $identity): self
     {
-        $user = new self($id, $createdAt);
+        $user = new self($id, $date);
         $user->attachNetwork($network, $identity);
         $user->status = self::STATUS_ACTIVE;
         return $user;
@@ -212,6 +220,8 @@ class User
         return $this->passwordHash;
     }
     /**
+     * Возвращает токен для подтверждения пароля
+     *
      * @return string | null
      */
     public function getConfirmToken(): ?string
@@ -219,6 +229,8 @@ class User
         return $this->confirmToken;
     }
     /**
+     * Возвращает токен для сброса пароля
+     *
      * @return ResetToken | null
      */
     public function getRequestToken(): ?ResetToken
