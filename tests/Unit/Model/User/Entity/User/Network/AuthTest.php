@@ -1,0 +1,35 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\Unit\Model\User\Entity\User\Network;
+
+use App\Model\User\Entity\User\Network;
+use App\Tests\Builder\User\UserBuilder;
+use phpDocumentor\Reflection\Types\Mixed_;
+use PHPUnit\Framework\TestCase;
+
+class AuthTest extends TestCase
+{
+    public function testSuccess(): void
+    {
+        $userBuilder = new UserBuilder();
+        $user = $userBuilder
+            ->buildByNetwork();
+
+        self::assertTrue($user->isActive());
+        self::assertFalse($user->isNew());
+        self::assertFalse($user->isWait());
+
+        self::assertNull($user->getEmail());
+        self::assertNull($user->getConfirmToken());
+
+        self::assertEquals($user->getId(), $userBuilder->defaultParams('id'));
+        self::assertEquals($user->getDate(), $userBuilder->defaultParams('date'));
+
+        self::assertCount(1, $networks = $user->getNetworks());
+        self::assertInstanceOf(Network::class, $first = reset($networks));
+        self::assertEquals($userBuilder->getNetwork(), $first->getNetwork());
+        self::assertEquals($userBuilder->getIdentity(), $first->getIdentity());
+    }
+}
