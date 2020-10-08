@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace App\Model\User\Entity\User;
 
+use Doctrine\ORM\Mapping as ORM;
 use Webmozart\Assert\Assert;
 
 class ResetToken
 {
     /**
-     * @var string
+     * @ORM\Column(type="string", name="token", nullable=true)
      */
     private string $value;
     /**
-     * @var \DateTimeImmutable
+     * @ORM\Column(type="date_immutable", name="token_expires" nullable=true)
      */
     private \DateTimeImmutable $expires;
 
