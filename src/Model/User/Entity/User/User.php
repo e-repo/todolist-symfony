@@ -44,7 +44,8 @@ class User
     /**
      * Доступные соцсети в отдельной таблице
      *
-     * @var ArrayCollection
+     * @var Network[] | ArrayCollection
+     * @ORM\OneToMany(targetEntity="Network", mappedBy="user", orphanRemoval=true, cascade={"persist"})
      */
     private ArrayCollection $networks;
 
