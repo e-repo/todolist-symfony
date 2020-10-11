@@ -26,7 +26,6 @@ class Id
 
     /**
      * @return $this
-     * @throws \Exception
      */
     public static function next(): self
     {
