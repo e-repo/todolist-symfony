@@ -5,8 +5,43 @@ declare(strict_types=1);
 namespace App\Model\User\Service;
 
 use App\Model\User\Entity\User\Email;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mailer\MailerInterface;
+use Twig\Environment;
 
-interface ConfirmTokenSender
+class ConfirmTokenSender
 {
-    public function send(Email $email, string $token);
+    private MailerInterface $mailer;
+    private Environment $twig;
+
+    /**
+     * ConfirmTokenSender constructor.
+     * @param MailerInterface $mailer
+     * @param Environment $twig
+     */
+    public function __construct(MailerInterface $mailer, Environment $twig)
+    {
+        $this->mailer = $mailer;
+        $this->twig = $twig;
+    }
+
+    /**
+     * @param Email $email
+     * @param string $token
+     * @throws \Symfony\Component\Mailer\Exception\TransportExceptionInterface
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
+     */
+    public function send(Email $email, string $token): void
+    {
+        $email = (new TemplatedEmail())
+            ->from('mail@app.test')
+            ->to($email->getValue())
+            ->htmlTemplate($this->twig->render('mail/user/signup.html.twig', [
+                'token' => $token
+            ]));
+
+        $this->mailer->send($email);
+    }
 }
