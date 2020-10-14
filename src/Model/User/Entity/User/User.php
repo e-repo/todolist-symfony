@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
  *     name="user_users",
  *     uniqueConstraints={
  *          @ORM\UniqueConstraint(columns={"email"}),
- *          @ORM\UniqueConstraint(columns={"user_reset_token"})
+ *          @ORM\UniqueConstraint(columns={"reset_token"})
  *     }
  * )
  */
@@ -28,6 +28,7 @@ class User
 
     /**
      * @ORM\Column(type="user_user_id")
+     * @ORM\Id()
      */
     private Id $id;
 

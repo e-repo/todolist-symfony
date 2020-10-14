@@ -24,6 +24,7 @@ class Network
      *
      * @var string
      * @ORM\Column(type="guid")
+     * @ORM\Id()
      */
     private string $id;
     /**

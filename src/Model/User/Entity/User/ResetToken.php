@@ -7,6 +7,11 @@ namespace App\Model\User\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use Webmozart\Assert\Assert;
 
+/**
+ * Class ResetToken
+ * @package App\Model\User\Entity\User
+ * @ORM\Embeddable()
+ */
 class ResetToken
 {
     /**
@@ -14,7 +19,7 @@ class ResetToken
      */
     private string $value;
     /**
-     * @ORM\Column(type="date_immutable", name="token_expires" nullable=true)
+     * @ORM\Column(type="date_immutable", name="token_expires", nullable=true)
      */
     private \DateTimeImmutable $expires;
 
