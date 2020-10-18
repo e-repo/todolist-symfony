@@ -6,6 +6,7 @@ namespace App\ReadModel\User;
 
 use App\Model\User\Entity\User\User;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\FetchMode;
 use Doctrine\ORM\QueryBuilder;
 
 class UserFetcher
@@ -44,5 +45,20 @@ class UserFetcher
                 ->andWhere('t.email = :email')
                 ->setParameter(':email', $email)
                 ->getQuery()->getSingleScalarResult() > 0;
+    }
+
+    public function findForAuth(string $email): ?AuthView
+    {
+        $stmt = $this->qb
+            ->select('id', 'email', 'password_hash', 'role', 'status')
+            ->from('user_users')
+            ->where('email = :email')
+            ->setParameter(':email', $email)
+            ->execute();
+
+        $stmt->setFetchMode(FetchMode::CUSTOM_OBJECT, AuthView::class);
+        $result = $stmt->fetch();
+
+        return $result ?: null;
     }
 }
