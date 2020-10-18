@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Model\User\UseCase\Request;
+namespace App\Model\User\UseCase\SignUp\Request;
 
 
 use App\Model\Flusher;
