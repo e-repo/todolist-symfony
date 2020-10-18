@@ -32,12 +32,6 @@ class SignUpController extends AbstractController
      * @param Request $request
      * @param SignUp\Request\Handler $handler
      * @return Response
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Symfony\Component\Mailer\Exception\TransportExceptionInterface
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
      */
     public function request(Request $request, SignUp\Request\Handler $handler): Response
     {
