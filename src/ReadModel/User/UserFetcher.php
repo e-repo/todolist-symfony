@@ -7,7 +7,7 @@ namespace App\ReadModel\User;
 use App\Model\User\Entity\User\User;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
-use Doctrine\ORM\QueryBuilder;
+use Doctrine\DBAL\Query\QueryBuilder;
 
 class UserFetcher
 {
@@ -16,7 +16,12 @@ class UserFetcher
      */
     private Connection $connection;
     private QueryBuilder $qb;
-    private string $entityClassName;
+
+    /**
+     * Наименование таблицы бд для
+     * read-model
+     */
+    public const TABLE_NAME = 'user_users';
 
 
     /**
@@ -26,32 +31,32 @@ class UserFetcher
     public function __construct(Connection $connection)
     {
         $this->connection = $connection;
-
         $this->qb = $connection->createQueryBuilder();
-        $this->entityClassName = User::class;
     }
 
     /**
      * @param string $email
      * @return bool
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function hasByEmail(string $email)
     {
         return $this->qb
-                ->select('COUNT(t.id)')
-                ->from($this->entityClassName, 't')
-                ->andWhere('t.email = :email')
-                ->setParameter(':email', $email)
-                ->getQuery()->getSingleScalarResult() > 0;
+            ->select('COUNT(t.id)')
+            ->from(self::TABLE_NAME, 't')
+            ->andWhere('t.email = :email')
+            ->setParameter(':email', $email)
+            ->execute()->fetchColumn(0) > 0;
     }
 
+    /**
+     * @param string $email
+     * @return AuthView|null
+     */
     public function findForAuth(string $email): ?AuthView
     {
         $stmt = $this->qb
             ->select('id', 'email', 'password_hash', 'role', 'status')
-            ->from('user_users')
+            ->from(self::TABLE_NAME)
             ->where('email = :email')
             ->setParameter(':email', $email)
             ->execute();

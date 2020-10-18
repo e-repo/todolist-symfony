@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\ReadModel\User\UserFetcher;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -9,6 +10,16 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class AuthController extends AbstractController
 {
+    /**
+     * @var UserFetcher
+     */
+    private UserFetcher $fetcher;
+
+    public function __construct(UserFetcher $fetcher)
+    {
+        $this->fetcher = $fetcher;
+    }
+
     /**
      * @Route("/login", name="app_login")
      * @param AuthenticationUtils $authenticationUtils
