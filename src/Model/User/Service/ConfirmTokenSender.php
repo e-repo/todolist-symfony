@@ -38,7 +38,7 @@ class ConfirmTokenSender
         $email = (new TemplatedEmail())
             ->from('mail@app.test')
             ->to($email->getValue())
-            ->htmlTemplate($this->twig->render('mail/user/signup.html.twig', [
+            ->html($this->twig->render('mail/user/signup.html.twig', [
                 'token' => $token
             ]));
 
