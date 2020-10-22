@@ -45,33 +45,38 @@ class User
     /**
      * Доступные соцсети в отдельной таблице
      *
-     * @var Network[] | ArrayCollection
+     * @var Network[] | ArrayCollection | null
      * @ORM\OneToMany(targetEntity="Network", mappedBy="user", orphanRemoval=true, cascade={"persist"})
      */
-    private ArrayCollection $networks;
+    private ?ArrayCollection $networks = null;
 
     /**
-     * @ORM\Column(type="user_user_email")
+     * @ORM\Column(type="user_user_email", nullable=true)
      */
-    private ?Email $email;
+    private ?Email $email = null;
 
-    private ?string $passwordHash;
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private ?string $passwordHash = null;
 
     /**
      * Токен для подтвержения пользователя
      * через email, соцсети и тп.
+     *
+     * @ORM\Column(type="string", nullable=true)
      */
-    private ?string $confirmToken;
+    private ?string $confirmToken = null;
 
     /**
      * Токен для сброса пароля
      *
      * @ORM\Embedded(class="ResetToken", columnPrefix="reset_")
      */
-    private ?ResetToken $resetToken;
+    private ?ResetToken $resetToken = null;
 
     /**
-     * @var string
+     * @ORM\Column(type="string", length=20)
      */
     private string $status;
 
@@ -85,12 +90,6 @@ class User
         $this->id = $id;
         $this->date = $date;
         $this->role = Role::user();
-        $this->networks = new ArrayCollection();
-
-        $this->email = null;
-        $this->passwordHash = null;
-        $this->resetToken = null;
-        $this->confirmToken = null;
     }
 
     /**
@@ -126,6 +125,7 @@ class User
     public static function signUpByNetwork(Id $id, \DateTimeImmutable $date, string $network, string $identity): self
     {
         $user = new self($id, $date);
+        $user->networks = new ArrayCollection();
         $user->attachNetwork($network, $identity);
         $user->status = self::STATUS_ACTIVE;
         return $user;
