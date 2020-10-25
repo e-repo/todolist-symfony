@@ -50,7 +50,7 @@ class SignUpController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             try {
                 $handler->handle($command);
-                $this->addFlash('success', 'Check your email.');
+                $this->addFlash('success', $this->translator->trans('Check your email.', [], 'notification'));
                 return $this->redirectToRoute('home');
             } catch (\DomainException $e) {
                 $this->logger->error($e->getMessage(), ['exception' => $e]);
@@ -61,5 +61,26 @@ class SignUpController extends AbstractController
         return $this->render('app/auth/signup.html.twig', [
             'form' => $form->createView()
         ]);
+    }
+
+    /**
+     * @Route("/signup/{token}", name="auth.signup.confirm")
+     * @param string $token
+     * @param SignUp\Confirm\Handler $handler
+     * @return Response
+     */
+    public function confirm(string $token, SignUp\Confirm\Handler $handler): Response
+    {
+        $command = new SignUp\Confirm\Command($token);
+
+        try {
+            $handler->handle($command);
+            $this->addFlash('success', $this->translator->trans('Email is success confirmed.', [], 'notification'));
+            return $this->redirectToRoute('home');
+        } catch (\DomainException $e) {
+            $this->logger->error($e->getMessage(), ['exception', $e]);
+            $this->addFlash('error', $e->getMessage());
+            return $this->redirectToRoute('home');
+        }
     }
 }
