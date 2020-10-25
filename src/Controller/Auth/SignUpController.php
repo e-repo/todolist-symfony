@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Model\User\UseCase\SignUp;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SignUpController extends AbstractController
 {
@@ -17,14 +18,20 @@ class SignUpController extends AbstractController
      * @var LoggerInterface
      */
     private LoggerInterface $logger;
+    /**
+     * @var TranslatorInterface
+     */
+    private TranslatorInterface $translator;
 
     /**
      * SignUpController constructor.
      * @param LoggerInterface $logger
+     * @param TranslatorInterface $translator
      */
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, TranslatorInterface $translator)
     {
         $this->logger = $logger;
+        $this->translator = $translator;
     }
 
     /**
@@ -47,7 +54,7 @@ class SignUpController extends AbstractController
                 return $this->redirectToRoute('home');
             } catch (\DomainException $e) {
                 $this->logger->error($e->getMessage(), ['exception' => $e]);
-                $this->addFlash('error', $e->getMessage());
+                $this->addFlash('error', $this->translator->trans($e->getMessage(), [], 'exceptions'));
             }
         }
 
