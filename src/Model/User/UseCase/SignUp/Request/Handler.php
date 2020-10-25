@@ -75,7 +75,7 @@ class Handler
         $email = new Email($command->email);
 
         if ($this->userFetcher->hasByEmail($email->getValue())) {
-            throw new \DomainException('User already exist');
+            throw new \DomainException('User already exist.');
         }
 
         $user = User::signUpByEmail(
