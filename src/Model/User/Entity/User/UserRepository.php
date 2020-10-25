@@ -5,7 +5,6 @@ namespace App\Model\User\Entity\User;
 
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ObjectRepository;
 
 class UserRepository
@@ -23,9 +22,26 @@ class UserRepository
         $this->repo = $this->em->getRepository(User::class);
     }
 
-    public function findByResetToken(string $token): ?User
+    /**
+     * Возвращает пользователя по токену на сброс пароля
+     *
+     * @param string $token
+     * @return User|object|null
+     */
+    public function findByResetToken(string $token)
     {
         return $this->repo->findOneBy(['resetToken.token' => $token]);
+    }
+
+    /**
+     * Возвращаент пользователя по токену регистрации
+     *
+     * @param string $token
+     * @return User|object|null
+     */
+    public function findByConfirmToken(string $token)
+    {
+        return $this->repo->findOneBy(['confirmToken' => $token]);
     }
 
     public function add(User $user): void
