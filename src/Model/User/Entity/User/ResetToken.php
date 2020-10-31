@@ -36,6 +36,8 @@ class ResetToken
     }
 
     /**
+     * Истек или нет?
+     *
      * @param \DateTimeImmutable $date
      * @return bool
      */
