@@ -17,9 +17,9 @@ class ResetToken
     /**
      * @ORM\Column(type="string", name="token", nullable=true)
      */
-    private string $value;
+    private string $token;
     /**
-     * @ORM\Column(type="date_immutable", name="token_expires", nullable=true)
+     * @ORM\Column(type="datetime_immutable", name="token_expires", nullable=true)
      */
     private \DateTimeImmutable $expires;
 
@@ -31,7 +31,7 @@ class ResetToken
     public function __construct(string $token, \DateTimeImmutable $expires)
     {
         Assert::notEmpty($token);
-        $this->value = $token;
+        $this->token = $token;
         $this->expires = $expires;
     }
 
@@ -51,7 +51,7 @@ class ResetToken
      */
     public function getToken(): string
     {
-        return $this->value;
+        return $this->token;
     }
 
     public function isEmpty()
