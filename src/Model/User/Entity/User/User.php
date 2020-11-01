@@ -158,7 +158,7 @@ class User
      */
     public function passwordReset(\DateTimeImmutable $date, string $hash): void
     {
-        if (!$this->resetToken) {
+        if (! $this->resetToken) {
             throw new \DomainException('Resisting is not requested.');
         }
         if ($this->resetToken->isExpiredTo($date)) {
