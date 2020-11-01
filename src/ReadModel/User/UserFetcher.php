@@ -66,4 +66,14 @@ class UserFetcher
 
         return $result ?: null;
     }
+
+    public function existByResetToken(string $token)
+    {
+        return $this->qb
+            ->select('COUNT(t.id)')
+            ->from(self::TABLE_NAME, 't')
+            ->andWhere('t.reset_token = :token')
+            ->setParameter(':token', $token)
+            ->execute()->fetchColumn(0) > 0;
+    }
 }
