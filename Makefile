@@ -34,6 +34,9 @@ todo-composer-install:
 todo-assets-install:
 	docker-compose run --rm todo-node yarn install
 
+todo-assets-dev:
+	docker-compose run --rm todo-node npm run dev
+
 todo-wait-db:
 	until docker-compose exec -T todo-postgres pg_isready --timeout=0 --dbname=app ; do sleep 1 ; done
 
