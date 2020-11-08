@@ -4,7 +4,7 @@ PHP_SERVICE_NAME=todo-nginx
 
 up: docker-up
 down: docker-down
-init: docker-down-clear docker-pull docker-build docker-up todo-init post-install
+init: docker-down-clear todo-clear docker-pull docker-build docker-up todo-init post-install
 test: todo-test
 
 docker-up:
@@ -16,6 +16,9 @@ docker-down:
 docker-down-clear:
 	docker-compose down -v --remove-orphans
 
+todo-clear:
+	docker run --rm -v ${PWD}:/app --workdir=/app alpine rm -f .ready
+
 docker-pull:
 	docker-compose pull
 
@@ -26,7 +29,7 @@ shell:
 docker-build:
 	docker-compose build
 
-todo-init: todo-composer-install todo-assets-install todo-wait-db todo-migrations todo-fixtures
+todo-init: todo-composer-install todo-assets-install todo-wait-db todo-migrations todo-fixtures todo-ready
 
 todo-composer-install:
 	docker-compose run --rm todo-php-cli composer install
@@ -50,6 +53,9 @@ todo-fixtures:
 
 todo-test:
 	docker-compose run --rm todo-php-cli php bin/phpunit
+
+todo-ready:
+	docker run --rm -v ${PWD}:/app --workdir=/app alpine touch .ready
 
 chown:
 	@docker-compose $(DOCKER_ARGS) exec $(PHP_SERVICE_NAME) chown -R $(UID):$(UID) ./
