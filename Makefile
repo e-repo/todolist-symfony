@@ -26,10 +26,13 @@ shell:
 docker-build:
 	docker-compose build
 
-todo-init: todo-composer-install todo-wait-db todo-migrations todo-fixtures
+todo-init: todo-composer-install todo-assets-install todo-wait-db todo-migrations todo-fixtures
 
 todo-composer-install:
 	docker-compose run --rm todo-php-cli composer install
+
+todo-assets-install:
+	docker-compose run --rm todo-node yarn install
 
 todo-wait-db:
 	until docker-compose exec -T todo-postgres pg_isready --timeout=0 --dbname=app ; do sleep 1 ; done

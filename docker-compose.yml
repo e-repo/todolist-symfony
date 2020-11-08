@@ -29,6 +29,11 @@ services:
     depends_on:
       - todo-postgres
       - mailer
+  todo-node:
+    image: node:14.15-alpine
+    volumes:
+      - ./:/app
+    working_dir: /app
   todo-postgres:
     image: postgres:11.2-alpine
     volumes:
