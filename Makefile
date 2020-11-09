@@ -6,9 +6,14 @@ up: docker-up
 down: docker-down
 init: docker-down-clear todo-clear docker-pull docker-build docker-up todo-init post-install
 test: todo-test
+ps: docker-ps
+watch-logs: node-watch-logs
 
 docker-up:
 	docker-compose up -d
+
+docker-ps:
+	docker-compose ps
 
 docker-down:
 	docker-compose down --remove-orphans
@@ -36,6 +41,9 @@ todo-composer-install:
 
 todo-assets-install:
 	docker-compose run --rm todo-node yarn install
+
+node-watch-logs:
+	docker-compose logs todo-node-watch
 
 todo-assets-dev:
 	docker-compose run --rm todo-node npm run dev
