@@ -7,6 +7,7 @@ down: docker-down
 init: docker-down-clear todo-clear docker-pull docker-build docker-up todo-init post-install
 test: todo-test
 ps: docker-ps
+restart: down up
 watch-logs: node-watch-logs
 
 docker-up:
