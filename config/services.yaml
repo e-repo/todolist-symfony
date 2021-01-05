@@ -36,3 +36,11 @@ services:
     App\Service\Email\AppTemplateCreator:
         arguments: ['%env(MAILER_FROM_EMAIL)%']
 
+    Predis\Client:
+        arguments:
+            - '%env(REDIS_URL)%'
+
+    Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
+        arguments:
+            - '@Predis\Client'
+
