@@ -2,7 +2,7 @@
 <html lang="en" class="h-100">
 <head>
     <meta charset="utf-8">
-    <link rel="icon" type="image/x-icon" href="/image/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{% block title %}Welcome!{% endblock %}</title>
 
@@ -11,54 +11,81 @@
         {{ encore_entry_link_tags('app') }}
     {% endblock %}
 </head>
-<body class="d-flex flex-column h-100">
-<header>
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-        <div class="container">
 
-            <a class="navbar-brand" href="{{ path('home') }}">App</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <ul class="navbar-nav ml-auto">
-                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('home') }}">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_logout') }}">Log Out</a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_login') }}">Log In</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('auth.signup') }}">Sign Up</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('auth.reset') }}">Reset</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
+<body class="c-app">
+
+<div class="c-sidebar c-sidebar-dark c-sidebar-fixed c-sidebar-lg-show" id="sidebar">
+
+    <div class="c-sidebar-brand d-lg-down-none">
+        <svg class="c-sidebar-brand-full" width="118" height="46" alt="CoreUI Logo">
+            <use xlink:href="/assets/brand/coreui.svg#full"></use>
+        </svg>
+        <svg class="c-sidebar-brand-minimized" width="46" height="46" alt="CoreUI Logo">
+            <use xlink:href="assets/brand/coreui.svg#signet"></use>
+        </svg>
+    </div>
+
+    <ul class="c-sidebar-nav">
+        <li class="c-sidebar-nav-item">
+            <a class="c-sidebar-nav-link" href="index.html">
+                <i class="c-sidebar-nav-icon cil-speedometer"></i>
+                Dashboard
+            </a>
+        </li>
+    </ul>
+
+    <button class="c-sidebar-minimizer c-class-toggler" type="button" data-target="_parent" data-class="c-sidebar-minimized"></button>
+</div>
+
+<div class="c-wrapper c-fixed-components">
+    <header class="c-header c-header-light c-header-fixed c-header-with-subheader">
+        <button class="c-header-toggler c-class-toggler mfs-3 d-md-down-none" type="button" data-target="#sidebar" data-class="c-sidebar-lg-show" responsive="true">
+            <span class="c-icon c-icon-lg">
+                <i class="cil-menu"></i>
+            </span>
+        </button>
+        <ul class="c-header-nav ml-auto mr-4">
+            <li class="c-header-nav-item dropdown">
+                <a class="c-header-nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                    {{ app.user.userName }}
+                </a>
+                <div class="dropdown-menu dropdown-menu-right pt-0">
+                    <a class="dropdown-item" href="{{ path('app_logout') }}">
+                        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                            <i class="c-icon mr-2 cil-account-logout"></i> {% trans %}Logout{% endtrans %}
+                        {% endif %}
+                    </a>
+                </div>
+            </li>
+        </ul>
+        <div class="c-subheader px-3">
+            <!-- Breadcrumb-->
+            <ol class="breadcrumb border-0 m-0">
+                <li class="breadcrumb-item"><a href="{{ path('home') }}">{% trans %}Home{% endtrans %}</a></li>
+                {% block breadcrumbs %}{% endblock %}
+            </ol>
         </div>
-    </nav>
-</header>
+    </header>
+    <div class="c-body">
 
-<main role="main" class="flex-shrink-0">
-    <div class="container">
-        {% block breadcrumbs %}{% endblock %}
-        {% include '_flashes.html.twig' %}
-        {% block body %}{% endblock %}
-    </div>
-</main>
+        <main class="c-main">
+            <div class="container-fluid">
+                <div class="fade-in">
 
-<footer class="footer mt-auto py-3">
-    <div class="container">
-        <span class="text-muted">App</span>
+                    {% include '_flashes.html.twig' %}
+                    {% block body %}{% endblock %}
+
+                </div>
+            </div>
+        </main>
+
+        <footer class="c-footer">
+            <div>EVENING PRODUCTION &copy; 2021 creativeLabs.</div>
+            <div class="ml-auto">Powered by&nbsp;evening production</div>
+        </footer>
+
     </div>
-</footer>
+</div>
 
 {% block javascripts %}
     {{ encore_entry_script_tags('app') }}
