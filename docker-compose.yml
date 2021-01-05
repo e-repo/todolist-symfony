@@ -57,6 +57,12 @@ services:
     ports:
       - "54322:5432"
 
+  todo-redis:
+    image: redis:3.0-alpine
+    volumes:
+      - todo-redis:/data
+    command: redis-server --requirepass secret
+
   mailer:
     image: mailhog/mailhog
     ports:
@@ -64,4 +70,5 @@ services:
 
 volumes:
   todo-postgres:
+  todo-redis:
   composer:
