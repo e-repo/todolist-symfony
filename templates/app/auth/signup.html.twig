@@ -1,7 +1,7 @@
 {% extends 'auth.html.twig' %}
 
 {% block title %}
-    {% trans from 'app' %}Sign up{% endtrans %}
+    {% trans %}Sign up{% endtrans %}
 {% endblock %}
 
 {% block body %}
@@ -12,7 +12,7 @@
             <div class="col-md-6">
                 <div class="card mx-4">
                     <div class="card-body p-4">
-                        <h1>{% trans from 'app' %}Sign up{% endtrans %}</h1>
+                        <h1>{% trans %}Sign up{% endtrans %}</h1>
 
                         {{ form_start(form) }}
 
@@ -32,7 +32,7 @@
                             </div>
                             {{ form_widget(form.password, {'attr': {'placeholder': 'Password'|trans({}, 'app')}}) }}
                         </div>
-                        <button class="btn btn-block btn-success" type="submit">{% trans from 'app' %}Sign up{% endtrans %}</button>
+                        <button class="btn btn-block btn-success" type="submit">{% trans %}Sign up{% endtrans %}</button>
 
                         {{ form_end(form) }}
 

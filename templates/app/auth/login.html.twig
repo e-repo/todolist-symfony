@@ -1,7 +1,7 @@
 {% extends 'auth.html.twig' %}
 
 {% block title %}
-    {% trans from 'app' %}Login{% endtrans %}
+    {% trans %}Login{% endtrans %}
 {% endblock %}
 
 {% block body %}
@@ -12,9 +12,9 @@
                     <div class="card p-4">
                         <div class="card-body">
                             {% include '_flashes.html.twig' %}
-                            <h1>{% trans from 'app' %}Login{% endtrans %}</h1>
+                            <h1>{% trans %}Login{% endtrans %}</h1>
                             <p class="text-muted">
-                                {% trans from 'app' %}To enter, you must specify your email and password.{% endtrans %}
+                                {% trans %}To enter, you must specify your email and password.{% endtrans %}
                             </p>
                             {% if error %}
                                 <div class="alert alert-danger">
@@ -45,7 +45,7 @@
                                     </div>
                                     <div class="col-6 text-right">
                                         <a class="btn btn-link px-0" href="{{ path('auth.reset') }}">
-                                            {% trans from 'app' %}Forgot your password?{% endtrans %}
+                                            {% trans %}Forgot your password?{% endtrans %}
                                         </a>
                                     </div>
                                 </div>
@@ -63,9 +63,9 @@
                     <div class="card text-white bg-primary py-5 d-md-down-none" style="width:44%">
                         <div class="card-body content-center">
                             <div>
-                                <h2>{% trans from 'app' %}Registration{% endtrans %}</h2>
-                                <p>{% trans from 'app' %}To register in the system, follow the link below and fill out the registration form.{% endtrans %}</p>
-                                <a class="btn btn-lg btn-outline-light mt-3" href="{{ path('auth.signup') }}">{% trans from 'app' %}Register now{% endtrans %}</a>
+                                <h2>{% trans %}Registration{% endtrans %}</h2>
+                                <p>{% trans %}To register in the system, follow the link below and fill out the registration form.{% endtrans %}</p>
+                                <a class="btn btn-lg btn-outline-light mt-3" href="{{ path('auth.signup') }}">{% trans %}Register now{% endtrans %}</a>
                             </div>
                         </div>
                     </div>
