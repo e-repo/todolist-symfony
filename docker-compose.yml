@@ -21,6 +21,7 @@ services:
     depends_on:
       - todo-postgres
       - mailer
+      - todo-redis
 
   todo-php-cli:
     build:
@@ -31,6 +32,7 @@ services:
       - composer:/root/.composer/cache
     depends_on:
       - todo-postgres
+      - todo-redis
       - mailer
 
   todo-node-watch:
