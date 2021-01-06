@@ -49,9 +49,21 @@ class UserRepository
      * @param string $email
      * @return User|object
      */
-    public function getByEmail(string $email): ?User
+    public function getByEmail(string $email): User
     {
         if (! $user = $this->repo->findOneBy(['email' => $email])) {
+            throw new EntityNotFoundException('User is not found.');
+        }
+        return $user;
+    }
+
+    /**
+     * @param Id $id
+     * @return User|object
+     */
+    public function get(Id $id): User
+    {
+        if (! $user = $this->repo->find($id->getValue())) {
             throw new EntityNotFoundException('User is not found.');
         }
         return $user;
