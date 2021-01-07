@@ -33,7 +33,7 @@ class User
     private Id $id;
 
     /**
-     * @ORM\Column(type="date_immutable")
+     * @ORM\Column(type="datetime_immutable")
      */
     private \DateTimeImmutable $date;
 
