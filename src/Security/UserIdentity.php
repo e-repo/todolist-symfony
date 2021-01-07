@@ -89,6 +89,14 @@ class UserIdentity implements UserInterface, EquatableInterface
     }
 
     /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    /**
      * Проверка статуса пльзователя
      *
      * @return bool
