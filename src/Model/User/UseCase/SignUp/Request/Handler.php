@@ -69,6 +69,10 @@ class Handler
 
     /**
      * @param Command $command
+     * @throws \Symfony\Component\Mailer\Exception\TransportExceptionInterface
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
     public function handle(Command $command)
     {
