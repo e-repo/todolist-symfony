@@ -69,6 +69,18 @@ class User
     private ?string $confirmToken = null;
 
     /**
+     * @var Email|null
+     * @ORM\Column(type="user_user_email", name="new_email", nullable=true)
+     */
+    private ?Email $newEmail = null;
+
+    /**
+     * @var string|null
+     * @ORM\Column(type="string", name="new_email_token", nullable=true)
+     */
+    private ?string $newEmailToken = null;
+
+    /**
      * Токен для сброса пароля
      *
      * @ORM\Embedded(class="ResetToken", columnPrefix="reset_")
@@ -149,6 +161,40 @@ class User
             throw new \DomainException('Resetting is already request.');
         }
         $this->resetToken = $token;
+    }
+    /**
+     * Изменение email пользователя с верификацией email
+     *
+     * @param Email $email
+     * @param string $token
+     */
+    public function requestEmailChanging(Email $email, string $token): void
+    {
+        if (!$this->isActive()) {
+            throw new \DomainException('User is not active.');
+        }
+        if ($this->email && $this->email->isEqual($email)) {
+            throw new \DomainException('Email is already same.');
+        }
+        $this->newEmail = $email;
+        $this->newEmailToken = $token;
+    }
+    /**
+     * Изменение пароля пользователя после верификации
+     *
+     * @param string $token
+     */
+    public function confirmEmailChanging(string $token): void
+    {
+        if (!$this->newEmailToken) {
+            throw new \DomainException('Changing is not requested.');
+        }
+        if ($this->newEmailToken !== $token) {
+            throw new \DomainException('Incorrect changing token.');
+        }
+        $this->email = $this->newEmail;
+        $this->newEmail = null;
+        $this->newEmailToken = null;
     }
     /**
      * Запрос на смену пароля
@@ -256,6 +302,22 @@ class User
     public function getConfirmToken(): ?string
     {
         return $this->confirmToken;
+    }
+    /**
+     * Новый email пользователя при изменении
+     * @return Email|null
+     */
+    public function getNewEmail(): ?Email
+    {
+        return $this->newEmail;
+    }
+    /**
+     * Токен для изменения пароля пользователя
+     * @return string|null
+     */
+    public function getNewEmailToken(): ?string
+    {
+        return $this->newEmailToken;
     }
     /**
      * Возвращает токен для сброса пароля
