@@ -10,7 +10,7 @@ use App\Model\User\Entity\User\Id;
 use App\Model\User\Entity\User\User;
 use App\Model\User\Entity\User\UserRepository;
 use App\Model\User\Service\ConfirmTokenizer;
-use App\Model\User\Service\ConfirmTokenSender;
+use App\Model\User\Service\SignUpConfirmTokenSender;
 use App\Model\User\Service\PasswordHasher;
 use App\ReadModel\User\UserFetcher;
 
@@ -37,9 +37,9 @@ class Handler
      */
     private UserRepository $users;
     /**
-     * @var ConfirmTokenSender
+     * @var SignUpConfirmTokenSender
      */
-    private ConfirmTokenSender $sender;
+    private SignUpConfirmTokenSender $sender;
 
     /**
      * Handler constructor.
@@ -48,7 +48,7 @@ class Handler
      * @param PasswordHasher $hasher
      * @param ConfirmTokenizer $tokenizer
      * @param Flusher $flusher
-     * @param ConfirmTokenSender $sender
+     * @param SignUpConfirmTokenSender $sender
      */
     public function __construct(
         UserRepository $users,
@@ -56,7 +56,7 @@ class Handler
         PasswordHasher $hasher,
         ConfirmTokenizer $tokenizer,
         Flusher $flusher,
-        ConfirmTokenSender $sender
+        SignUpConfirmTokenSender $sender
     )
     {
         $this->userFetcher = $userFetcher;
