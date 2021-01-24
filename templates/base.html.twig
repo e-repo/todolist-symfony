@@ -27,9 +27,15 @@
 
     <ul class="c-sidebar-nav">
         <li class="c-sidebar-nav-item">
-            <a class="c-sidebar-nav-link" href="index.html">
-                <i class="c-sidebar-nav-icon cil-speedometer"></i>
-                Dashboard
+            <a class="c-sidebar-nav-link" href="{{ path('home') }}">
+                <i class="c-sidebar-nav-icon cil-home"></i>
+                {% trans %}Home page{% endtrans %}
+            </a>
+        </li>
+        <li class="c-sidebar-nav-item">
+            <a class="c-sidebar-nav-link" href="{{ path('profile') }}">
+                <i class="c-sidebar-nav-icon cil-user"></i>
+                {% trans from 'profile' %}User profile{% endtrans %}
             </a>
         </li>
     </ul>
