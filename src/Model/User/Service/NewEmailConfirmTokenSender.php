@@ -9,13 +9,19 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Twig\Environment;
 
-class SignUpConfirmTokenSender
+class NewEmailConfirmTokenSender
 {
+    /**
+     * @var MailerInterface
+     */
     private MailerInterface $mailer;
+    /**
+     * @var Environment
+     */
     private Environment $twig;
 
     /**
-     * ConfirmTokenSender constructor.
+     * NewEmailConfirmTokenSender constructor.
      * @param MailerInterface $mailer
      * @param Environment $twig
      */
@@ -25,23 +31,17 @@ class SignUpConfirmTokenSender
         $this->twig = $twig;
     }
 
-    /**
-     * @param Email $email
-     * @param string $token
-     * @throws \Symfony\Component\Mailer\Exception\TransportExceptionInterface
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
-     */
     public function send(Email $email, string $token): void
     {
         $message = (new TemplatedEmail())
             ->from('mail@app.test')
             ->to($email->getValue())
-            ->html($this->twig->render('mail/user/signup.html.twig', [
+            ->html($this->twig->render('mail/user/email.html.twig', [
                 'token' => $token
-            ]));
+            ]), 'text/html');
 
-        $this->mailer->send($message);
+        if (! $this->mailer->send($message)) {
+            throw new \RuntimeException('Unable to send message.');
+        }
     }
 }

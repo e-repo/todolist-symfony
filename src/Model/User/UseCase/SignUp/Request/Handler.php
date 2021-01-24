@@ -9,7 +9,7 @@ use App\Model\User\Entity\User\Email;
 use App\Model\User\Entity\User\Id;
 use App\Model\User\Entity\User\User;
 use App\Model\User\Entity\User\UserRepository;
-use App\Model\User\Service\ConfirmTokenizer;
+use App\Model\User\Service\SignUpConfirmTokenizer;
 use App\Model\User\Service\SignUpConfirmTokenSender;
 use App\Model\User\Service\PasswordHasher;
 use App\ReadModel\User\UserFetcher;
@@ -25,9 +25,9 @@ class Handler
      */
     private PasswordHasher $hasher;
     /**
-     * @var ConfirmTokenizer
+     * @var SignUpConfirmTokenizer
      */
-    private ConfirmTokenizer $tokenizer;
+    private SignUpConfirmTokenizer $tokenizer;
     /**
      * @var Flusher
      */
@@ -46,7 +46,7 @@ class Handler
      * @param UserRepository $users
      * @param UserFetcher $userFetcher
      * @param PasswordHasher $hasher
-     * @param ConfirmTokenizer $tokenizer
+     * @param SignUpConfirmTokenizer $tokenizer
      * @param Flusher $flusher
      * @param SignUpConfirmTokenSender $sender
      */
@@ -54,7 +54,7 @@ class Handler
         UserRepository $users,
         UserFetcher $userFetcher,
         PasswordHasher $hasher,
-        ConfirmTokenizer $tokenizer,
+        SignUpConfirmTokenizer $tokenizer,
         Flusher $flusher,
         SignUpConfirmTokenSender $sender
     )
