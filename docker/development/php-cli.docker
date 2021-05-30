@@ -4,7 +4,7 @@ RUN apt-get update && apt-get install -y libpq-dev zlib1g-dev libzip-dev zip \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
     && docker-php-ext-install pdo_pgsql zip
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/bin --filename=composer --quiet
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/bin --filename=composer --version='1.10.20' --quiet
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_MEMORY_LIMIT -1
