@@ -834,6 +834,11 @@
   resolved "https://registry.yarnpkg.com/@coreui/icons/-/icons-1.0.1.tgz#8af0fe6450904ee1dbb0abf36bf107f35cfecf5e"
   integrity sha512-DAlvdHRC+HHecdy52vskbNzNKEpu6wHDvSlsHGrwOqNxQl1YLhGEtqAW4sKpyVE3GgysNCywUWZGFlLp8I3LgA==
 
+"@fortawesome/fontawesome-free@^5.15.2":
+  version "5.15.3"
+  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-free/-/fontawesome-free-5.15.3.tgz#c36ffa64a2a239bf948541a97b6ae8d729e09a9a"
+  integrity sha512-rFnSUN/QOtnOAgqFRooTA3H57JLDm0QEG/jPdk+tLQNL/eWd+Aok8g3qCI+Q1xuDPWpGW/i9JySpJVsq8Q0s9w==
+
 "@popperjs/core@^2.4.4":
   version "2.5.4"
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.5.4.tgz#de25b5da9f727985a3757fd59b5d028aba75841a"
