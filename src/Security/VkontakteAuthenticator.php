@@ -1,38 +1,37 @@
 <?php
 
-
 namespace App\Security;
 
-
-use App\Model\User\UseCase\Network\Auth\Command;
-use App\Model\User\UseCase\Network\Auth\Handler;
-use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
-use KnpU\OAuth2ClientBundle\Client\Provider\VKontakteClient;
-use KnpU\OAuth2ClientBundle\Security\Authenticator\SocialAuthenticator;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use J4k\OAuth2\Client\Provider\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
-use Symfony\Component\Security\Core\User\UserInterface;
+use KnpU\OAuth2ClientBundle\Security\Authenticator\SocialAuthenticator;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use KnpU\OAuth2ClientBundle\Client\OAuth2ClientInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
+use App\Model\User\UseCase\Network\Auth\Handler;
+use App\Model\User\UseCase\Network\Auth\Command;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 
 class VkontakteAuthenticator extends SocialAuthenticator
 {
     /**
      * @var UrlGeneratorInterface
      */
-    private $urlGenerator;
+    private ?UrlGeneratorInterface $urlGenerator;
     /**
      * @var ClientRegistry
      */
-    private $clients;
+    private ?ClientRegistry $clients;
     /**
      * @var Handler
      */
-    private Handler $handler;
+    private ?Handler $handler;
 
     /**
      * VkontakteAuthenticator constructor.
@@ -51,12 +50,12 @@ class VkontakteAuthenticator extends SocialAuthenticator
         $this->handler = $handler;
     }
 
-    public function start(Request $request, AuthenticationException $authException = null)
+    public function start(Request $request, AuthenticationException $authException = null): RedirectResponse
     {
         return new RedirectResponse($this->urlGenerator->generate('app_login'));
     }
 
-    public function supports(Request $request)
+    public function supports(Request $request): bool
     {
         return $request->get('_route') === 'oauth.vkontakte_check';
     }
@@ -66,37 +65,47 @@ class VkontakteAuthenticator extends SocialAuthenticator
         return $this->fetchAccessToken($this->getVkontakteClient());
     }
 
-    public function getUser($credentials, UserProviderInterface $userProvider)
+    /**
+     * @param mixed $credentials
+     * @param UserProviderInterface $userProvider
+     * @return UserInterface|null
+     */
+    public function getUser($credentials, UserProviderInterface $userProvider): ?UserInterface
     {
+        /* @var User $vkontakteUser */
         $vkontakteUser = $this->getVkontakteClient()->fetchUserFromToken($credentials);
 
         $network = 'vkontakte';
         $id = $vkontakteUser->getId();
         $username = $network . ':' . $id;
 
+        $command = new Command($network, $id);
+        $command->firstName = $vkontakteUser->getFirstName();
+        $command->lastName = $vkontakteUser->getLastName();
+
         try {
             return $userProvider->loadUserByUsername($username);
         } catch (UsernameNotFoundException $e) {
-            $this->handler->handle(new Command($network, $id));
+            $this->handler->handle($command);
             return $userProvider->loadUserByUsername($username);
         }
     }
 
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
         $message = strtr($exception->getMessageKey(), $exception->getMessageData());
         return new Response($message, Response::HTTP_FORBIDDEN);
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey): RedirectResponse
     {
         return new RedirectResponse($this->urlGenerator->generate('home'));
     }
 
     /**
-     * @return VKontakteClient
+     * @return OAuth2ClientInterface
      */
-    private function getVkontakteClient(): VKontakteClient
+    private function getVkontakteClient(): OAuth2ClientInterface
     {
         return $this->clients->getClient('vkontakte_main');
     }
