@@ -37,7 +37,7 @@ class ResetTest extends TestCase
         $userBuilder = new UserBuilder();
         $now = new \DateTimeImmutable();
         $token = new ResetToken($userBuilder->defaultParams('token'), $now->modify('+1 day'));
-        $user = $user = $userBuilder
+        $user = $userBuilder
             ->confirmed()
             ->buildByEmail();
 
@@ -51,7 +51,7 @@ class ResetTest extends TestCase
         $newHashPassword = 'hash1';
         $userBuilder = new UserBuilder();
         $now = new \DateTimeImmutable();
-        $user = $user = $userBuilder
+        $user = $userBuilder
             ->confirmed()
             ->buildByEmail();
 
