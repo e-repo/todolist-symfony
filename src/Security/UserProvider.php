@@ -52,7 +52,7 @@ class UserProvider implements UserProviderInterface
     /**
      * @inheritDoc
      */
-    public function supportsClass($class)
+    public function supportsClass($class): bool
     {
         return $class === UserIdentity::class;
     }
