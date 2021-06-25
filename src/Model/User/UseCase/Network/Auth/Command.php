@@ -19,6 +19,14 @@ class Command
      * @var string
      */
     public string $identity;
+    /**
+     * @var string|null
+     */
+    public ?string $firstName;
+    /**
+     * @var string|null
+     */
+    public ?string $lastName;
 
     /**
      * Command constructor.
