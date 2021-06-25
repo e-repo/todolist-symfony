@@ -6,12 +6,14 @@ namespace App\Tests\Builder\User;
 
 use App\Model\User\Entity\User\Email;
 use App\Model\User\Entity\User\Id;
+use App\Model\User\Entity\User\Name;
 use App\Model\User\Entity\User\User;
 
 class UserBuilder
 {
     private Id $id;
     private \DateTimeImmutable $date;
+    private Name $name;
 
     private ?Email $email = null;
     private ?string $hash = null;
@@ -29,25 +31,10 @@ class UserBuilder
     {
         $this->id       = Id::next();
         $this->date     = new \DateTimeImmutable();
-    }
-
-    /**
-     * Возвращает дефолтные параметры
-     * для сущности User
-     *
-     * @return array
-     */
-    private function paramsList(): array
-    {
-        return [
-            'id'            => $this->id,
-            'date'          => $this->date,
-            'email'         => 'test@test.ru',
-            'passwordHash'  => 'hash',
-            'token'         => 'token',
-            'network'       => 'vk',
-            'identity'      => '0000001'
-        ];
+        $this->name     = new Name(
+            $this->defaultParams('firstName'),
+            $this->defaultParams('lastName')
+        );
     }
 
     /**
@@ -80,10 +67,10 @@ class UserBuilder
     public function buildByEmail(): User
     {
         $this->viaEmail();
-
         $user = User::signUpByEmail(
             $this->id,
             $this->date,
+            $this->name,
             $this->email,
             $this->hash,
             $this->token
@@ -102,6 +89,7 @@ class UserBuilder
         return User::signUpByNetwork(
             $this->id,
             $this->date,
+            $this->name,
             $this->network,
             $this->identity
         );
@@ -121,6 +109,14 @@ class UserBuilder
     public function getDate(): ?\DateTimeImmutable
     {
         return $this->date;
+    }
+
+    /**
+     * @return Name|null
+     */
+    public function getName(): ?Name
+    {
+        return $this->name;
     }
 
     /**
@@ -191,5 +187,26 @@ class UserBuilder
         $this->network = $network ?? $this->defaultParams('network');
         $this->identity = $identity ?? $this->defaultParams('identity');
         return $this;
+    }
+
+    /**
+     * Возвращает дефолтные параметры
+     * для сущности User
+     *
+     * @return array
+     */
+    private function paramsList(): array
+    {
+        return [
+            'id'            => $this->id,
+            'date'          => $this->date,
+            'firstName'     => 'Firstname',
+            'lastName'      => 'Lastname',
+            'email'         => 'test@test.ru',
+            'passwordHash'  => 'hash',
+            'token'         => 'token',
+            'network'       => 'vk',
+            'identity'      => '0000001'
+        ];
     }
 }
