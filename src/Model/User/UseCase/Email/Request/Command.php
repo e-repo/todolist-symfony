@@ -17,7 +17,7 @@ class Command
      * @Assert\NotBlank()
      * @var string
      */
-    public string $emil;
+    public string $email;
 
     public function __construct(string $id)
     {

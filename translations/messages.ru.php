@@ -17,4 +17,6 @@ return [
     'Home' => 'Главная',
     'Logout' => 'Выход',
     'Home page' => 'Домашняя страница',
+    'First name' => 'Имя',
+    'Last name' => 'Фамилия',
 ];

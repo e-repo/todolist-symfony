@@ -69,6 +69,11 @@ class User
     private ?string $confirmToken = null;
 
     /**
+     * @ORM\Embedded(class="Name")
+     */
+    private ?Name $name = null;
+
+    /**
      * @var Email|null
      * @ORM\Column(type="user_user_email", name="new_email", nullable=true)
      */
@@ -96,11 +101,13 @@ class User
      * User constructor.
      * @param Id $id
      * @param \DateTimeImmutable $date
+     * @param Name $name
      */
-    private function __construct(Id $id, \DateTimeImmutable $date)
+    private function __construct(Id $id, \DateTimeImmutable $date, Name $name)
     {
         $this->id = $id;
         $this->date = $date;
+        $this->name = $name;
         $this->role = Role::user();
     }
 
@@ -110,14 +117,22 @@ class User
      *
      * @param Id $id
      * @param \DateTimeImmutable $date
+     * @param Name $name
      * @param Email $email
      * @param string $hash
      * @param string $token
      * @return static
      */
-    public static function signUpByEmail(Id $id, \DateTimeImmutable $date, Email $email, string $hash, string $token): self
+    public static function signUpByEmail(
+        Id $id,
+        \DateTimeImmutable $date,
+        Name $name,
+        Email $email,
+        string $hash,
+        string $token
+    ): self
     {
-        $user = new self($id, $date);
+        $user = new self($id, $date, $name);
         $user->email = $email;
         $user->passwordHash = $hash;
         $user->confirmToken = $token;
@@ -130,13 +145,20 @@ class User
      *
      * @param Id $id
      * @param \DateTimeImmutable $date
+     * @param Name $name
      * @param string $network
      * @param string $identity
      * @return $this
      */
-    public static function signUpByNetwork(Id $id, \DateTimeImmutable $date, string $network, string $identity): self
+    public static function signUpByNetwork(
+        Id $id,
+        \DateTimeImmutable $date,
+        Name $name,
+        string $network,
+        string $identity
+    ): self
     {
-        $user = new self($id, $date);
+        $user = new self($id, $date, $name);
         $user->networks = new ArrayCollection();
         $user->attachNetwork($network, $identity);
         $user->status = self::STATUS_ACTIVE;
@@ -327,6 +349,29 @@ class User
     public function getRequestToken(): ?ResetToken
     {
         return $this->resetToken;
+    }
+    /**
+     * @return Name|null
+     */
+    public function getName(): ?Name
+    {
+        return $this->name;
+    }
+    /**
+     * @param Name $name
+     */
+    public function changeName(Name $name): void
+    {
+        $this->name = $name;
+    }
+    /**
+     * @param Email $email
+     * @param Name $name
+     */
+    public function edit(Email $email, Name $name): void
+    {
+        $this->email = $email;
+        $this->name = $name;
     }
     /**
      * Событие жизенного цикла доктрины
