@@ -25,20 +25,7 @@
         </svg>
     </div>
 
-    <ul class="c-sidebar-nav">
-        <li class="c-sidebar-nav-item">
-            <a class="c-sidebar-nav-link" href="{{ path('home') }}">
-                <i class="c-sidebar-nav-icon cil-home"></i>
-                {% trans %}Home page{% endtrans %}
-            </a>
-        </li>
-        <li class="c-sidebar-nav-item">
-            <a class="c-sidebar-nav-link" href="{{ path('profile') }}">
-                <i class="c-sidebar-nav-icon cil-user"></i>
-                {% trans from 'profile' %}User profile{% endtrans %}
-            </a>
-        </li>
-    </ul>
+    {{ knp_menu_render('sidebar_menu') }}
 
     <button class="c-sidebar-minimizer c-class-toggler" type="button" data-target="_parent" data-class="c-sidebar-minimized"></button>
 </div>
