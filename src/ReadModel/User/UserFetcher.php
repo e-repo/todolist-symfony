@@ -121,7 +121,7 @@ class UserFetcher
     }
 
     /**
-     * Проверка суещствования токена для сброса пароля
+     * Проверка наличия токена для сброса пароля
      *
      * @param string $token
      * @return bool
@@ -134,42 +134,5 @@ class UserFetcher
             ->andWhere('t.reset_token = :token')
             ->setParameter(':token', $token)
             ->execute()->fetchColumn(0) > 0;
-    }
-
-    /**
-     * @param string $id
-     * @return DetailView|null
-     */
-    public function findDetail(string $id): ?DetailView
-    {
-        $stmt = $this->connection->createQueryBuilder()
-            ->select(
-                'id',
-                'date',
-                'email',
-                'role',
-                'status'
-            )
-            ->from(self::TABLE_NAME)
-            ->where('id = :id')
-            ->setParameter(':id', $id)
-            ->execute();
-
-        $stmt->setFetchMode(FetchMode::CUSTOM_OBJECT, DetailView::class);
-
-        if ($view = $stmt->fetch()) {
-            $stmt = $this->connection->createQueryBuilder()
-                ->select('network', 'identity')
-                ->from('user_user_networks')
-                ->where('user_id = :id')
-                ->setParameter(':id', $id)
-                ->execute();
-
-            $stmt->setFetchMode(FetchMode::CUSTOM_OBJECT, NetworkView::class);
-
-            $view->networks = $stmt->fetchAll();
-        }
-
-        return $view ?: null;
     }
 }

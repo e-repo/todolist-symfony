@@ -62,9 +62,9 @@ class Handler
     {
         $user = $this->users->get(new Id($command->id));
 
-        $email = new Email($command->emil);
+        $email = new Email($command->email);
 
-        if ($this->userFetcher->hasByEmail($command->emil)) {
+        if ($this->userFetcher->hasByEmail($command->email)) {
             throw new \DomainException('Email is already in use.');
         }
 

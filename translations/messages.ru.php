@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 return [
     'Password Reset' => 'Сброс пароля',
+    'Changing user name' => 'Изменение имени пользователя',
     'Send' => 'Отправить',
     'To enter, you must specify your email and password.' => 'Для входа необходимо указать email и пароль.',
     'Login' => 'Вход в систему',
@@ -17,6 +18,10 @@ return [
     'Home' => 'Главная',
     'Logout' => 'Выход',
     'Home page' => 'Домашняя страница',
+    'Name' => 'Имя',
     'First name' => 'Имя',
     'Last name' => 'Фамилия',
+    'Created' => 'Создано',
+    'Role' => 'Роль',
+    'Status' => 'Статус',
 ];

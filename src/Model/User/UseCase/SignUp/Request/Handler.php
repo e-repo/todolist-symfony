@@ -14,6 +14,7 @@ use App\Model\User\Service\SignUpConfirmTokenizer;
 use App\Model\User\Service\SignUpConfirmTokenSender;
 use App\Model\User\Service\PasswordHasher;
 use App\ReadModel\User\UserFetcher;
+use Doctrine\ORM\EntityManagerInterface;
 
 class Handler
 {
@@ -36,7 +37,7 @@ class Handler
     /**
      * @var UserRepository
      */
-    private UserRepository $users;
+    private EntityManagerInterface $em;
     /**
      * @var SignUpConfirmTokenSender
      */
@@ -44,7 +45,7 @@ class Handler
 
     /**
      * Handler constructor.
-     * @param UserRepository $users
+     * @param EntityManagerInterface $em
      * @param UserFetcher $userFetcher
      * @param PasswordHasher $hasher
      * @param SignUpConfirmTokenizer $tokenizer
@@ -52,7 +53,7 @@ class Handler
      * @param SignUpConfirmTokenSender $sender
      */
     public function __construct(
-        UserRepository $users,
+        EntityManagerInterface $em,
         UserFetcher $userFetcher,
         PasswordHasher $hasher,
         SignUpConfirmTokenizer $tokenizer,
@@ -64,7 +65,7 @@ class Handler
         $this->hasher = $hasher;
         $this->tokenizer = $tokenizer;
         $this->flusher = $flusher;
-        $this->users = $users;
+        $this->em = $em;
         $this->sender = $sender;
     }
 
@@ -92,8 +93,8 @@ class Handler
             $token = $this->tokenizer->generate()
         );
 
-        $this->users->add($user);
-        $this->sender->send($email, $token);
+        $this->em->persist($user);
         $this->flusher->flush();
+        $this->sender->send($email, $token);
     }
 }

@@ -10,7 +10,7 @@ use Doctrine\Persistence\ObjectRepository;
 
 class UserRepository
 {
-    private ObjectRepository $repo;
+    private ObjectRepository $repository;
     private EntityManagerInterface $em;
 
     /**
@@ -19,8 +19,7 @@ class UserRepository
      */
     public function __construct(EntityManagerInterface $em)
     {
-        $this->em = $em;
-        $this->repo = $this->em->getRepository(User::class);
+        $this->repository = $em->getRepository(User::class);
     }
 
     /**
@@ -31,7 +30,7 @@ class UserRepository
      */
     public function findByResetToken(string $token): ?User
     {
-        return $this->repo->findOneBy(['resetToken.token' => $token]);
+        return $this->repository->findOneBy(['resetToken.token' => $token]);
     }
 
     /**
@@ -42,7 +41,7 @@ class UserRepository
      */
     public function findByConfirmToken(string $token): ?User
     {
-        return $this->repo->findOneBy(['confirmToken' => $token]);
+        return $this->repository->findOneBy(['confirmToken' => $token]);
     }
 
     /**
@@ -51,7 +50,7 @@ class UserRepository
      */
     public function getByEmail(string $email): User
     {
-        if (! $user = $this->repo->findOneBy(['email' => $email])) {
+        if (! $user = $this->repository->findOneBy(['email' => $email])) {
             throw new EntityNotFoundException('User is not found.');
         }
         return $user;
@@ -63,17 +62,9 @@ class UserRepository
      */
     public function get(Id $id): User
     {
-        if (! $user = $this->repo->find($id->getValue())) {
+        if (! $user = $this->repository->find($id)) {
             throw new EntityNotFoundException('User is not found.');
         }
         return $user;
-    }
-
-    /**
-     * @param User $user
-     */
-    public function add(User $user): void
-    {
-        $this->em->persist($user);
     }
 }

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller\Profile;
 
-use App\ReadModel\User\UserFetcher;
+use App\Model\User\Entity\User\Id;
+use App\Model\User\Entity\User\User;
+use App\Model\User\Entity\User\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -12,15 +14,15 @@ use Symfony\Component\Routing\Annotation\Route;
 class ProfileController extends AbstractController
 {
     /**
-     * @var UserFetcher
+     * @var UserRepository
      */
-    private UserFetcher $users;
+    private UserRepository $users;
 
     /**
      * ProfileController constructor.
-     * @param UserFetcher $users
+     * @param UserRepository $users
      */
-    public function __construct(UserFetcher $users)
+    public function __construct(UserRepository $users)
     {
         $this->users = $users;
     }
@@ -31,7 +33,7 @@ class ProfileController extends AbstractController
      */
     public function index(): Response
     {
-        $user = $this->users->findDetail($this->getUser()->getId());
+        $user = $this->users->get(new Id($this->getUser()->getId()));
         return $this->render('app/profile/show.html.twig', compact('user'));
     }
 }

@@ -3,7 +3,7 @@
 {% block title %}Profile{% endblock %}
 
 {% block breadcrumbs %}
-    <li class="breadcrumb-item active">{% trans from 'profile'%}User profile{% endtrans %}</li>
+    <li class="breadcrumb-item active">{% trans from 'profile' %}User profile{% endtrans %}</li>
 {% endblock %}
 
 {% block body %}
@@ -11,17 +11,18 @@
 <div class="row">
     <div class="col">
         <div class="card">
-            <div class="card-header"><h5>{% trans %}Profile{% endtrans %}</h5></div>
+            <div class="card-header"><h5>{% trans from 'profile' %}Profile{% endtrans %}</h5></div>
             <div class="card-body">
                 <table class="table table-bordered table-hover">
                     <tbody>
                         <tr>
-                            <td>ID</td>
-                            <td>{{ user.id }}</td>
-                        </tr>
-                        <tr>
-                            <td>Created</td>
-                            <td>{{ user.date|date('d.m.Y H:i:s') }}</td>
+                            <td>{% trans %}Name{% endtrans %}</td>
+                            <td>
+                                {{ user.name.full }}
+                                <a href="{{ path('profile.change.name', {id: user.id}) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </a>
+                            </td>
                         </tr>
                         {% if user.email %}
                             <tr>
@@ -35,11 +36,15 @@
                             </tr>
                         {% endif %}
                         <tr>
-                            <td>Role</td>
-                            <td>{{ user_role(user.role) }}</td>
+                            <td>{% trans %}Created{% endtrans %}</td>
+                            <td>{{ user.date|date('d.m.Y H:i:s') }}</td>
                         </tr>
                         <tr>
-                            <td>Status</td>
+                            <td>{% trans %}Role{% endtrans %}</td>
+                            <td>{{ user_role(user.role.name) }}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans %}Status{% endtrans %}</td>
                             <td>{{ user_status(user.status) }}</td>
                         </tr>
                     </tbody>
