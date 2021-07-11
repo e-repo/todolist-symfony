@@ -6,6 +6,7 @@ return [
     'Password Reset' => 'Сброс пароля',
     'Changing user name' => 'Изменение имени пользователя',
     'Send' => 'Отправить',
+    'Save' => 'Сохранить',
     'To enter, you must specify your email and password.' => 'Для входа необходимо указать email и пароль.',
     'Login' => 'Вход в систему',
     'Forgot your password?' => 'Забыли пароль?',
