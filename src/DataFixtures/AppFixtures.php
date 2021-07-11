@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Model\User\Entity\User\Email;
 use App\Model\User\Entity\User\Id;
+use App\Model\User\Entity\User\Name;
 use App\Model\User\Entity\User\Role;
 use App\Model\User\Entity\User\User;
 use App\Model\User\Service\PasswordHasher;
@@ -12,7 +13,9 @@ use Doctrine\Persistence\ObjectManager;
 
 class AppFixtures extends Fixture
 {
-    const ADMIN_PASSWORD = 'secret';
+    private const FIRST_NAME = 'Admin';
+    private const LAST_NAME = 'Adminov';
+    private const ADMIN_PASSWORD = 'secret';
     const ADMIN_EMAIL = 'admin@test.ru';
 
     /**
@@ -36,6 +39,7 @@ class AppFixtures extends Fixture
         $user = User::signUpByEmail(
             Id::next(),
             new \DateTimeImmutable(),
+            new Name(self::FIRST_NAME, self::LAST_NAME),
             new Email(self::ADMIN_EMAIL),
             $passwordHash,
             'token'

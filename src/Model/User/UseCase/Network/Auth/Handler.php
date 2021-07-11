@@ -10,13 +10,14 @@ use App\Model\User\Entity\User\Name;
 use App\Model\User\Entity\User\User;
 use App\Model\User\Entity\User\UserRepository;
 use App\ReadModel\User\UserFetcher;
+use Doctrine\ORM\EntityManagerInterface;
 
 class Handler
 {
     /**
-     * @var UserRepository
+     * @var EntityManagerInterface
      */
-    private UserRepository $users;
+    private EntityManagerInterface $em;
     /**
      * @var Flusher
      */
@@ -28,13 +29,13 @@ class Handler
 
     /**
      * Handler constructor.
-     * @param UserRepository $users
+     * @param EntityManagerInterface $em
      * @param UserFetcher $userFetcher
      * @param Flusher $flusher
      */
-    public function __construct(UserRepository $users, UserFetcher $userFetcher, Flusher $flusher)
+    public function __construct(EntityManagerInterface $em, UserFetcher $userFetcher, Flusher $flusher)
     {
-        $this->users = $users;
+        $this->em = $em;
         $this->flusher = $flusher;
         $this->userFetcher = $userFetcher;
     }
@@ -53,7 +54,7 @@ class Handler
             $command->identity
         );
 
-        $this->users->add($user);
+        $this->em->persist($user);
         $this->flusher->flush();
     }
 }

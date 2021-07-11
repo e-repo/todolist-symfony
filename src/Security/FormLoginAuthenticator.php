@@ -17,6 +17,13 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
+/**
+ * Отвечает за аутентификацию пользователя, или перебрасывает пользователя
+ * на форму регистрации
+ *
+ * Class FormLoginAuthenticator
+ * @package App\Security
+ */
 class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
 {
     use TargetPathTrait;
@@ -45,6 +52,8 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
     }
 
     /**
+     * Метод определяющий запрос формы на аутентификацию
+     *
      * @param Request $request
      * @return bool
      */
@@ -55,6 +64,8 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
     }
 
     /**
+     * Данные для аутентификации (учетные данные)
+     *
      * @param Request $request
      * @return array|mixed
      */
@@ -74,11 +85,13 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
     }
 
     /**
+     * Метод вызывается при получении учетных данных.
+     *
      * @param mixed $credentials
      * @param UserProviderInterface $userProvider
-     * @return UserIdentity
+     * @return UserInterface
      */
-    public function getUser($credentials, UserProviderInterface $userProvider): UserIdentity
+    public function getUser($credentials, UserProviderInterface $userProvider): UserInterface
     {
         $token = new CsrfToken('authenticate', $credentials['csrf_token']);
         if (!$this->csrfTokenManager->isTokenValid($token)) {
@@ -96,6 +109,8 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
     }
 
     /**
+     * Проверка подлинности пароля
+     *
      * @param mixed $credentials
      * @param UserInterface $user
      * @return bool
@@ -106,6 +121,8 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
     }
 
     /**
+     * Вызывается в результате успешной аутентификации
+     *
      * @param Request $request
      * @param TokenInterface $token
      * @param string $providerKey
@@ -122,6 +139,8 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
     }
 
     /**
+     * Вызывается в результате ошибки при аутентификации
+     *
      * @return string
      */
     protected function getLoginUrl(): string

@@ -357,6 +357,12 @@ class User
     {
         return $this->name;
     }
+
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
     /**
      * @param Name $name
      */

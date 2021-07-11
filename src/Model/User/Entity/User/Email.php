@@ -11,7 +11,7 @@ class Email
     /**
      * @var string
      */
-    private string $value;
+    private string $value = '';
 
     /**
      * Email constructor.
@@ -37,5 +37,10 @@ class Email
     public function isEqual(self $other): bool
     {
         return $this->getValue() === $other->getValue();
+    }
+
+    public function __toString()
+    {
+        return $this->value;
     }
 }
