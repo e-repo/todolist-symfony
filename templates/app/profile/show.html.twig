@@ -54,23 +54,25 @@
     </div>
 </div>
 
-{% if user.networks %}
     <div class="row">
         <div class="col">
             <div class="card">
                 <div class="card-header"><h5>{% trans %}Networks{% endtrans %}</h5></div>
-                <div class="card-body">
-                    <table class="table table-bordered table-hover">
-                        <tbody>
-                            {% for network in user.networks %}
-                                <tr>
-                                    <td>{{ network.network }}</td>
-                                    <td>{{ network.identity }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+                    <div class="card-body">
+                        {% if user.networks %}
+                            <table class="table table-bordered table-hover">
+                                <tbody>
+                                    {% for network in user.networks %}
+                                        <tr>
+                                            <td>{{ network.network }}</td>
+                                            <td>{{ network.identity }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
+                        <a href="{{ path('oauth.attach.vkontakte') }}">{% trans %}Attach VK{% endtrans %}</a>
+                    </div>
             </div>
         </div>
     </div>

@@ -9,3 +9,13 @@ knpu_oauth2_client:
             # see the controller example below
             redirect_route: oauth.vkontakte_check
             redirect_params: { }
+        vkontakte_attach:
+            # this will be one of the supported types
+            type: vkontakte
+            client_id: '%env(OAUTH_VKONTAKTE_CLIENT_ID)%'
+            client_secret: '%env(OAUTH_VKONTAKTE_CLIENT_SECRET)%'
+            # the route that you're redirected to after
+            # see the controller example below
+            redirect_route: oauth.attach.vkontakte_check
+            redirect_params: { }
+

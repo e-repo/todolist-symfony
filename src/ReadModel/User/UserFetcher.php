@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\ReadModel\User;
 
+use App\Model\User\Entity\User\Id;
 use App\Model\User\Entity\User\User;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
@@ -68,6 +69,28 @@ class UserFetcher
     }
 
     /**
+     * Проверка существования соцсети у пользователя
+     *
+     * @param Id $id
+     * @param string $network
+     * @param string $identity
+     * @return bool
+     */
+    public function hasNetwork(Id $id, string $network, string $identity): bool
+    {
+        return $this->connection->createQueryBuilder()
+                ->select('COUNT(u.id)')
+                ->from(self::TABLE_NAME, 'u')
+                ->innerJoin('u', 'user_user_networks', 'n', 'n.user_id = u.id')
+                ->where('u.id = :uuid')
+                ->andWhere('n.network = :network and n.identity = :identity')
+                ->setParameter(':uuid', $id->getValue())
+                ->setParameter(':network', $network)
+                ->setParameter(':identity', $identity)
+                ->execute()->fetchColumn(0) > 0;
+    }
+
+    /**
      * Возвращает пользователя по email для аутентификации
      *
      * @param string $email
@@ -103,6 +126,13 @@ class UserFetcher
         return $result ?: null;
     }
 
+    /**
+     * Возвращает AuthView - пользователя по соцсети
+     *
+     * @param string $network
+     * @param string $identity
+     * @return AuthView|null
+     */
     public function findForAuthByNetwork(string $network, string $identity): ?AuthView
     {
         $stmt = $this->connection->createQueryBuilder()
