@@ -25,4 +25,5 @@ return [
     'Created' => 'Создано',
     'Role' => 'Роль',
     'Status' => 'Статус',
+    'Attach VK' => 'Добавить VK'
 ];

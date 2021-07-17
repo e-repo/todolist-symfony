@@ -17,23 +17,21 @@ class Name
      * @var string|null
      * @ORM\Column(type="string")
      */
-    private ?string $first = null;
+    private string $first;
     /**
      * @var string|null
      * @ORM\Column(type="string")
      */
-    private ?string $last = null;
+    private string $last;
 
     /**
      * Name constructor.
      * @param string $first
      * @param string $last
      */
-    public function __construct(string $first, string $last)
+    public function __construct(string $first, string $last = '')
     {
         Assert::notEmpty($first);
-        Assert::notEmpty($last);
-
         $this->first = $first;
         $this->last = $last;
     }

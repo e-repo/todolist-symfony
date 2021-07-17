@@ -410,7 +410,7 @@ class User
      * @param string $network
      * @param string $identity
      */
-    private function attachNetwork(string $network, string $identity): void
+    public function attachNetwork(string $network, string $identity): void
     {
         foreach ($this->networks as $existing) {
             if ($existing->isNetworkAttached($network)) {

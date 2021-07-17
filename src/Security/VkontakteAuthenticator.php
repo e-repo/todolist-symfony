@@ -23,15 +23,15 @@ class VkontakteAuthenticator extends SocialAuthenticator
     /**
      * @var UrlGeneratorInterface
      */
-    private ?UrlGeneratorInterface $urlGenerator;
+    private UrlGeneratorInterface $urlGenerator;
     /**
      * @var ClientRegistry
      */
-    private ?ClientRegistry $clients;
+    private ClientRegistry $clients;
     /**
      * @var Handler
      */
-    private ?Handler $handler;
+    private Handler $handler;
 
     /**
      * VkontakteAuthenticator constructor.
