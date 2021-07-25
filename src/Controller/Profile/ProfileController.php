@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Profile;
 
 use App\Model\User\Entity\User\Id;
+use App\Model\User\Entity\User\NetworkRepository;
 use App\Model\User\Entity\User\User;
 use App\Model\User\Entity\User\UserRepository;
 use App\ReadModel\User\UserFetcher;
@@ -18,16 +19,17 @@ class ProfileController extends AbstractController
      * @var UserRepository
      */
     private UserRepository $users;
-    private UserFetcher $userFetcher;
+    private NetworkRepository $networks;
 
     /**
      * ProfileController constructor.
      * @param UserRepository $users
+     * @param NetworkRepository $networks
      */
-    public function __construct(UserRepository $users, UserFetcher $userFetcher)
+    public function __construct(UserRepository $users, NetworkRepository $networks)
     {
         $this->users = $users;
-        $this->userFetcher = $userFetcher;
+        $this->networks = $networks;
     }
 
     /**

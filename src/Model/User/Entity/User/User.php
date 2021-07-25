@@ -61,7 +61,7 @@ class User
     private ?string $passwordHash = null;
 
     /**
-     * Токен для подтвержения пользователя
+     * Токен для подтверждения пользователя
      * через email, соцсети и тп.
      *
      * @ORM\Column(type="string", nullable=true)

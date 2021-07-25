@@ -34,7 +34,7 @@ class UserRepository
     }
 
     /**
-     * Возвращаент пользователя по токену регистрации
+     * Возвращает пользователя по токену регистрации
      *
      * @param string $token
      * @return User|object|null
