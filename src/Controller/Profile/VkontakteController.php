@@ -6,14 +6,33 @@ namespace App\Controller\Profile;
 
 use App\Model\User\UseCase\Network;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class VkontakteController extends AbstractController
 {
+    private LoggerInterface $logger;
+    private TranslatorInterface $translator;
+
     /**
-     * @Route("oauth/attach/vkontacte", "oauth.attach.vkontakte")
+     * VkontakteController constructor.
+     * @param LoggerInterface $logger
+     * @param TranslatorInterface $translator
+     */
+    public function __construct(
+        LoggerInterface $logger,
+        TranslatorInterface $translator
+    )
+    {
+        $this->logger = $logger;
+        $this->translator = $translator;
+    }
+
+    /**
+     * @Route("oauth/attach/vkontakte", name="oauth.attach.vkontakte")
      * @param ClientRegistry $clientRegistry
      * @return Response
      */
@@ -25,6 +44,7 @@ class VkontakteController extends AbstractController
     }
 
     /**
+     * @Route("oath/attach/check", name="oauth.attach.vkontakte_check")
      * @param ClientRegistry $clientRegistry
      * @param Network\Attach\Handler $handler
      * @return Response
@@ -42,9 +62,17 @@ class VkontakteController extends AbstractController
         $command = new Network\Attach\Command(
             $this->getUser()->getId(),
             'vkontakte',
-            $vkontakteUser->getId()
+            (string) $vkontakteUser->getId()
         );
 
-
+        try {
+            $handler->handle($command);
+            $this->addFlash('success', $this->translator->trans('VK is successfully attached.', [], 'profile'));
+            return $this->redirectToRoute('profile');
+        } catch (\DomainException $e) {
+            $this->logger->warning($e->getMessage(), ['exception' => $e]);
+            $this->addFlash('error', $e->getMessage());
+            return $this->redirectToRoute('profile');
+        }
     }
 }
