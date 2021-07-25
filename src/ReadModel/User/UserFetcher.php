@@ -7,7 +7,7 @@ namespace App\ReadModel\User;
 use App\Model\User\Entity\User\Id;
 use App\Model\User\Entity\User\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\DBAL\Connection;
+use Doctrine\ORM\UnexpectedResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 class UserFetcher extends ServiceEntityRepository
@@ -16,9 +16,8 @@ class UserFetcher extends ServiceEntityRepository
      * UserFetcher constructor.
      * @param ManagerRegistry $managerRegistry
      */
-    public function __construct(ManagerRegistry $managerRegistry, Connection $connection)
+    public function __construct(ManagerRegistry $managerRegistry)
     {
-        $connection->createQueryBuilder();
         parent::__construct($managerRegistry, User::class);
     }
 
@@ -30,12 +29,18 @@ class UserFetcher extends ServiceEntityRepository
      */
     public function hasByEmail(string $email): bool
     {
-        return $this->createQueryBuilder('u')
-            ->select('COUNT(u.id)')
-            ->andWhere('t.email = :email')
-            ->setParameter(':email', $email)
-            ->getQuery()
-            ->execute() > 0;
+        try {
+            $result = $this->createQueryBuilder('u')
+                    ->select('COUNT(u.id)')
+                    ->andWhere('t.email = :email')
+                    ->setParameter(':email', $email)
+                    ->getQuery()
+                    ->execute() > 0;
+        } catch (UnexpectedResultException $e) {
+            return false;
+        }
+
+        return $result > 0;
     }
 
     /**
@@ -47,14 +52,20 @@ class UserFetcher extends ServiceEntityRepository
      */
     public function hasByNetworkIdentity(string $network, string $identity): bool
     {
-        return $this->createQueryBuilder('u')
-            ->select('COUNT(u.id)')
-            ->leftJoin('u.networks', 'n')
-            ->where('n.network = :network and n.identity = :identity')
-            ->setParameter(':network', $network)
-            ->setParameter(':identity', $identity)
-            ->getQuery()
-            ->execute() > 0;
+        try {
+            $result = $this->createQueryBuilder('u')
+                ->select('COUNT(u.id)')
+                ->leftJoin('u.networks', 'n')
+                ->where('n.network = :network and n.identity = :identity')
+                ->setParameter(':network', $network)
+                ->setParameter(':identity', $identity)
+                ->getQuery()
+                ->getSingleScalarResult();
+        } catch (UnexpectedResultException $e) {
+            return false;
+        }
+
+        return $result > 0;
     }
 
     /**
@@ -67,7 +78,8 @@ class UserFetcher extends ServiceEntityRepository
      */
     public function hasNetwork(Id $id, string $network, string $identity): bool
     {
-        return $this->createQueryBuilder('u')
+        try {
+            $result = $this->createQueryBuilder('u')
                 ->select('COUNT(u.id)')
                 ->innerJoin('u.networks', 'n')
                 ->where('u.id = :uuid')
@@ -76,7 +88,12 @@ class UserFetcher extends ServiceEntityRepository
                 ->setParameter(':network', $network)
                 ->setParameter(':identity', $identity)
                 ->getQuery()
-                ->execute() > 0;
+                ->getSingleScalarResult();
+        } catch (UnexpectedResultException $e) {
+            return false;
+        }
+
+        return $result > 0;
     }
 
     /**
@@ -128,11 +145,17 @@ class UserFetcher extends ServiceEntityRepository
      */
     public function existByResetToken(string $token): bool
     {
-        return $this->createQueryBuilder('u')
-            ->select('COUNT(u.id)')
-            ->where('t.reset_token = :token')
-            ->setParameter(':token', $token)
-            ->getQuery()
-            ->execute() > 0;
+        try {
+            $result = $this->createQueryBuilder('u')
+                    ->select('COUNT(u.id)')
+                    ->where('t.reset_token = :token')
+                    ->setParameter(':token', $token)
+                    ->getQuery()
+                    ->getSingleScalarResult();
+        } catch (UnexpectedResultException $e) {
+            return false;
+        }
+
+        return $result > 0;
     }
 }

@@ -73,4 +73,9 @@ class Network
     {
         return $this->identity;
     }
+
+    public function changeUser(User $user): void
+    {
+        $this->user = $user;
+    }
 }
