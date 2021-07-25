@@ -60,26 +60,34 @@ class UserProvider implements UserProviderInterface
     private function identityByUser(AuthView $user, string $username): UserIdentity
     {
         return new UserIdentity(
-            $user->id,
+            $user->id->getValue(),
             $username,
-            $user->password_hash ?: '',
-            $user->role,
+            $user->passwordHash ?: '',
+            $user->role->name(),
             $user->status
         );
     }
 
+    /**
+     * @param $username
+     * @return AuthView
+     */
     private function loadUser($username): AuthView
     {
         $chunks = explode(':', $username);
 
-        if (count($chunks) === 2 && $user = $this->users->findForAuthByNetwork($chunks[0], $chunks[1])) {
-            return $user;
+        try {
+            if (count($chunks) === 2 && $user = $this->users->findForAuthByNetwork($chunks[0], $chunks[1])) {
+                return $user;
+            }
+
+            if ($user = $this->users->findForAuthByEmail($username)) {
+                return $user;
+            }
+        } catch (\Doctrine\ORM\NonUniqueResultException $e) {
+            throw new UsernameNotFoundException($e->getMessage());
         }
 
-        if ($user = $this->users->findForAuthByEmail($username)) {
-            return $user;
-        }
-
-        throw new UsernameNotFoundException('');
+        throw new UsernameNotFoundException();
     }
 }
