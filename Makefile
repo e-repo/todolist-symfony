@@ -1,6 +1,7 @@
 UID=1000
 DOCKER_ARGS=--log-level=ERROR
 PHP_SERVICE_NAME=todo-nginx
+CLI_SERVICE_NAME=todo-php-cli
 
 up: docker-up
 down: docker-down
@@ -68,3 +69,6 @@ todo-ready:
 
 chown:
 	@docker-compose $(DOCKER_ARGS) exec $(PHP_SERVICE_NAME) chown -R $(UID):$(UID) ./
+
+cli:
+	@docker-compose run --rm $(CLI_SERVICE_NAME) /bin/bash
