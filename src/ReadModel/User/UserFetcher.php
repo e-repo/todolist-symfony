@@ -6,31 +6,20 @@ namespace App\ReadModel\User;
 
 use App\Model\User\Entity\User\Id;
 use App\Model\User\Entity\User\User;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\FetchMode;
-use Doctrine\DBAL\Query\QueryBuilder;
+use Doctrine\Persistence\ManagerRegistry;
 
-class UserFetcher
+class UserFetcher extends ServiceEntityRepository
 {
     /**
-     * @var Connection
-     */
-    private Connection $connection;
-
-    /**
-     * Наименование таблицы бд для
-     * read-model
-     */
-    public const TABLE_NAME = 'user_users';
-
-
-    /**
      * UserFetcher constructor.
-     * @param Connection $connection
+     * @param ManagerRegistry $managerRegistry
      */
-    public function __construct(Connection $connection)
+    public function __construct(ManagerRegistry $managerRegistry, Connection $connection)
     {
-        $this->connection = $connection;
+        $connection->createQueryBuilder();
+        parent::__construct($managerRegistry, User::class);
     }
 
     /**
@@ -41,12 +30,12 @@ class UserFetcher
      */
     public function hasByEmail(string $email): bool
     {
-        return $this->connection->createQueryBuilder()
-            ->select('COUNT(t.id)')
-            ->from(self::TABLE_NAME, 't')
+        return $this->createQueryBuilder('u')
+            ->select('COUNT(u.id)')
             ->andWhere('t.email = :email')
             ->setParameter(':email', $email)
-            ->execute()->fetchColumn(0) > 0;
+            ->getQuery()
+            ->execute() > 0;
     }
 
     /**
@@ -58,14 +47,14 @@ class UserFetcher
      */
     public function hasByNetworkIdentity(string $network, string $identity): bool
     {
-        return $this->connection->createQueryBuilder()
+        return $this->createQueryBuilder('u')
             ->select('COUNT(u.id)')
-            ->from(self::TABLE_NAME, 'u')
-            ->innerJoin('u', 'user_user_networks', 'n', 'n.user_id = u.id')
-            ->andWhere('n.network = :network and n.identity = :identity')
+            ->leftJoin('u.networks', 'n')
+            ->where('n.network = :network and n.identity = :identity')
             ->setParameter(':network', $network)
             ->setParameter(':identity', $identity)
-            ->execute()->fetchColumn(0) > 0;
+            ->getQuery()
+            ->execute() > 0;
     }
 
     /**
@@ -78,16 +67,16 @@ class UserFetcher
      */
     public function hasNetwork(Id $id, string $network, string $identity): bool
     {
-        return $this->connection->createQueryBuilder()
+        return $this->createQueryBuilder('u')
                 ->select('COUNT(u.id)')
-                ->from(self::TABLE_NAME, 'u')
-                ->innerJoin('u', 'user_user_networks', 'n', 'n.user_id = u.id')
+                ->innerJoin('u.networks', 'n')
                 ->where('u.id = :uuid')
                 ->andWhere('n.network = :network and n.identity = :identity')
                 ->setParameter(':uuid', $id->getValue())
                 ->setParameter(':network', $network)
                 ->setParameter(':identity', $identity)
-                ->execute()->fetchColumn(0) > 0;
+                ->getQuery()
+                ->execute() > 0;
     }
 
     /**
@@ -95,35 +84,18 @@ class UserFetcher
      *
      * @param string $email
      * @return AuthView|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function findForAuthByEmail(string $email): ?AuthView
     {
-        $stmt = $this->connection->createQueryBuilder()
-            ->select('id', 'email', 'password_hash', 'role', 'status')
-            ->from(self::TABLE_NAME)
-            ->where('email = :email')
+        $result = $this->createQueryBuilder('u')
+            ->select('u.id', 'u.passwordHash', 'u.email', 'u.role', 'u.status')
+            ->where('u.email = :email')
             ->setParameter(':email', $email)
-            ->execute();
+            ->getQuery()
+            ->getOneOrNullResult();
 
-        $stmt->setFetchMode(FetchMode::CUSTOM_OBJECT, AuthView::class);
-        $result = $stmt->fetch();
-
-        return $result ?: null;
-    }
-
-    public function findByEmail(string $email): ?ShortView
-    {
-        $stmt = $this->connection->createQueryBuilder()
-            ->select('id', 'email', 'role', 'status')
-            ->from(self::TABLE_NAME)
-            ->where('email = :email')
-            ->setParameter(':email', $email)
-            ->execute();
-
-        $stmt->setFetchMode(FetchMode::CUSTOM_OBJECT, ShortView::class);
-        $result = $stmt->fetch();
-
-        return $result ?: null;
+        return $result ? AuthView::fromArray($result) : null;
     }
 
     /**
@@ -132,22 +104,20 @@ class UserFetcher
      * @param string $network
      * @param string $identity
      * @return AuthView|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function findForAuthByNetwork(string $network, string $identity): ?AuthView
     {
-        $stmt = $this->connection->createQueryBuilder()
-            ->select('u.id', 'u.email', 'u.password_hash', 'u.role', 'u.status')
-            ->from(self::TABLE_NAME, 'u')
-            ->innerJoin('u', 'user_user_networks', 'n', 'n.user_id = u.id')
+        $result = $this->createQueryBuilder('u')
+            ->select('u.id', 'u.email', 'u.passwordHash', 'u.role', 'u.status')
+            ->innerJoin('u.networks', 'n')
             ->where('n.network = :network and n.identity = :identity')
             ->setParameter(':network', $network)
             ->setParameter(':identity', $identity)
-            ->execute();
+            ->getQuery()
+            ->getOneOrNullResult();
 
-        $stmt->setFetchMode(FetchMode::CUSTOM_OBJECT, AuthView::class);
-        $result = $stmt->fetch();
-
-        return $result ?: null;
+        return $result ? AuthView::fromArray($result) : null;
     }
 
     /**
@@ -156,13 +126,13 @@ class UserFetcher
      * @param string $token
      * @return bool
      */
-    public function existByResetToken(string $token)
+    public function existByResetToken(string $token): bool
     {
-        return $this->connection->createQueryBuilder()
-            ->select('COUNT(t.id)')
-            ->from(self::TABLE_NAME, 't')
-            ->andWhere('t.reset_token = :token')
+        return $this->createQueryBuilder('u')
+            ->select('COUNT(u.id)')
+            ->where('t.reset_token = :token')
             ->setParameter(':token', $token)
-            ->execute()->fetchColumn(0) > 0;
+            ->getQuery()
+            ->execute() > 0;
     }
 }
