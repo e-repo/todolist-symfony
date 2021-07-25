@@ -34,7 +34,7 @@ class Command
     public function __construct(
         string $uuid,
         string $network,
-        string $networkIdentity,
+        string $networkIdentity
     )
     {
         $this->uuid = $uuid;
