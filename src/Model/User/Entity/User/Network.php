@@ -74,8 +74,20 @@ class Network
         return $this->identity;
     }
 
+    /**
+     * @return User
+     */
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
     public function changeUser(User $user): void
     {
+        if ($this->user === $user) {
+            throw new \DomainException('User is already changed.');
+        }
+
         $this->user = $user;
     }
 }

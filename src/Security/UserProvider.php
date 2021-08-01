@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Security;
 
+use App\Model\User\Entity\User\Name;
 use App\ReadModel\User\AuthView;
 use App\ReadModel\User\UserFetcher;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -57,10 +58,22 @@ class UserProvider implements UserProviderInterface
         return $class === UserIdentity::class;
     }
 
+    /**
+     * @param AuthView $user
+     * Не всегда email, если через соцсеть, то
+     * <название соцсети>:<идентификатор>
+     * @param string $username
+     * @return UserIdentity
+     */
     private function identityByUser(AuthView $user, string $username): UserIdentity
     {
+        $name = $user->firstName && $user->lastName
+            ? new Name($user->firstName, $user->lastName)
+            : null;
+
         return new UserIdentity(
             $user->id->getValue(),
+            $name,
             $username,
             $user->passwordHash ?: '',
             $user->role->name(),

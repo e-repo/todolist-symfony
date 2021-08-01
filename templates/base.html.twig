@@ -41,7 +41,7 @@
             <ul class="c-header-nav ml-auto mr-4">
                 <li class="c-header-nav-item dropdown">
                     <a class="c-header-nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                        {{ app.user.userName }}
+                        {{ user_name(app.user) }}
                     </a>
                     <div class="dropdown-menu dropdown-menu-right pt-0">
                         <a class="dropdown-item" href="{{ path('profile') }}">
