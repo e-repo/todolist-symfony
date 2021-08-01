@@ -19,6 +19,9 @@ class ProfileController extends AbstractController
      * @var UserRepository
      */
     private UserRepository $users;
+    /**
+     * @var NetworkRepository
+     */
     private NetworkRepository $networks;
 
     /**

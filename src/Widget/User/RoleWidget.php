@@ -28,7 +28,7 @@ class RoleWidget extends AbstractExtension
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
      */
-    public function role(Environment $twig, string $role)
+    public function role(Environment $twig, string $role): string
     {
         return $twig->render('widget/user/role.html.twig', compact('role'));
     }
