@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Security;
 
+use App\Model\User\Entity\User\Name;
 use App\Model\User\Entity\User\User;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -11,6 +12,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class UserIdentity implements UserInterface, EquatableInterface
 {
     private string $id;
+    private ?Name $name;
     private string $userName;
     private string $password;
     private string $role;
@@ -20,12 +22,14 @@ class UserIdentity implements UserInterface, EquatableInterface
      * UserIdentity constructor.
      * @param string $id
      * @param string $userName
+     * @param ?Name $name
      * @param string $password
      * @param string $role
      * @param string $status
      */
     public function __construct(
         string $id,
+        ?Name $name,
         string $userName,
         string $password,
         string $role,
@@ -33,6 +37,7 @@ class UserIdentity implements UserInterface, EquatableInterface
     )
     {
         $this->id = $id;
+        $this->name = $name;
         $this->userName = $userName;
         $this->password = $password;
         $this->role = $role;
@@ -54,6 +59,11 @@ class UserIdentity implements UserInterface, EquatableInterface
             $this->password === $user->password &&
             $this->role === $user->role &&
             $this->status === $user->status;
+    }
+
+    public function getName(): ?Name
+    {
+        return $this->name;
     }
 
     /**

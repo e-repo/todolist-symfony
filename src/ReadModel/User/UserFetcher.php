@@ -106,7 +106,14 @@ class UserFetcher extends ServiceEntityRepository
     public function findForAuthByEmail(string $email): ?AuthView
     {
         $result = $this->createQueryBuilder('u')
-            ->select('u.id', 'u.passwordHash', 'u.email', 'u.role', 'u.status')
+            ->select(
+                'u.id',
+                'u.name.first as firstName',
+                'u.name.last as lastName',
+                'u.passwordHash', 'u.email',
+                'u.role',
+                'u.status'
+            )
             ->where('u.email = :email')
             ->setParameter(':email', $email)
             ->getQuery()
@@ -126,7 +133,15 @@ class UserFetcher extends ServiceEntityRepository
     public function findForAuthByNetwork(string $network, string $identity): ?AuthView
     {
         $result = $this->createQueryBuilder('u')
-            ->select('u.id', 'u.email', 'u.passwordHash', 'u.role', 'u.status')
+            ->select(
+                'u.id',
+                'u.name.first as firstName',
+                'u.name.last as lastName',
+                'u.email',
+                'u.passwordHash',
+                'u.role',
+                'u.status'
+            )
             ->innerJoin('u.networks', 'n')
             ->where('n.network = :network and n.identity = :identity')
             ->setParameter(':network', $network)

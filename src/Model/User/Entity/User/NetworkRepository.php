@@ -31,6 +31,6 @@ class NetworkRepository
      */
     public function findByUserId(Id $id): array
     {
-        return $this->repository->findBy(['user_id' => $id->getValue()]);
+        return $this->repository->findBy(['user' => $id]);
     }
 }

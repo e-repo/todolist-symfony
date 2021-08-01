@@ -13,6 +13,7 @@ use App\ReadModel\User\UserFetcher;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Model\User\Entity\User\Id;
 use App\Model\Flusher;
+use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class Handler
@@ -20,7 +21,6 @@ class Handler
     private UserRepository $users;
     private Flusher $flusher;
     private EntityManagerInterface $em;
-    private UserFetcher $fetcher;
     private TranslatorInterface $translator;
     private NetworkRepository $networks;
 
@@ -52,20 +52,20 @@ class Handler
      */
     public function handle(Command $command)
     {
-        $userByNetwork = $this->networks
-                ->findByNetworkIdentity($command->network, $command->networkIdentity)->getUser() ?? null;
+        $network = $this->networks->findByNetworkIdentity($command->network, $command->networkIdentity);
+        $userByNetwork = $network ? $network->getUser() : null;
 
-        if ($userByNetwork && $userByNetwork->getEmail() instanceof Email) {
+        $isUserAndEmailExist = $userByNetwork && $userByNetwork->getEmail() instanceof Email;
+        if ($isUserAndEmailExist) {
             throw  new \DomainException($this->translator->trans('Profile is already in use.', [], 'profile'));
         }
 
         $user = $this->users->get(new Id($command->uuid));
-        if ($userByNetwork && $userByNetwork->getEmail() === null) {
+        $userHasNoEmail = $userByNetwork && $userByNetwork->getEmail() === null;
+        if ($userHasNoEmail) {
             $this->overrideUserNetworks($userByNetwork->getId(), $user);
-
             $this->em->remove($userByNetwork);
             $this->flusher->flush();
-
             return;
         }
 
@@ -83,5 +83,6 @@ class Handler
             $network->changeUser($user);
             $this->em->persist($network);
         }
+        $this->flusher->flush();
     }
 }
