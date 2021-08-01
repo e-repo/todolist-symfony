@@ -1,0 +1,6 @@
+{% if user.name is not null %}
+    {% set name = user.name %}
+    {{ name.last ~ ' ' ~ name.first }}
+{% else %}
+    {{ user.userName }}
+{% endif %}
