@@ -19,7 +19,7 @@ class ConfirmTest extends TestCase
             ->buildByEmail();
 
         self::assertTrue($user->isActive());
-        self::assertFalse($user->isNew());
+        self::assertFalse($user->isBlocked());
         self::assertFalse($user->isWait());
 
         self::assertEquals($user->getId(), $userBuilder->defaultParams('id'));

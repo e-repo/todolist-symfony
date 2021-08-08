@@ -18,7 +18,7 @@ class AuthTest extends TestCase
             ->buildByNetwork();
 
         self::assertTrue($user->isActive());
-        self::assertFalse($user->isNew());
+        self::assertFalse($user->isBlocked());
         self::assertFalse($user->isWait());
 
         self::assertNull($user->getEmail());

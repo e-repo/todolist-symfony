@@ -23,7 +23,7 @@ class ResetRequestTest extends TestCase
         $user->requestPasswordReset($token, $now);
 
         self::assertTrue($user->isActive());
-        self::assertFalse($user->isNew());
+        self::assertFalse($user->isBlocked());
         self::assertFalse($user->isWait());
 
         self::assertNotNull($user->getRequestToken());

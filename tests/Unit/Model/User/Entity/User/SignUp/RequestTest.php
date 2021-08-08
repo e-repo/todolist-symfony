@@ -18,7 +18,7 @@ class RequestTest extends TestCase
             ->buildByEmail();
 
         self::assertTrue($user->isWait());
-        self::assertFalse($user->isNew());
+        self::assertFalse($user->isBlocked());
         self::assertFalse($user->isActive());
 
         self::assertEquals($user->getId(), $userBuilder->defaultParams('id'));
