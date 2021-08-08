@@ -22,9 +22,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class User
 {
-    private const STATUS_WAIT = 'wait';
+    public const STATUS_WAIT = 'wait';
     public const STATUS_ACTIVE = 'active';
-    private const STATUS_NEW = 'new';
+    public const STATUS_BLOCKED = 'blocked';
 
     /**
      * @ORM\Column(type="user_user_id")
@@ -250,9 +250,9 @@ class User
     /**
      * @return bool
      */
-    public function isNew(): bool
+    public function isBlocked(): bool
     {
-        return $this->status === self::STATUS_NEW;
+        return $this->status === self::STATUS_BLOCKED;
     }
     /**
      * @return bool

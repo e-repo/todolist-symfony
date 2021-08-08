@@ -40,6 +40,15 @@ class SidebarMenu
 
         $menu
             ->addChild(
+                $this->translator->trans('Users', [], 'profile'),
+                ['route' => 'users']
+            )
+            ->setAttribute('class', 'c-sidebar-nav-item')
+            ->setLinkAttribute('class', 'c-sidebar-nav-link')
+            ->setExtra('icon', 'c-sidebar-nav-icon cil-people');
+
+        $menu
+            ->addChild(
                 $this->translator->trans('User profile', [], 'profile'),
                 ['route' => 'profile']
             )
