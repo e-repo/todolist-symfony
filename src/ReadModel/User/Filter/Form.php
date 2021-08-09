@@ -10,17 +10,17 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Translation\Translator;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class Form extends AbstractType
 {
-    private Translator $translator;
+    private TranslatorInterface $translator;
 
     /**
      * Form constructor.
-     * @param Translator $translator
+     * @param TranslatorInterface $translator
      */
-    public function __construct(Translator $translator)
+    public function __construct(TranslatorInterface $translator)
     {
         $this->translator = $translator;
     }
@@ -40,12 +40,12 @@ class Form extends AbstractType
                 $this->translator->trans('Wait') => User::STATUS_WAIT,
                 $this->translator->trans('Active') => User::STATUS_ACTIVE,
                 $this->translator->trans('Blocked') => User::STATUS_BLOCKED,
-            ], 'require' => false, 'placeholder' => $this->translator->trans('All statuses'),
+            ], 'required' => false, 'placeholder' => $this->translator->trans('All statuses'),
                 'attr' => ['onchange' => 'this.form.submit()']])
             ->add('role', Type\ChoiceType::class, ['choices' => [
                 $this->translator->trans('User') => Role::USER,
                 $this->translator->trans('Admin') => Role::ADMIN,
-            ], 'require' => false, 'placeholder' => 'All roles',
+            ], 'required' => false, 'placeholder' => 'All roles',
                 'attr' => ['onchange' => 'this.form.submit()']]);
     }
 
