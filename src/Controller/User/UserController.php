@@ -16,6 +16,8 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class UserController extends AbstractController
 {
+    private const PER_PAGE = 50;
+
     /**
      * @Route("", name="")
      * @param Request $request
@@ -29,10 +31,17 @@ class UserController extends AbstractController
         $form = $this->createForm(Filter\Form::class, $filter);
         $form->handleRequest($request);
 
-        dd($form);
+        $pagination = $fetcher->all(
+            $filter,
+            $request->query->getInt('page', 1),
+            self::PER_PAGE,
+            $request->query->get('sort', 'date'),
+            $request->query->get('direction', 'desc')
+        );
 
-//        return $this->render('app/user/index.html.twig', [
-//            'controller_name' => 'UserController',
-//        ]);
+        return $this->render('app/user/index.html.twig', [
+            'pagination' => $pagination,
+            'form' => $form->createView(),
+        ]);
     }
 }

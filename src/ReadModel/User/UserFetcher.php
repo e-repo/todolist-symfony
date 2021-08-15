@@ -6,19 +6,30 @@ namespace App\ReadModel\User;
 
 use App\Model\User\Entity\User\Id;
 use App\Model\User\Entity\User\User;
+use App\ReadModel\User\Filter\Filter;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\UnexpectedResultException;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\Pagination\PaginationInterface;
+use Knp\Component\Pager\PaginatorInterface;
 
 class UserFetcher extends ServiceEntityRepository
 {
+    private Connection $connection;
+    private PaginatorInterface $paginator;
+
     /**
      * UserFetcher constructor.
      * @param ManagerRegistry $managerRegistry
+     * @param Connection $connection
+     * @param PaginatorInterface $paginator
      */
-    public function __construct(ManagerRegistry $managerRegistry)
+    public function __construct(ManagerRegistry $managerRegistry, Connection $connection, PaginatorInterface $paginator)
     {
         parent::__construct($managerRegistry, User::class);
+        $this->connection = $connection;
+        $this->paginator = $paginator;
     }
 
     /**
@@ -172,5 +183,47 @@ class UserFetcher extends ServiceEntityRepository
         }
 
         return $result > 0;
+    }
+
+    public function all(Filter $filter, int $page, int $size, string $sort, string $direction): PaginationInterface
+    {
+        $qb = $this->connection->createQueryBuilder()
+            ->select(
+                'id',
+                'date',
+                'TRIM(CONCAT(name_first, \' \', name_last)) AS name',
+                'email',
+                'role',
+                'status'
+            )
+            ->from('user_users');
+
+        if ($filter->name) {
+            $qb->andWhere($qb->expr()->like('LOWER(CONCAT(name_first, \' \', name_last))', ':name'));
+            $qb->setParameter(':name', $filter->name);
+        }
+
+        if ($filter->email) {
+            $qb->andWhere($qb->expr()->like('LOWER(email)', ':email'));
+            $qb->setParameter(':email', $filter->email);
+        }
+
+        if ($filter->role) {
+            $qb->andWhere('role = :role');
+            $qb->setParameter(':role', $filter->role);
+        }
+
+        if ($filter->status) {
+            $qb->andWhere('status = :status');
+            $qb->setParameter(':status', $filter->status);
+        }
+
+        if (! \in_array($sort, ['date', 'name', 'email', 'role', 'status'], true)) {
+            throw new \UnexpectedValueException(sprintf('Cannot sort by %s', $sort));
+        }
+
+        $qb->orderBy($sort, $direction === 'desc' ? 'desc' : 'asc');
+
+        return $this->paginator->paginate($qb, $page, $size);
     }
 }

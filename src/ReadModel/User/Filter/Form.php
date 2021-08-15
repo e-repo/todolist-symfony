@@ -36,7 +36,7 @@ class Form extends AbstractType
                 'placeholder' => 'Email',
                 'onchange' => 'this.form.submit()',
             ]])
-            ->add('role', Type\ChoiceType::class, ['choices' => [
+            ->add('status', Type\ChoiceType::class, ['choices' => [
                 $this->translator->trans('Wait') => User::STATUS_WAIT,
                 $this->translator->trans('Active') => User::STATUS_ACTIVE,
                 $this->translator->trans('Blocked') => User::STATUS_BLOCKED,
