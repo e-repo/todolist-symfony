@@ -19,6 +19,12 @@ class PasswordHasher
         return $hash;
     }
 
+    public function hashRandom(): string
+    {
+        $someNumber = rand(100000, 1000000);
+        return $this->hash((string) $someNumber);
+    }
+
     /**
      * @param string $password
      * @param string $hash

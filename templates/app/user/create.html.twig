@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% trans %}Create user{% endtrans %}{% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item">{% trans from 'profile'%}Users{% endtrans %}</li>
+    <li class="breadcrumb-item active">{% trans %}Create user{% endtrans %}</li>
+{% endblock %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    {{ form_start(form) }}
+                    <div class="form-group">
+                        {{ form_label(form.firstName, 'First name'|trans({}, 'app')) }}
+                        {{ form_widget(form.firstName) }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.lastName, 'Last name'|trans({}, 'app')) }}
+                        {{ form_widget(form.lastName) }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.email, 'Email') }}
+                        {{ form_widget(form.email) }}
+                    </div>
+                    <button type="submit" class="btn btn-success">{% trans %}Save{% endtrans %}</button>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

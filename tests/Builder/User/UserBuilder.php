@@ -83,6 +83,18 @@ class UserBuilder
         return $user;
     }
 
+    public function buildManual(): User
+    {
+        $this->manual();
+        return User::signUpByManual(
+            $this->id,
+            $this->date,
+            $this->name,
+            $this->email,
+            $this->hash
+        );
+    }
+
     public function buildByNetwork(): User
     {
         $this->viaNetwork();
@@ -165,16 +177,23 @@ class UserBuilder
      * @param string|null $token
      * @return $this
      */
-    private function viaEmail(
-        Email $email = null,
-        string $hash = null,
-        string $token = null
-    ): self
+    private function viaEmail(Email $email = null, string $hash = null, string $token = null): self
     {
         $this->email = $email ?? new Email($this->defaultParams('email'));
         $this->hash = $hash ?? $this->defaultParams('passwordHash');
         $this->token = $token ?? $this->defaultParams('token');
         return $this;
+    }
+
+    /**
+     * @param Email|null $email
+     * @param string|null $hash
+     * @return void
+     */
+    private function manual(Email $email = null, string $hash = null): void
+    {
+        $this->email = $email ?? new Email($this->defaultParams('email'));
+        $this->hash = $hash ?? $this->defaultParams('passwordHash');
     }
 
     /**

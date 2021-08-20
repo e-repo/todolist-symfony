@@ -141,6 +141,32 @@ class User
     }
 
     /**
+     * Регистрация с потверждением через Email
+     * при помощи токена
+     *
+     * @param Id $id
+     * @param \DateTimeImmutable $date
+     * @param Name $name
+     * @param Email $email
+     * @param string $hash
+     * @return static
+     */
+    public static function signUpByManual(
+        Id $id,
+        \DateTimeImmutable $date,
+        Name $name,
+        Email $email,
+        string $hash
+    ): self
+    {
+        $user = new self($id, $date, $name);
+        $user->email = $email;
+        $user->passwordHash = $hash;
+        $user->status = self::STATUS_ACTIVE;
+        return $user;
+    }
+
+    /**
      * Регистрация через соцсети
      *
      * @param Id $id
