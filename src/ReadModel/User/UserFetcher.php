@@ -43,10 +43,10 @@ class UserFetcher extends ServiceEntityRepository
         try {
             $result = $this->createQueryBuilder('u')
                     ->select('COUNT(u.id)')
-                    ->andWhere('t.email = :email')
+                    ->andWhere('u.email = :email')
                     ->setParameter(':email', $email)
                     ->getQuery()
-                    ->execute() > 0;
+                    ->getSingleScalarResult();
         } catch (UnexpectedResultException $e) {
             return false;
         }
@@ -174,7 +174,7 @@ class UserFetcher extends ServiceEntityRepository
         try {
             $result = $this->createQueryBuilder('u')
                     ->select('COUNT(u.id)')
-                    ->where('t.reset_token = :token')
+                    ->where('u.resetToken.token = :token')
                     ->setParameter(':token', $token)
                     ->getQuery()
                     ->getSingleScalarResult();

@@ -74,7 +74,7 @@ class ResetController extends AbstractController
     {
         if (! $users->existByResetToken($token)) {
             $this->addFlash('error', 'Incorrect or already confirmed token');
-            $this->redirectToRoute('home');
+            return $this->redirectToRoute('home');
         }
 
         $command = new Reset\Reset\Command($token);
@@ -87,7 +87,7 @@ class ResetController extends AbstractController
             try {
                 $handler->handle($command);
                 $this->addFlash('success', 'Password is successfully changed.');
-                $this->redirectToRoute('app_login');
+                return $this->redirectToRoute('app_login');
             } catch (\DomainException $e) {
                 $this->logger->error($e->getMessage(), ['exception' => $e]);
                 $this->addFlash('error', $e->getMessage());
