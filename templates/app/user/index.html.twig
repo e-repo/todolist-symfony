@@ -22,13 +22,42 @@
                     <div class="col-md-2">{{ form_widget(form.role) }}</div>
                     <div class="col-md-2">{{ form_widget(form.status) }}</div>
                     <div class="col-md-2">
-                        <button type="submit" class="btn btn-success">Filter</button>
+                        <button type="submit" class="btn btn-success">{% trans %}Filter{% endtrans %}</button>
                         <a href="{{ path('users') }}" class="btn btn-info">{% trans %}Reset{% endtrans %}</a>
                     </div>
                 </div>
             {{ form_end(form) }}
 
         </div>
+    </div>
+
+    <div class="box">
+        <table class="table table-bordered table-hover">
+            <thead>
+            <tr>
+                <th>{{ knp_pagination_sortable(pagination, 'Date', 'date') }}</th>
+                <th>{{ knp_pagination_sortable(pagination, 'Name', 'name') }}</th>
+                <th>{{ knp_pagination_sortable(pagination, 'Email', 'date') }}</th>
+                <th>{{ knp_pagination_sortable(pagination, 'Role', 'role') }}</th>
+                <th>{{ knp_pagination_sortable(pagination, 'Status', 'status') }}</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for user in pagination %}
+                    <tr>
+                        <td>{{ user.date|date('d.m.Y') }}</td>
+                        <td>{{ user.name }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user_role(user.role) }}</td>
+                        <td>{{ user_status(user.status) }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="navigation">
+        {{ knp_pagination_render(pagination) }}
     </div>
 
 {% endblock %}
