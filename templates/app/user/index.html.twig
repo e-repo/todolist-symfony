@@ -46,7 +46,7 @@
                 {% for user in pagination %}
                     <tr>
                         <td>{{ user.date|date('d.m.Y') }}</td>
-                        <td>{{ user.name }}</td>
+                        <td><a href="{{ path('users.show', {uuid: user.id}) }}">{{ user.name }}</a></td>
                         <td>{{ user.email }}</td>
                         <td>{{ user_role(user.role) }}</td>
                         <td>{{ user_status(user.status) }}</td>

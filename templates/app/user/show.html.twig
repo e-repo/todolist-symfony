@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% trans %}View user{% endtrans %}{% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item active">{% trans %}View user{% endtrans %}</li>
+{% endblock %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="col">
+            <div class="mb-2">
+                <a href="" class="btn btn-info">{% trans %}Edit{% endtrans %}</a>
+                <a href="" class="btn btn-info">{% trans %}Change role{% endtrans %}</a>
+                {% if user.isActive %}
+                    <a href="" class="btn btn-danger">{% trans %}Block{% endtrans %}</a>
+                {% else %}
+                    <a href="" class="btn btn-success">{% trans %}Active{% endtrans %}</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-6">
+            <div class="card">
+                <div class="card-body">
+                    <table class="table table-bordered table-hover">
+                        <tbody>
+                        <tr>
+                            <td>{% trans %}Name{% endtrans %}</td>
+                            <td>
+                                {{ user.name.full }}
+                            </td>
+                        </tr>
+                        {% if user.email %}
+                            <tr>
+                                <td>Email</td>
+                                <td>
+                                    {{ user.email }}
+                                </td>
+                            </tr>
+                        {% endif %}
+                        <tr>
+                            <td>{% trans %}Created{% endtrans %}</td>
+                            <td>{{ user.date|date('d.m.Y H:i:s') }}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans %}Role{% endtrans %}</td>
+                            <td>{{ user_role(user.role.name) }}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans %}Status{% endtrans %}</td>
+                            <td>{{ user_status(user.status) }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+

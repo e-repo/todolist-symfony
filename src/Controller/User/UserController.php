@@ -2,6 +2,8 @@
 
 namespace App\Controller\User;
 
+use App\Model\User\Entity\User\Id;
+use App\Model\User\Entity\User\UserRepository;
 use App\Model\User\UseCase;
 use App\ReadModel\User\Filter;
 use App\ReadModel\User\UserFetcher;
@@ -10,7 +12,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Translation\Translator;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -88,6 +89,28 @@ class UserController extends AbstractController
 
         return $this->render('app/user/create.html.twig', [
             'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/show/{uuid}", name=".show")
+     * @param $uuid
+     * @param Request $request
+     * @param UserRepository $users
+     * @return Response
+     */
+    public function show($uuid, Request $request, UserRepository $users): Response
+    {
+        try {
+            $user = $users->get(new Id($uuid));
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage(), ['exception' => $e]);
+            $this->addFlash('error', $e->getMessage());
+            return $this->redirectToRoute('users');
+        }
+
+        return $this->render('app/user/show.html.twig', [
+            'user' => $user
         ]);
     }
 }
