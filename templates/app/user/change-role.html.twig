@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% trans %}Change role{% endtrans %}{% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{{ path('users') }}"></a>{% trans from 'profile'%}Users{% endtrans %}</li>
+    <li class="breadcrumb-item active">{% trans %}Change role{% endtrans %}</li>
+{% endblock %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="col-6">
+            <div class="card">
+                <div class="card-body">
+                    {{ form_start(form) }}
+                    <div class="form-group">
+                        {{ form_label(form.role, 'Role'|trans({}, 'app')) }}
+                        {{ form_widget(form.role) }}
+                    </div>
+                    <button type="submit" class="btn btn-success">{% trans %}Save{% endtrans %}</button>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

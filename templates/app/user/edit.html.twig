@@ -1,10 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{% trans %}Create user{% endtrans %}{% endblock %}
+{% block title %}{% trans %}Edit user{% endtrans %}{% endblock %}
 
 {% block breadcrumbs %}
-    <li class="breadcrumb-item"><a href="{{ path('users') }}"></a>{% trans from 'profile'%}Users{% endtrans %}</li>
-    <li class="breadcrumb-item active">{% trans %}Create user{% endtrans %}</li>
+    <li class="breadcrumb-item"><a href="{{ path('users') }}">{% trans %}Users{% endtrans %}</a></li>
+    <li class="breadcrumb-item active">{% trans %}Edit user{% endtrans %}</li>
 {% endblock %}
 
 {% block body %}

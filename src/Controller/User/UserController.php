@@ -127,6 +127,41 @@ class UserController extends AbstractController
     }
 
     /**
+     * @Route("/role/{id}", name=".role")
+     * @param User $user
+     * @param Request $request
+     * @param UseCase\Role\Change\Handler $handler
+     * @return Response
+     */
+    public function changeRole(User $user, Request $request, UseCase\Role\Change\Handler $handler): Response
+    {
+        if ($user->getId()->getValue() === $this->getUser()->getId()) {
+            $this->addFlash('error', $this->translator->trans('Unable to edit yourself.'));
+            return $this->redirectToRoute('users.show', ['id' => $user->getId()->getValue()]);
+        }
+
+        $command = UseCase\Role\Change\Command::createFromUser($user);
+        $form = $this->createForm(UseCase\Role\Change\Form::class, $command);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isRequired()) {
+            try {
+                $handler->handle($command);
+                $this->addFlash('success', $this->translator->trans('User is success edit.'));
+            } catch (\Exception $e) {
+                $this->logger->error($e->getMessage(), ['exception' => $e]);
+                $this->addFlash('error', $e->getMessage());
+            }
+
+            return $this->redirectToRoute('users.show', ['id' => $user->getId()->getValue()]);
+        }
+
+        return $this->render('app/user/change-role.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
      * @Route("/{id}", name=".show")
      * @param User $user
      * @param Request $request
