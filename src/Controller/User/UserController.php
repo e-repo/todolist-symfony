@@ -2,8 +2,7 @@
 
 namespace App\Controller\User;
 
-use App\Model\User\Entity\User\Id;
-use App\Model\User\Entity\User\UserRepository;
+use App\Model\User\Entity\User\User;
 use App\Model\User\UseCase;
 use App\ReadModel\User\Filter;
 use App\ReadModel\User\UserFetcher;
@@ -93,22 +92,48 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/show/{uuid}", name=".show")
-     * @param $uuid
+     * @Route("/edit/{id}", name=".edit")
+     * @param User $user
      * @param Request $request
-     * @param UserRepository $users
+     * @param UseCase\Edit\Handler $handler
      * @return Response
      */
-    public function show($uuid, Request $request, UserRepository $users): Response
+    public function edit(User $user, Request $request, UseCase\Edit\Handler $handler): Response
     {
-        try {
-            $user = $users->get(new Id($uuid));
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), ['exception' => $e]);
-            $this->addFlash('error', $e->getMessage());
-            return $this->redirectToRoute('users');
+        if ($user->getId()->getValue() === $this->getUser()->getId()) {
+            $this->addFlash('error', $this->translator->trans('Unable to edit yourself.'));
+            return $this->redirectToRoute('users.show', ['id' => $user->getId()->getValue()]);
         }
 
+        $command = UseCase\Edit\Command::createFromUser($user);
+        $form = $this->createForm(UseCase\Edit\Form::class, $command);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $handler->handle($command);
+                $this->addFlash('success', $this->translator->trans('User is success edit.'));
+            } catch (\Exception $e) {
+                $this->logger->error($e->getMessage(), ['exception' => $e]);
+                $this->addFlash('error', $e->getMessage());
+            }
+
+            return $this->redirectToRoute('users.show', ['id' => $user->getId()->getValue()]);
+        }
+
+        return $this->render('app/user/edit.html.twig', [
+            'form' =>  $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("/{id}", name=".show")
+     * @param User $user
+     * @param Request $request
+     * @return Response
+     */
+    public function show(User $user, Request $request): Response
+    {
         return $this->render('app/user/show.html.twig', [
             'user' => $user
         ]);

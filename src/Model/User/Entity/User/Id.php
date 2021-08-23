@@ -9,9 +9,6 @@ use Webmozart\Assert\Assert;
 
 class Id
 {
-    /**
-     * @var string
-     */
     private string $value;
 
     /**
@@ -24,16 +21,11 @@ class Id
         $this->value = $value;
     }
 
-    /**
-     * @return $this
-     */
     public static function next(): self
     {
         return new self(Uuid::uuid4()->toString());
     }
-    /**
-     * @return string
-     */
+
     public function getValue(): string
     {
         return $this->value;
