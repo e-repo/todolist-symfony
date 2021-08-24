@@ -29,6 +29,7 @@ return [
     'Role' => 'Роль',
     'Wait' => 'В ожидании',
     'Active' => 'Активен',
+    'Activate' => 'Активировать',
     'Blocked' => 'Заблокирован',
     'All statuses' => 'Все статусы',
     'All roles' => 'Все роли',
@@ -44,6 +45,7 @@ return [
     'Change role' => 'Изменить роль',
     'Attach VK' => 'Добавить VK',
     'Unable to edit yourself.' => 'Невозможно редактировать самого себя.',
+    'Unable to block yourself.' => 'Невозможно блокировать самого себя.',
     'User is success edit.' => 'Пользователь успешно отредактирован.',
     'Edit user' => 'Редактирование пользователя',
 ];

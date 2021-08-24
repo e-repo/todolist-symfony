@@ -162,6 +162,35 @@ class UserController extends AbstractController
     }
 
     /**
+     * @Route("/block/{id}", name=".block", methods={"POST"})
+     * @param User $user
+     * @param Request $request
+     * @param UseCase\Block\Handler $handler
+     * @return Response
+     */
+    public function block(User $user, Request $request, UseCase\Block\Handler $handler): Response
+    {
+        if (! $this->isCsrfTokenValid('block', $request->request->get('token'))) {
+            return $this->redirectToRoute('users.show', ['id' => $user->getId()]);
+        }
+
+        if ($user->getId()->getValue() === $this->getUser()->getId()) {
+            $this->addFlash('error', $this->translator->trans('Unable to block yourself.'));
+            return $this->redirectToRoute('users.show', ['id' => $user->getId()->getValue()]);
+        }
+
+        try {
+            $command = new UseCase\Block\Command($user->getId()->getValue());
+            $handler->handle($command);
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage(), ['exception' => $e]);
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('users.show', ['id' => $user->getId()]);
+    }
+
+    /**
      * @Route("/{id}", name=".show")
      * @param User $user
      * @param Request $request

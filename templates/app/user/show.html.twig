@@ -3,6 +3,7 @@
 {% block title %}{% trans %}View user{% endtrans %}{% endblock %}
 
 {% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{{ path('users') }}">{% trans %}Users{% endtrans %}</a></li>
     <li class="breadcrumb-item active">{% trans %}View user{% endtrans %}</li>
 {% endblock %}
 
@@ -14,9 +15,12 @@
                 <a href="{{ path('users.edit', {id: user.id.value}) }}" class="btn btn-info">{% trans %}Edit{% endtrans %}</a>
                 <a href="{{ path('users.role', {id: user.id.value}) }}" class="btn btn-info">{% trans %}Change role{% endtrans %}</a>
                 {% if user.isActive %}
-                    <a href="" class="btn btn-danger">{% trans %}Block{% endtrans %}</a>
+                    <form action="{{ path('users.block', {id: user.id.value}) }}" method="POST" class="d-inline-block">
+                        <input type="hidden" name="token" value="{{ csrf_token("block") }}">
+                        <button type="submit" class="btn btn-danger">{% trans %}Block{% endtrans %}</button>
+                    </form>
                 {% else %}
-                    <a href="" class="btn btn-success">{% trans %}Active{% endtrans %}</a>
+                    <a href="" class="btn btn-success">{% trans %}Activate{% endtrans %}</a>
                 {% endif %}
             </div>
         </div>

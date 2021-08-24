@@ -307,6 +307,17 @@ class User
         $this->confirmToken = null;
     }
     /**
+     * Блокирование пользователя
+     */
+    public function block(): void
+    {
+        if ($this->isBlocked()) {
+            throw new \DomainException('User is already blocked.');
+        }
+
+        $this->status = self::STATUS_BLOCKED;
+    }
+    /**
      * @return Id
      */
     public function getId(): Id
