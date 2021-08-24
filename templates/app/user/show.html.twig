@@ -20,7 +20,10 @@
                         <button type="submit" class="btn btn-danger">{% trans %}Block{% endtrans %}</button>
                     </form>
                 {% else %}
-                    <a href="" class="btn btn-success">{% trans %}Activate{% endtrans %}</a>
+                    <form action="{{ path('users.active', {id: user.id.value}) }}" method="POST" class="d-inline-block">
+                        <input type="hidden" name="token" value="{{ csrf_token("active") }}">
+                        <button type="submit" class="btn btn-success">{% trans %}Activate{% endtrans %}</button>
+                    </form>
                 {% endif %}
             </div>
         </div>

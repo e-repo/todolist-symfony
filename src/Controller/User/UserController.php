@@ -171,6 +171,7 @@ class UserController extends AbstractController
     public function block(User $user, Request $request, UseCase\Block\Handler $handler): Response
     {
         if (! $this->isCsrfTokenValid('block', $request->request->get('token'))) {
+            $this->addFlash('error', $this->translator->trans('Invalid csrf token.'));
             return $this->redirectToRoute('users.show', ['id' => $user->getId()]);
         }
 
@@ -181,6 +182,30 @@ class UserController extends AbstractController
 
         try {
             $command = new UseCase\Block\Command($user->getId()->getValue());
+            $handler->handle($command);
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage(), ['exception' => $e]);
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('users.show', ['id' => $user->getId()]);
+    }
+    /**
+     * @Route("/active/{id}", name=".active", methods={"POST"})
+     * @param User $user
+     * @param Request $request
+     * @param UseCase\Activate\Handler $handler
+     * @return Response
+     */
+    public function active(User $user, Request $request, UseCase\Activate\Handler $handler): Response
+    {
+        if (! $this->isCsrfTokenValid('active', $request->request->get('token'))) {
+            $this->addFlash('error', $this->translator->trans('Invalid csrf token.'));
+            return $this->redirectToRoute('users.show', ['id' => $user->getId()]);
+        }
+
+        try {
+            $command = new UseCase\Activate\Command($user->getId()->getValue());
             $handler->handle($command);
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage(), ['exception' => $e]);

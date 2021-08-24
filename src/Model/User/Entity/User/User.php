@@ -318,6 +318,17 @@ class User
         $this->status = self::STATUS_BLOCKED;
     }
     /**
+     * Активирование пользователя
+     */
+    public function activate(): void
+    {
+        if ($this->isActive()) {
+            throw new \DomainException('User is already active.');
+        }
+
+        $this->status = self::STATUS_ACTIVE;
+    }
+    /**
      * @return Id
      */
     public function getId(): Id
