@@ -9,6 +9,7 @@ init: docker-down-clear todo-clear docker-pull docker-build docker-up todo-init 
 test: todo-test
 ps: docker-ps
 restart: down up
+cli-shell: todo-cli-shell
 watch-logs: node-watch-logs
 
 docker-up:
@@ -63,6 +64,9 @@ todo-fixtures:
 
 todo-test:
 	docker-compose run --rm todo-php-cli php bin/phpunit
+
+todo-cli-shell:
+	@docker-compose run todo-php-cli bash
 
 todo-ready:
 	docker run --rm -v ${PWD}:/app --workdir=/app alpine touch .ready
