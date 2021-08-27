@@ -9,11 +9,15 @@
 
 {% block body %}
 
+    {{ include('app/user/_tab.html.twig') }}
+
     <div class="row">
         <div class="col">
             <div class="mb-2">
-                <a href="{{ path('users.edit', {id: user.id.value}) }}" class="btn btn-info">{% trans %}Edit{% endtrans %}</a>
-                <a href="{{ path('users.role', {id: user.id.value}) }}" class="btn btn-info">{% trans %}Change role{% endtrans %}</a>
+                <a href="{{ path('users.edit', {id: user.id.value}) }}"
+                   class="btn btn-info">{% trans %}Edit{% endtrans %}</a>
+                <a href="{{ path('users.role', {id: user.id.value}) }}"
+                   class="btn btn-info">{% trans %}Change role{% endtrans %}</a>
                 {% if user.isActive %}
                     <form action="{{ path('users.block', {id: user.id.value}) }}" method="POST" class="d-inline-block">
                         <input type="hidden" name="token" value="{{ csrf_token("block") }}">
@@ -25,6 +29,7 @@
                         <button type="submit" class="btn btn-success">{% trans %}Activate{% endtrans %}</button>
                     </form>
                 {% endif %}
+                <a href="{{ path('tasks.create', {id: user.id.value}) }}" class="btn btn-success">{% trans from 'task' %}Add task{% endtrans %}</a>
             </div>
         </div>
     </div>
