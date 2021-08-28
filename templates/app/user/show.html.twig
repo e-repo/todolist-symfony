@@ -66,6 +66,10 @@
                             <td>{% trans %}Status{% endtrans %}</td>
                             <td>{{ user_status(user.status) }}</td>
                         </tr>
+                        <tr>
+                            <td>{% trans from 'task' %}Number tasks{% endtrans %}</td>
+                            <td><span class="badge badge-pill badge-dark">{{ numberTasks }}</span></td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>

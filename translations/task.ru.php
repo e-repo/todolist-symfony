@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 return [
     'Tasks' => 'Задачи',
+    'Published' => 'Опубликован',
+    'Fulfilled' => 'Исполнен',
     'Task name' => 'Название задачи',
     'Task description' => 'Описание задачи',
     'Add task' => 'Добавить задачу',

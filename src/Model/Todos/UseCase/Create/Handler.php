@@ -34,7 +34,7 @@ class Handler
     public function handle(Command $command): void
     {
         $user = $this->users->get(new UserId($command->userId));
-        $content = new Content($command->name, $command->desctiption);
+        $content = new Content($command->name, $command->description);
 
         $task = new Task(
             Id::next(),

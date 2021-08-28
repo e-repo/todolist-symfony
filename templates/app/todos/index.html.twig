@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% trans %}Users{% endtrans %}{% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item active"><a href="{{ path('users') }}">{% trans %}Users{% endtrans %}</a></li>
+    <li class="breadcrumb-item active">{% trans from 'task' %}View user tasks{% endtrans %}</li>
+{% endblock %}
+
+{% block body %}
+
+    {{ include('app/todos/_tab.htmt.twig') }}
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+            <div class="row">
+                <div class="col-md-2">{{ form_widget(form.name) }}</div>
+                <div class="col-md-2">{{ form_widget(form.description) }}</div>
+                <div class="col-md-2">{{ form_widget(form.status) }}</div>
+                <div class="col-md-2">{{ form_widget(form.date) }}</div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-success">{% trans %}Filter{% endtrans %}</button>
+                    <a href="{{ path('tasks.user', {id: user.id.value}) }}" class="btn btn-info">{% trans %}Reset{% endtrans %}</a>
+                </div>
+            </div>
+            {{ form_end(form) }}
+
+        </div>
+    </div>
+
+    <div class="box">
+        <table class="table table-bordered table-hover">
+            <thead>
+            <tr>
+                <th>{{ knp_pagination_sortable(pagination, 'Name', 'name') }}</th>
+                <th>{{ knp_pagination_sortable(pagination, 'Description', 'description') }}</th>
+                <th>{{ knp_pagination_sortable(pagination, 'Status', 'status') }}</th>
+                <th>{{ knp_pagination_sortable(pagination, 'Date', 'date') }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for task in pagination %}
+                <tr>
+                    <td>{{ task.name }}</a></td>
+                    <td>{{ task.description }}</td>
+                    <td>{{ task.status }}</td>
+                    <td>{{ task.date|date('d.m.Y H:i:s') }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="navigation">
+        {{ knp_pagination_render(pagination) }}
+    </div>
+
+{% endblock %}

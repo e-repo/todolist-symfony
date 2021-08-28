@@ -27,6 +27,7 @@ return [
     'First name' => 'Имя',
     'Last name' => 'Фамилия',
     'Created' => 'Создано',
+    'Date' => 'Дата',
     'Role' => 'Роль',
     'Wait' => 'В ожидании',
     'Active' => 'Активен',

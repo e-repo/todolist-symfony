@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controller\Todos;
 
+use App\Model\Todos\Entity\Task\Task;
 use App\Model\Todos\UseCase;
 use App\Model\User\Entity\User\User;
+use App\ReadModel\Task\Filter;
+use App\ReadModel\Task\TaskFetcher;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,6 +23,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class TaskController extends AbstractController
 {
+    private const PER_PAGE = 20;
+
     private LoggerInterface $logger;
     private TranslatorInterface $translator;
 
@@ -38,12 +43,29 @@ class TaskController extends AbstractController
      * @Route("/user/{id}", name=".user")
      * @param User $user
      * @param Request $request
-     * @param UseCase\Create\Handler $handler
+     * @param TaskFetcher $fetcher
      * @return Response
      */
-    public function index(User $user, Request $request): Response
+    public function index(User $user, Request $request, TaskFetcher $fetcher): Response
     {
-        dd('Tasks list');
+        $filter = new Filter\Filter($user->getId()->getValue(), Task::STATUS_PUBLISHED);
+
+        $form = $this->createForm(Filter\Form::class, $filter);
+        $form->handleRequest($request);
+
+        $pagination = $fetcher->all(
+            $filter,
+            $request->get('page', 1),
+            self::PER_PAGE,
+            $request->get('sort', 'date'),
+            $request->get('direction', 'desc')
+        );
+
+        return $this->render('app/todos/index.html.twig', [
+            'user' => $user,
+            'pagination' => $pagination,
+            'form' => $form->createView(),
+        ]);
     }
 
     /**

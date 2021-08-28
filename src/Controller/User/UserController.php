@@ -4,6 +4,7 @@ namespace App\Controller\User;
 
 use App\Model\User\Entity\User\User;
 use App\Model\User\UseCase;
+use App\ReadModel\Task\TaskFetcher;
 use App\ReadModel\User\Filter;
 use App\ReadModel\User\UserFetcher;
 use Psr\Log\LoggerInterface;
@@ -219,12 +220,15 @@ class UserController extends AbstractController
      * @Route("/{id}", name=".show")
      * @param User $user
      * @param Request $request
+     * @param TaskFetcher $fetcher
      * @return Response
      */
-    public function show(User $user, Request $request): Response
+    public function show(User $user, Request $request, TaskFetcher $fetcher): Response
     {
+        $numberTasks = $fetcher->numberUserTasks($user->getId()->getValue());
         return $this->render('app/user/show.html.twig', [
-            'user' => $user
+            'user' => $user,
+            'numberTasks' => $numberTasks,
         ]);
     }
 }
