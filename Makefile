@@ -10,6 +10,7 @@ test: todo-test
 ps: docker-ps
 restart: down up
 cli-shell: todo-cli-shell
+node-shell: todo-node-shell
 watch-logs: node-watch-logs
 
 docker-up:
@@ -67,6 +68,9 @@ todo-test:
 
 todo-cli-shell:
 	@docker-compose run todo-php-cli bash
+
+todo-node-shell:
+	@docker-compose run todo-node sh
 
 todo-ready:
 	docker run --rm -v ${PWD}:/app --workdir=/app alpine touch .ready
