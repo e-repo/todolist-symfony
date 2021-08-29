@@ -83,8 +83,10 @@ class TaskFetcher extends ServiceEntityRepository
         }
 
         if ($date = $filter->date) {
-            $qb->andWhere('date = :date');
-            $qb->setParameter(':date', $date);
+            $dateTime = \DateTimeImmutable::createFromFormat('d.m.Y H:i:s', sprintf('%s 00:00:00', $date));
+            $qb->andWhere('date BETWEEN :dateStart AND :dateEnd');
+            $qb->setParameter(':dateStart', $dateTime->format('Y-m-d H:i:s'));
+            $qb->setParameter(':dateEnd', $dateTime->modify('+1 day')->format('Y-m-d H:i:s'));
         }
 
         if (! \in_array($sort, ['name', 'description', 'status', 'date'])) {

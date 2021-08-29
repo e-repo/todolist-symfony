@@ -42,6 +42,7 @@ class Form extends AbstractType
             ->add('date', Type\TextType::class, ['required' => false, 'attr' => [
                 'placeholder' => $this->translator->trans('Date'),
                 'class' => 'js-task-date',
+                'autocomplete' => 'off',
                 'onchange' => 'this.form.submit()',
             ]]);
     }

@@ -7,6 +7,11 @@
     <li class="breadcrumb-item active">{% trans from 'task' %}View user tasks{% endtrans %}</li>
 {% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('task-page') }}
+{% endblock %}
+
 {% block body %}
 
     {{ include('app/todos/_tab.htmt.twig') }}
@@ -57,4 +62,9 @@
         {{ knp_pagination_render(pagination) }}
     </div>
 
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('task-page') }}
 {% endblock %}

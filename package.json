@@ -2,8 +2,8 @@
     "devDependencies": {
         "@symfony/webpack-encore": "^0.31.0",
         "core-js": "^3.0.0",
-        "regenerator-runtime": "^0.13.2",
         "node-sass": "^5.0.0",
+        "regenerator-runtime": "^0.13.2",
         "sass-loader": "^10.0.5",
         "webpack-notifier": "^1.6.0"
     },
@@ -12,6 +12,9 @@
         "@coreui/icons": "^1.0.1",
         "@fortawesome/fontawesome-free": "^5.15.2",
         "@popperjs/core": "^2.4.4",
+        "bootstrap-datepicker": "^1.9.0",
+        "jquery": "^3.6.0",
+        "lodash": "^4.17.21",
         "perfect-scrollbar": "^1.5.0"
     },
     "license": "UNLICENSED",
