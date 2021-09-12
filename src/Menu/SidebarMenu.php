@@ -45,6 +45,9 @@ class SidebarMenu
             )
             ->setAttribute('class', 'c-sidebar-nav-item')
             ->setLinkAttribute('class', 'c-sidebar-nav-link')
+            ->setExtra('routes', [
+                ['pattern' => '/^users\..+/']
+            ])
             ->setExtra('icon', 'c-sidebar-nav-icon cil-people');
 
         $menu
@@ -54,6 +57,9 @@ class SidebarMenu
             )
             ->setAttribute('class', 'c-sidebar-nav-item')
             ->setLinkAttribute('class', 'c-sidebar-nav-link')
+            ->setExtra('routes', [
+                ['pattern' => '/^profile\..+/']
+            ])
             ->setExtra('icon', 'c-sidebar-nav-icon cil-user');
 
         return $menu;
