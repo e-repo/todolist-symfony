@@ -49,8 +49,8 @@ class Task
     {
         $this->id = $id;
         $this->user = $user;
-        $this->name = $content->getName();
-        $this->description = $content->getDescription();
+        $this->setName($content->getName());
+        $this->setDescription($content->getDescription());
         $this->status = self::STATUS_PUBLISHED;
         $this->date = $date;
     }
@@ -75,6 +75,11 @@ class Task
         return $this->description;
     }
 
+    public function getContent(): Content
+    {
+        return new Content($this->getName(), $this->getDescription());
+    }
+
     public function getStatus(): string
     {
         return $this->status;
@@ -85,6 +90,30 @@ class Task
         return $this->date;
     }
 
+    public function changeContent(Content $content): void
+    {
+        $this->changeName($content->getName());
+        $this->changeDescription($content->getDescription());
+    }
+
+    public function setName(string $name): void
+    {
+        if ($this->name === \trim($name)) {
+            throw new \DomainException('Task name is set.');
+        }
+
+        $this->name = $name;
+    }
+
+    public function setDescription(string $description): void
+    {
+        if ($this->description === \trim($description)) {
+            throw new \DomainException('Task description is set.');
+        }
+
+        $this->description = $description;
+    }
+
     public function isPublished(): bool
     {
         return $this->status === self::STATUS_PUBLISHED;
@@ -93,6 +122,16 @@ class Task
     public function isFulfilled(): bool
     {
         return $this->status === self::STATUS_FULFILLED;
+    }
+
+    public function changeName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    public function changeDescription(string $description): void
+    {
+        $this->description = $description;
     }
 
     /**
