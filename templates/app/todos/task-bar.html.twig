@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% macro trunc(txt, len) -%}
+    {{ txt|length > len ? txt|slice(0, len) ~ '…' : txt }}
+{%- endmacro %}
+
+{% block title %}{% trans from 'task' %}Task bar user{% endtrans %}{% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item active"><a href="{{ path('home') }}">{% trans %}Home{% endtrans %}</a></li>
+    <li class="breadcrumb-item active">{% trans from 'task' %}Task bar user{% endtrans %}</li>
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+
+        {% for task in pagination %}
+        <div class="col-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0 font-weight-bold">{{ task.name }}</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ _self.trunc(task.description, 50) }}</p>
+                    <div class="text-right">
+                        <b>{{ task.date|date('d.m.Y H:i:s') }}</b>
+                    </div>
+                </div>
+                <div class="card-footer text-right">
+                    <button class="btn btn-outline-dark"><i class="cil-trash"></i></button>
+                    <button class="btn btn-outline-info js-modal-edit"  data-task="{{ task.id }}">
+                        <i class="cil-pencil"></i>
+                    </button>
+                    <a href="#" class="btn btn-outline-success"><i class="cil-check"></i></a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <div class="row">
+        {{ knp_pagination_render(pagination) }}
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="js-modal_task-bar" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-body__error"></div>
+                    <div class="modal-body__content"></div>
+                </div>
+                <div class="modal-footer"></div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('bar-page') }}
+{% endblock %}

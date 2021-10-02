@@ -6,6 +6,7 @@ namespace App\ReadModel\Task;
 
 use App\Model\Todos\Entity\Task\Task;
 use App\ReadModel\Task\Filter\Filter;
+use App\ReadModel\Task\FilterBar\Filter as FilterBar;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\UnexpectedResultException;
@@ -53,6 +54,40 @@ class TaskFetcher extends ServiceEntityRepository
         return (int)$result;
     }
 
+    public function allForBar(FilterBar $filter, int $page, int $size): PaginationInterface
+    {
+        $qb = $this->connection->createQueryBuilder()
+            ->select(
+                'id',
+                'name',
+                'description',
+                'status',
+                'date'
+            )
+            ->where('user_id = :userId')
+            ->setParameter(':userId', $filter->userId)
+            ->from('todos_tasks');
+
+        if ($status = $filter->status) {
+            $qb->andWhere('status = :status');
+            $qb->setParameter(':status', $status);
+        }
+
+        if ($date = $filter->date) {
+            $dateTime = \DateTimeImmutable::createFromFormat('d.m.Y H:i:s', sprintf('%s 00:00:00', $date));
+            $qb->andWhere('date BETWEEN :dateStart AND :dateEnd');
+            $qb->setParameter(':dateStart', $dateTime->format('Y-m-d H:i:s'));
+            $qb->setParameter(':dateEnd', $dateTime->modify('+1 day')->format('Y-m-d H:i:s'));
+        }
+
+        if (! \in_array($filter->sort, ['status', 'date'])) {
+            throw new \UnexpectedValueException(sprintf('Cannot sort by %s', $filter->sort));
+        }
+
+        $qb->orderBy($filter->sort, $filter->direction === 'desc' ? $filter->direction : 'asc');
+        return $this->paginator->paginate($qb, $page, $size);
+    }
+
     public function all(Filter $filter, int $page, int $size, string $sort, string $direction): PaginationInterface
     {
         $qb = $this->connection->createQueryBuilder()
@@ -94,7 +129,6 @@ class TaskFetcher extends ServiceEntityRepository
         }
 
         $qb->orderBy($sort, $direction === 'desc' ? $direction : 'asc');
-
         return $this->paginator->paginate($qb, $page, $size);
     }
 }

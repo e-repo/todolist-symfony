@@ -12,9 +12,9 @@ doctrine:
 
         types:
             user_user_id: 'App\Model\User\Entity\User\IdType'
-            todos_task_id: 'App\Model\Todos\Entity\Task\IdType'
             user_user_role: 'App\Model\User\Entity\User\RoleType'
             user_user_email: 'App\Model\User\Entity\User\EmailType'
+            todos_task_id: 'App\Model\Todos\Entity\Task\IdType'
 
     orm:
         auto_generate_proxy_classes: true

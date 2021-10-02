@@ -62,6 +62,15 @@ class SidebarMenu
             ])
             ->setExtra('icon', 'c-sidebar-nav-icon cil-user');
 
+        $menu
+            ->addChild('ToDo', ['route' => 'tasks.bar'])
+            ->setAttribute('class', 'c-sidebar-nav-item')
+            ->setLinkAttribute('class', 'c-sidebar-nav-link')
+            ->setExtra('routes', [
+                ['pattern' => '/^tasks\..+/']
+            ])
+            ->setExtra('icon', 'c-sidebar-nav-icon cil-list-rich');
+
         return $menu;
     }
 }
