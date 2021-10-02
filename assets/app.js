@@ -6,3 +6,9 @@ import './styles/app.scss';
 
 // Import core-ui theme
 require('@coreui/coreui');
+
+// require jQuery normally
+// const $ = require('jquery');
+
+// create global $ and jQuery variables
+// global.$ = global.jQuery = $;

@@ -27,7 +27,6 @@ export default class DatePickerFilter {
     _init(config) {
         for (let item of config) {
             const resolvedItem = merge(item, this._defaultDatePickerOptions());
-            console.log(resolvedItem);
             this._initDatePicker(resolvedItem)
         }
     }
