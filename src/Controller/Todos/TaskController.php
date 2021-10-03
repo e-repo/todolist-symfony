@@ -167,6 +167,11 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/user/{id}/create", name=".create")
+     *
+     * @param User $user
+     * @param Request $request
+     * @param UseCase\Create\Handler $handler
+     * @return Response
      */
     public function create(User $user, Request $request, UseCase\Create\Handler $handler): Response
     {
@@ -189,5 +194,30 @@ class TaskController extends AbstractController
         return $this->render('app/todos/create.html.twig', [
             'form' => $form->createView()
         ]);
+    }
+
+
+    /**
+     * @Route("/ajax-delete/{id}", name=".delete", methods={"POST"})
+     *
+     * @param Task $task
+     * @param UseCase\Delete\Handler $handler
+     * @return Response
+     */
+    public function delete(Task $task, UseCase\Delete\Handler $handler): Response
+    {
+        $command = new UseCase\Delete\Command($task->getId()->getValue());
+
+        try {
+            $handler->handle($command);
+            $this->addFlash('success', $this->translator->trans('Task deleted successfully.', [], 'task'));
+            $errorMessage = '';
+        } catch (\Exception $e) {
+            $this->logger->warning($e->getMessage(), ['exception' => $e]);
+            $this->addFlash('warning', $e->getMessage(), [], 'task');
+            $errorMessage = $e->getMessage();
+        }
+
+        return new JsonResponse(['error' => $errorMessage]);
     }
 }

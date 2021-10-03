@@ -65,6 +65,7 @@ class TaskFetcher extends ServiceEntityRepository
                 'date'
             )
             ->where('user_id = :userId')
+            ->andWhere('deleted_at IS NULL')
             ->setParameter(':userId', $filter->userId)
             ->from('todos_tasks');
 

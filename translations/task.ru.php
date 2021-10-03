@@ -7,6 +7,7 @@ return [
     'Task bar user' => 'Панель задач пользователя',
     'Edit Tasks' => 'Редактирование задач.',
     'Task edited successfully.' => 'Задача успешно отредактирована',
+    'Task deleted successfully.' => 'Задача успешно удалена',
     'Published' => 'Опубликован',
     'Fulfilled' => 'Исполнен',
     'Task name' => 'Название задачи',

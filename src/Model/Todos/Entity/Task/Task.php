@@ -42,6 +42,10 @@ class Task
      */
     private string $status;
     /**
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
+    private ?\DateTimeImmutable $deletedAt = null;
+    /**
      * @ORM\Column(type="datetime_immutable")
      */
     private \DateTimeImmutable $date;
@@ -84,6 +88,16 @@ class Task
     public function getStatus(): string
     {
         return $this->status;
+    }
+
+    public function getDeletedAt(): ?\DateTimeImmutable
+    {
+        return $this->deletedAt;
+    }
+
+    public function delete(): void
+    {
+        $this->deletedAt = new \DateTimeImmutable();
     }
 
     public function getDate(): \DateTimeImmutable
