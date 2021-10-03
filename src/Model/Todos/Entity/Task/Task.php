@@ -6,6 +6,7 @@ namespace App\Model\Todos\Entity\Task;
 
 use App\Model\User\Entity\User\User;
 use Doctrine\ORM\Mapping as ORM;
+use Webmozart\Assert\Assert;
 
 /**
  * Class Task
@@ -31,11 +32,11 @@ class Task
     /**
      * @ORM\Column(type="string", length=255, nullable=false)
      */
-    private string $name;
+    private string $name = '';
     /**
      * @ORM\Column(type="text", nullable=true)
      */
-    private string $description;
+    private string $description = '';
     /**
      * @ORM\Column(type="string", length=50, nullable=false)
      */
@@ -132,6 +133,15 @@ class Task
     public function changeDescription(string $description): void
     {
         $this->description = $description;
+    }
+
+    public function changeStatus(string $status): void
+    {
+        Assert::oneOf($status, [
+            self::STATUS_FULFILLED,
+            self::STATUS_PUBLISHED,
+        ]);
+        $this->status = $status;
     }
 
     /**
