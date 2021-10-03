@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 return [
     'Tasks' => 'Задачи',
+    'Task bar user' => 'Панель задач пользователя',
     'Edit Tasks' => 'Редактирование задач.',
     'Task edited successfully.' => 'Задача успешно отредактирована',
     'Published' => 'Опубликован',

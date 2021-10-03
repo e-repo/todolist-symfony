@@ -39,6 +39,7 @@
         </button>
         {% if is_granted('IS_AUTHENTICATED_FULLY') %}
             <ul class="c-header-nav ml-auto mr-4">
+                {% block right_navbar_content %}
                 <li class="c-header-nav-item dropdown">
                     <a class="c-header-nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                         {{ user_name(app.user) }}
@@ -52,6 +53,7 @@
                         </a>
                     </div>
                 </li>
+                {% endblock %}
             </ul>
         {% endif %}
         <div class="c-subheader px-3">

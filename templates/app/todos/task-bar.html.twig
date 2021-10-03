@@ -11,6 +11,18 @@
     <li class="breadcrumb-item active">{% trans from 'task' %}Task bar user{% endtrans %}</li>
 {% endblock %}
 
+{% block right_navbar_content %}
+    <li class="c-header-nav-item mx-2">
+        <div class="c-header-nav-link">
+            <button id="js-add-task" class="btn btn-square btn-outline-danger d-flex" data-user="{{ user.id }}">
+                <i class="cil-plus mr-1"></i>
+                {% trans from 'task' %}Add task{% endtrans %}
+            </button>
+        </div>
+    </li>
+    {{ parent() }}
+{% endblock %}
+
 {% block body %}
     <div class="row">
 

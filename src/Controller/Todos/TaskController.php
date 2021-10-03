@@ -113,9 +113,11 @@ class TaskController extends AbstractController
             try {
                 $handler->handle($command);
                 $this->addFlash('success', $this->translator->trans('Task edited successfully.', [], 'task'));
+                return new JsonResponse(['error' => '']);
             } catch (\Exception $e) {
                 $this->logger->warning($e->getMessage(), ['exception' => $e]);
                 $this->addFlash('warning', $e->getMessage());
+                return new JsonResponse(['error' => $e->getMessage()]);
             }
         };
 
@@ -125,6 +127,41 @@ class TaskController extends AbstractController
                 'form' => $form->createView(),
             ]),
             'formButtons' => $this->renderView('app/todos/modals/_task-edit-buttons.html.twig'),
+        ]);
+    }
+
+    /**
+     * @Route("/user/{id}/add-by-modal", name=".user.add-by-modal", methods={"POST"})
+     * @param User $user
+     * @param Request $request
+     * @param UseCase\Create\Handler $handler
+     * @return Response
+     */
+    public function addByModal(User $user, Request $request, UseCase\Create\Handler $handler): Response
+    {
+        $command = new UseCase\Create\Command();
+
+        $form = $this->createForm(UseCase\Create\Form::class, $command, ['userId' => $user->getId()->getValue()]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $handler->handle($command);
+                $this->addFlash('success', $this->translator->trans('User task added.', [], 'task'));
+                return new JsonResponse(['error', '']);
+            } catch (\Exception $e) {
+                $this->logger->warning($e->getMessage(), ['exception' => $e]);
+                $this->addFlash('warning', $e->getMessage());
+                return new JsonResponse(['error', $e->getMessage()]);
+            }
+        };
+
+        return new JsonResponse([
+            'formTitle' => $this->translator->trans('Add task', [], 'task'),
+            'form' => $this->renderView('app/todos/modals/_task-add.html.twig', [
+                'form' => $form->createView(),
+            ]),
+            'formButtons' => $this->renderView('app/todos/modals/_task-add-buttons.html.twig'),
         ]);
     }
 
