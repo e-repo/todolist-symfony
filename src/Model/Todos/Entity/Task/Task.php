@@ -97,6 +97,10 @@ class Task
 
     public function delete(): void
     {
+        if ($this->isDeleted()) {
+            throw new \DomainException('Task is already delete.');
+        }
+
         $this->deletedAt = new \DateTimeImmutable();
     }
 
@@ -137,6 +141,11 @@ class Task
     public function isFulfilled(): bool
     {
         return $this->status === self::STATUS_FULFILLED;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->deletedAt instanceof \DateTimeImmutable;
     }
 
     public function changeName(string $name): void

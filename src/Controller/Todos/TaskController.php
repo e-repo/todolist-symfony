@@ -220,4 +220,28 @@ class TaskController extends AbstractController
 
         return new JsonResponse(['error' => $errorMessage]);
     }
+
+    /**
+     * @Route("/ajax-fulfilled/{id}", name=".fulfilled", methods={"POST"})
+     *
+     * @param Task $task
+     * @param UseCase\Fulfilled\Handler $handler
+     * @return Response
+     */
+    public function fulfilled(Task $task, UseCase\Fulfilled\Handler $handler): Response
+    {
+        $command = new UseCase\Fulfilled\Command($task->getId()->getValue());
+
+        try {
+            $handler->handle($command);
+            $this->addFlash('success', $this->translator->trans('Task deleted successfully.', [], 'task'));
+            $errorMessage = '';
+        } catch (\Exception $e) {
+            $this->logger->warning($e->getMessage(), ['exception' => $e]);
+            $this->addFlash('warning', $e->getMessage(), [], 'task');
+            $errorMessage = $e->getMessage();
+        }
+
+        return new JsonResponse(['error' => $errorMessage]);
+    }
 }

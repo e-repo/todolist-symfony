@@ -113,7 +113,7 @@ export default class EditModal {
     _editEvent() {
         this.$document.on('click', '.js-modal-edit', (e) => {
             const _this = $(e.currentTarget);
-            this.state.taskId = _this.data('task');
+            this.state.taskId = _this.parents('.card').data('task');
 
             this._beforeShowModal()
             this._showModal();

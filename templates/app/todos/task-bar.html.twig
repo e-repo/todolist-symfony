@@ -28,7 +28,7 @@
 
         {% for task in pagination %}
         <div class="col-3">
-            <div class="card">
+            <div class="card" data-task="{{ task.id }}">
                 <div class="card-header">
                     <h5 class="mb-0 font-weight-bold">{{ task.name }}</h5>
                 </div>
@@ -39,11 +39,11 @@
                     </div>
                 </div>
                 <div class="card-footer text-right">
-                    <button class="btn btn-outline-dark js-delete-task" data-task="{{ task.id }}"><i class="cil-trash"></i></button>
-                    <button class="btn btn-outline-info js-modal-edit" data-task="{{ task.id }}">
+                    <button class="btn btn-outline-dark js-delete-task"><i class="cil-trash"></i></button>
+                    <button class="btn btn-outline-info js-modal-edit">
                         <i class="cil-pencil"></i>
                     </button>
-                    <a href="#" class="btn btn-outline-success js-fulfilled-task" data-task="{{ task.id }}"><i class="cil-check"></i></a>
+                    <a href="#" class="btn btn-outline-success js-fulfilled-task"><i class="cil-check"></i></a>
                 </div>
             </div>
         </div>
