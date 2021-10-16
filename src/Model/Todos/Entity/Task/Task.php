@@ -184,7 +184,7 @@ class Task
      */
     public function published(): void
     {
-        if ($this->isFulfilled()) {
+        if ($this->isPublished()) {
             throw new \DomainException('Task is already published.');
         }
 

@@ -43,7 +43,11 @@
                     <button class="btn btn-outline-info js-modal-edit">
                         <i class="cil-pencil"></i>
                     </button>
-                    <a href="#" class="btn btn-outline-success js-fulfilled-task"><i class="cil-check"></i></a>
+                    {% if task.status == 'published' %}
+                        <a href="#" class="btn btn-outline-success js-fulfilled-task"><i class="cil-check"></i></a>
+                    {% else %}
+                        <a href="#" class="btn btn-outline-danger js-published-task"><i class="cil-reload"></i></a>
+                    {% endif %}
                 </div>
             </div>
         </div>
