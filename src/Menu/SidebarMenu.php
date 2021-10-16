@@ -51,13 +51,28 @@ class SidebarMenu
             ->setExtra('icon', 'c-sidebar-nav-icon cil-people');
 
         $menu
-            ->addChild('ToDo', ['route' => 'tasks.bar'])
-            ->setAttribute('class', 'c-sidebar-nav-item')
-            ->setLinkAttribute('class', 'c-sidebar-nav-link')
-            ->setExtra('routes', [
-                ['pattern' => '/^tasks\..+/']
-            ])
-            ->setExtra('icon', 'c-sidebar-nav-icon cil-list-rich');
+            ->addChild('ToDo', ['route' => 'home'])
+            ->setAttribute('class', 'c-sidebar-nav-item c-sidebar-nav-dropdown')
+            ->setLinkAttribute('class', 'c-sidebar-nav-link c-sidebar-nav-dropdown-toggle')
+            ->setExtra('icon', 'c-sidebar-nav-icon cil-list-rich')
+
+                ->setChildrenAttribute('class', 'c-sidebar-nav-dropdown-items')
+
+                ->addChild('New', ['route' => 'tasks.bar.published'])
+                ->setAttribute('class', 'c-sidebar-nav-item')
+                ->setLinkAttribute('class', 'c-sidebar-nav-link')
+                ->setExtra('routes', [
+                    ['pattern' => '/^tasks\.bar\.published.+/']
+                ])
+
+                ->getParent()
+
+                ->addChild('Fulfilled', ['route' => 'tasks.bar.fulfilled'])
+                ->setAttribute('class', 'c-sidebar-nav-item')
+                ->setLinkAttribute('class', 'c-sidebar-nav-link')
+                ->setExtra('routes', [
+                    ['pattern' => '/^tasks\.bar\.fulfilled.+/']
+                ]);
 
         return $menu;
     }

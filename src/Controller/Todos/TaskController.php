@@ -72,15 +72,38 @@ class TaskController extends AbstractController
     }
 
     /**
-     * @Route("/bar", name=".bar")
+     * @Route("/bar/published", name=".bar.published")
      * @param Request $request
      * @param TaskFetcher $fetcher
      * @return Response
      */
-    public function bar(Request $request, TaskFetcher $fetcher): Response
+    public function barPublished(Request $request, TaskFetcher $fetcher): Response
     {
         $currentUser = $this->getUser();
-        $filter = new FilterBar\Filter($currentUser->getId());
+        $filter = new FilterBar\Filter($currentUser->getId(), Task::STATUS_PUBLISHED);
+
+        $pagination = $fetcher->allForBar(
+            $filter,
+            $request->get('page', 1),
+            $request->get('size', self::PER_PAGE_FOR_BAR)
+        );
+
+        return $this->render('app/todos/task-bar.html.twig', [
+            'user' => $currentUser,
+            'pagination' => $pagination,
+        ]);
+    }
+
+    /**
+     * @Route("/bar/fulfilled", name=".bar.fulfilled")
+     * @param Request $request
+     * @param TaskFetcher $fetcher
+     * @return Response
+     */
+    public function barFulfillde(Request $request, TaskFetcher $fetcher): Response
+    {
+        $currentUser = $this->getUser();
+        $filter = new FilterBar\Filter($currentUser->getId(), Task::STATUS_FULFILLED);
 
         $pagination = $fetcher->allForBar(
             $filter,
@@ -235,6 +258,30 @@ class TaskController extends AbstractController
         try {
             $handler->handle($command);
             $this->addFlash('success', $this->translator->trans('Task deleted successfully.', [], 'task'));
+            $errorMessage = '';
+        } catch (\Exception $e) {
+            $this->logger->warning($e->getMessage(), ['exception' => $e]);
+            $this->addFlash('warning', $e->getMessage(), [], 'task');
+            $errorMessage = $e->getMessage();
+        }
+
+        return new JsonResponse(['error' => $errorMessage]);
+    }
+
+    /**
+     * @Route("/ajax-published/{id}", name=".published", methods={"POST"})
+     *
+     * @param Task $task
+     * @param UseCase\Published\Handler $handler
+     * @return Response
+     */
+    public function published(Task $task, UseCase\Published\Handler $handler): Response
+    {
+        $command = new UseCase\Published\Command($task->getId()->getValue());
+
+        try {
+            $handler->handle($command);
+            $this->addFlash('success', $this->translator->trans('Task published successfully.', [], 'task'));
             $errorMessage = '';
         } catch (\Exception $e) {
             $this->logger->warning($e->getMessage(), ['exception' => $e]);
