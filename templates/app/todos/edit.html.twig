@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% trans %}Edit user{% endtrans %}{% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{{ path('users') }}">{% trans %}Users{% endtrans %}</a></li>
+    <li class="breadcrumb-item active">{% trans from 'task' %}Edit task{% endtrans %}</li>
+{% endblock %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="col-6">
+            <div class="card">
+                <div class="card-body">
+
+                    {{ form_start(form) }}
+                    <div class="form-group">
+                        {{ form_widget(form.taskId) }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.name, 'Name'|trans()) }}
+                        {{ form_widget(form.name) }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.description, 'Description'|trans()) }}
+                        {{ form_widget(form.description) }}
+                    </div>
+                    <button type="submit" class="btn btn-success">{% trans %}Save{% endtrans %}</button>
+                    {{ form_end(form) }}
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

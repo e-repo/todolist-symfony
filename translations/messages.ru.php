@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 return [
     'Password Reset' => 'Сброс пароля',
+    'Action' => 'Действия',
     'Description' => 'Описание',
     'Changing user name' => 'Изменение имени пользователя',
     'Send' => 'Отправить',

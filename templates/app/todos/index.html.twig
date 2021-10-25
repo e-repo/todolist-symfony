@@ -43,6 +43,7 @@
                 <th>{{ knp_pagination_sortable(pagination, 'Description', 'description') }}</th>
                 <th>{{ knp_pagination_sortable(pagination, 'Status', 'status') }}</th>
                 <th>{{ knp_pagination_sortable(pagination, 'Date', 'date') }}</th>
+                <th style="width: 80px">{% trans %}Action{% endtrans %}</th>
             </tr>
             </thead>
             <tbody>
@@ -52,6 +53,28 @@
                     <td>{{ task.description }}</td>
                     <td>{{ task.status }}</td>
                     <td>{{ task.date|date('d.m.Y H:i:s') }}</td>
+                    <th>
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ path('tasks.edit', {id: task.id}) }}"><i class="fas fa-pencil-alt"></i></a>
+                            <form
+                                action="{{ path('tasks.delete', {id: task.id}) }}"
+                                onsubmit="return confirm('Вы уверены что хотите удалить этот элемент?');"
+                                method="post"
+                            >
+                                <button
+                                        type="submit"
+                                        class="btn btn-link"
+                                        style="outline: none; padding: 0; background-color: transparent;">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                            {% if task.status == 'published' %}
+                                <a href="{{ path('tasks.fulfilled', {id: task.id}) }}"><i class="fas fa-check"></i></a>
+                            {% else %}
+                                <a href="{{ path('tasks.published', {id: task.id}) }}"><i class="fas fa-redo"></i></a>
+                            {% endif %}
+                        </div>
+                    </th>
                 </tr>
             {% endfor %}
             </tbody>

@@ -100,7 +100,7 @@ class TaskController extends AbstractController
      * @param TaskFetcher $fetcher
      * @return Response
      */
-    public function barFulfillde(Request $request, TaskFetcher $fetcher): Response
+    public function barFulfilled(Request $request, TaskFetcher $fetcher): Response
     {
         $currentUser = $this->getUser();
         $filter = new FilterBar\Filter($currentUser->getId(), Task::STATUS_FULFILLED);
@@ -114,6 +114,38 @@ class TaskController extends AbstractController
         return $this->render('app/todos/task-bar.html.twig', [
             'user' => $currentUser,
             'pagination' => $pagination,
+        ]);
+    }
+
+    /**
+     * @Route("/edit/{id}", name=".edit")
+     * @param Task $task
+     * @param Request $request
+     * @param UseCase\Update\Handler $handler
+     * @return Response
+     */
+    public function edit(Task $task, Request $request, UseCase\Update\Handler $handler): Response
+    {
+        $command = new UseCase\Update\Command();
+        $command->createFromTask($task);
+
+        $form = $this->createForm(UseCase\Update\Form::class, $command, ['taskId' => $task->getId()->getValue()]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $handler->handle($command);
+                $this->addFlash('success', $this->translator->trans('Task edited successfully.', [], 'task'));
+                return $this->redirectToRoute('tasks.user', ['id' => $task->getUser()->getId()->getValue()]);
+            } catch (\Exception $e) {
+                $this->logger->warning($e->getMessage(), ['exception' => $e]);
+                $this->addFlash('warning', $e->getMessage());
+                return $this->redirectToRoute('tasks.user', ['id' => $task->getUser()->getId()->getValue()]);
+            }
+        };
+
+        return $this->render('app/todos/edit.html.twig', [
+            'form' => $form->createView()
         ]);
     }
 
@@ -221,13 +253,36 @@ class TaskController extends AbstractController
 
 
     /**
-     * @Route("/ajax-delete/{id}", name=".delete", methods={"POST"})
+     * @Route("/delete/{id}", name=".delete", methods={"POST"})
      *
      * @param Task $task
      * @param UseCase\Delete\Handler $handler
      * @return Response
      */
     public function delete(Task $task, UseCase\Delete\Handler $handler): Response
+    {
+        $command = new UseCase\Delete\Command($task->getId()->getValue());
+
+        try {
+            $handler->handle($command);
+            $this->addFlash('success', $this->translator->trans('Task deleted successfully.', [], 'task'));
+        } catch (\Exception $e) {
+            $this->logger->warning($e->getMessage(), ['exception' => $e]);
+            $this->addFlash('warning', $e->getMessage(), [], 'task');
+        }
+
+        return $this->redirectToRoute('tasks.user', ['id' => $task->getUser()->getId()->getValue()]);
+    }
+
+
+    /**
+     * @Route("/ajax-delete/{id}", name=".delete-by-modal", methods={"POST"})
+     *
+     * @param Task $task
+     * @param UseCase\Delete\Handler $handler
+     * @return Response
+     */
+    public function deleteByModal(Task $task, UseCase\Delete\Handler $handler): Response
     {
         $command = new UseCase\Delete\Command($task->getId()->getValue());
 
@@ -245,7 +300,7 @@ class TaskController extends AbstractController
     }
 
     /**
-     * @Route("/ajax-fulfilled/{id}", name=".fulfilled", methods={"POST"})
+     * @Route("/fulfilled/{id}", name=".fulfilled")
      *
      * @param Task $task
      * @param UseCase\Fulfilled\Handler $handler
@@ -257,7 +312,29 @@ class TaskController extends AbstractController
 
         try {
             $handler->handle($command);
-            $this->addFlash('success', $this->translator->trans('Task deleted successfully.', [], 'task'));
+            $this->addFlash('success', $this->translator->trans('Task fulfilled successfully.', [], 'task'));
+        } catch (\Exception $e) {
+            $this->logger->warning($e->getMessage(), ['exception' => $e]);
+            $this->addFlash('warning', $e->getMessage(), [], 'task');
+        }
+
+        return $this->redirectToRoute('tasks.user', ['id' => $task->getUser()->getId()->getValue()]);
+    }
+
+    /**
+     * @Route("/ajax-fulfilled/{id}", name=".fulfilled-by-modal", methods={"POST"})
+     *
+     * @param Task $task
+     * @param UseCase\Fulfilled\Handler $handler
+     * @return Response
+     */
+    public function fulfilledByModal(Task $task, UseCase\Fulfilled\Handler $handler): Response
+    {
+        $command = new UseCase\Fulfilled\Command($task->getId()->getValue());
+
+        try {
+            $handler->handle($command);
+            $this->addFlash('success', $this->translator->trans('Task fulfilled successfully.', [], 'task'));
             $errorMessage = '';
         } catch (\Exception $e) {
             $this->logger->warning($e->getMessage(), ['exception' => $e]);
@@ -269,13 +346,35 @@ class TaskController extends AbstractController
     }
 
     /**
-     * @Route("/ajax-published/{id}", name=".published", methods={"POST"})
+     * @Route("/published/{id}", name=".published")
      *
      * @param Task $task
      * @param UseCase\Published\Handler $handler
      * @return Response
      */
     public function published(Task $task, UseCase\Published\Handler $handler): Response
+    {
+        $command = new UseCase\Published\Command($task->getId()->getValue());
+
+        try {
+            $handler->handle($command);
+            $this->addFlash('success', $this->translator->trans('Task published successfully.', [], 'task'));
+        } catch (\Exception $e) {
+            $this->logger->warning($e->getMessage(), ['exception' => $e]);
+            $this->addFlash('warning', $e->getMessage(), [], 'task');
+        }
+
+        return $this->redirectToRoute('tasks.user', ['id' => $task->getUser()->getId()->getValue()]);
+    }
+
+    /**
+     * @Route("/ajax-published/{id}", name=".published-by-modal", methods={"POST"})
+     *
+     * @param Task $task
+     * @param UseCase\Published\Handler $handler
+     * @return Response
+     */
+    public function publishedByModal(Task $task, UseCase\Published\Handler $handler): Response
     {
         $command = new UseCase\Published\Command($task->getId()->getValue());
 

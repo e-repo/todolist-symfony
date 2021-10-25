@@ -39,14 +39,14 @@
                     </div>
                 </div>
                 <div class="card-footer text-right">
-                    <button class="btn btn-outline-dark js-delete-task"><i class="cil-trash"></i></button>
+                    <button class="btn btn-outline-dark js-delete-task"><i class="fas fa-trash-alt"></i></button>
                     <button class="btn btn-outline-info js-modal-edit">
-                        <i class="cil-pencil"></i>
+                        <i class="fas fa-pencil-alt"></i>
                     </button>
                     {% if task.status == 'published' %}
-                        <a href="#" class="btn btn-outline-success js-fulfilled-task"><i class="cil-check"></i></a>
+                        <a href="#" class="btn btn-outline-success js-fulfilled-task"><i class="fas fa-check"></i></a>
                     {% else %}
-                        <a href="#" class="btn btn-outline-danger js-published-task"><i class="cil-reload"></i></a>
+                        <a href="#" class="btn btn-outline-danger js-published-task"><i class="fas fa-redo"></i></a>
                     {% endif %}
                 </div>
             </div>
