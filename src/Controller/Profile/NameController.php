@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Profile;
 
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,8 +14,8 @@ use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
+ * @IsGranted("ROLE_USER")
  * @Route("/profile/name")
- *
  * Class NameController
  * @package App\Controller\Profile
  */

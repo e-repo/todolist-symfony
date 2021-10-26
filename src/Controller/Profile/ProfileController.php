@@ -9,10 +9,16 @@ use App\Model\User\Entity\User\NetworkRepository;
 use App\Model\User\Entity\User\User;
 use App\Model\User\Entity\User\UserRepository;
 use App\ReadModel\User\UserFetcher;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @IsGranted("ROLE_USER")
+ * Class ProfileController
+ * @package App\Controller\Profile
+ */
 class ProfileController extends AbstractController
 {
     /**

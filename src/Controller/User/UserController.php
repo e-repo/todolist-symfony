@@ -8,6 +8,7 @@ use App\ReadModel\Task\TaskFetcher;
 use App\ReadModel\User\Filter;
 use App\ReadModel\User\UserFetcher;
 use Psr\Log\LoggerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,6 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
+ * @IsGranted("ROLE_ADMIN")
  * @Route("/users", name="users")
  * Class UserController
  * @package App\Controller
@@ -191,6 +193,7 @@ class UserController extends AbstractController
 
         return $this->redirectToRoute('users.show', ['id' => $user->getId()]);
     }
+
     /**
      * @Route("/active/{id}", name=".active", methods={"POST"})
      * @param User $user

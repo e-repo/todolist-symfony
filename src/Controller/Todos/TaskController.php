@@ -11,6 +11,7 @@ use App\ReadModel\Task\Filter;
 use App\ReadModel\Task\FilterBar;
 use App\ReadModel\Task\TaskFetcher;
 use Psr\Log\LoggerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,6 +44,7 @@ class TaskController extends AbstractController
     }
 
     /**
+     * @IsGranted("ROLE_ADMIN")
      * @Route("/user/{id}", name=".user")
      * @param User $user
      * @param Request $request
@@ -118,6 +120,7 @@ class TaskController extends AbstractController
     }
 
     /**
+     * @IsGranted("ROLE_ADMIN")
      * @Route("/edit/{id}", name=".edit")
      * @param Task $task
      * @param Request $request
@@ -221,8 +224,8 @@ class TaskController extends AbstractController
     }
 
     /**
+     * @IsGranted("ROLE_ADMIN")
      * @Route("/user/{id}/create", name=".create")
-     *
      * @param User $user
      * @param Request $request
      * @param UseCase\Create\Handler $handler
@@ -251,10 +254,9 @@ class TaskController extends AbstractController
         ]);
     }
 
-
     /**
+     * @IsGranted("ROLE_ADMIN")
      * @Route("/delete/{id}", name=".delete", methods={"POST"})
-     *
      * @param Task $task
      * @param UseCase\Delete\Handler $handler
      * @return Response
@@ -273,7 +275,6 @@ class TaskController extends AbstractController
 
         return $this->redirectToRoute('tasks.user', ['id' => $task->getUser()->getId()->getValue()]);
     }
-
 
     /**
      * @Route("/ajax-delete/{id}", name=".delete-by-modal", methods={"POST"})
@@ -300,8 +301,8 @@ class TaskController extends AbstractController
     }
 
     /**
+     * @IsGranted("ROLE_ADMIN")
      * @Route("/fulfilled/{id}", name=".fulfilled")
-     *
      * @param Task $task
      * @param UseCase\Fulfilled\Handler $handler
      * @return Response
@@ -323,7 +324,6 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/ajax-fulfilled/{id}", name=".fulfilled-by-modal", methods={"POST"})
-     *
      * @param Task $task
      * @param UseCase\Fulfilled\Handler $handler
      * @return Response
@@ -346,8 +346,8 @@ class TaskController extends AbstractController
     }
 
     /**
+     * @IsGranted("ROLE_ADMIN")
      * @Route("/published/{id}", name=".published")
-     *
      * @param Task $task
      * @param UseCase\Published\Handler $handler
      * @return Response
@@ -369,7 +369,6 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/ajax-published/{id}", name=".published-by-modal", methods={"POST"})
-     *
      * @param Task $task
      * @param UseCase\Published\Handler $handler
      * @return Response

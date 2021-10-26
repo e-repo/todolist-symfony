@@ -6,25 +6,30 @@ namespace App\Menu;
 
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SidebarMenu
 {
     private FactoryInterface $factory;
     private TranslatorInterface $translator;
+    private AuthorizationCheckerInterface $authorizationChecker;
 
     /**
      * SidebarMenu constructor.
      * @param FactoryInterface $factory
      * @param TranslatorInterface $translator
+     * @param AuthorizationCheckerInterface $authorizationChecker
      */
     public function __construct(
         FactoryInterface $factory,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        AuthorizationCheckerInterface $authorizationChecker
     )
     {
         $this->factory = $factory;
         $this->translator = $translator;
+        $this->authorizationChecker = $authorizationChecker;
     }
 
     public function buildSidebarMenu(array $options): ItemInterface
@@ -38,17 +43,19 @@ class SidebarMenu
             ->setLinkAttribute('class', 'c-sidebar-nav-link')
             ->setExtra('icon', 'c-sidebar-nav-icon cil-home');
 
-        $menu
-            ->addChild(
-                $this->translator->trans('Users', [], 'profile'),
-                ['route' => 'users']
-            )
-            ->setAttribute('class', 'c-sidebar-nav-item')
-            ->setLinkAttribute('class', 'c-sidebar-nav-link')
-            ->setExtra('routes', [
-                ['pattern' => '/^users\..+/']
-            ])
-            ->setExtra('icon', 'c-sidebar-nav-icon cil-people');
+        if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
+            $menu
+                ->addChild(
+                    $this->translator->trans('Users', [], 'profile'),
+                    ['route' => 'users']
+                )
+                ->setAttribute('class', 'c-sidebar-nav-item')
+                ->setLinkAttribute('class', 'c-sidebar-nav-link')
+                ->setExtra('routes', [
+                    ['pattern' => '/^users\..+/']
+                ])
+                ->setExtra('icon', 'c-sidebar-nav-icon cil-people');
+        }
 
         $menu
             ->addChild('ToDo', ['route' => 'home'])
