@@ -64,7 +64,7 @@ export default class EditModal {
     _showEditForm() {
         $.post(`/tasks/bar/${this.state.taskId}/edit-by-modal`, (data) => {
             if (! data.form) {
-                window.location.reload();
+                this._reloadPage();
             }
 
             this.$modal
@@ -79,7 +79,7 @@ export default class EditModal {
     _showAdditionForm() {
         $.post(`/tasks/user/${this.state.userId}/add-by-modal`, (data) => {
             if (! data.form) {
-                window.location.reload();
+                this._reloadPage();
             }
 
             this.$modal
