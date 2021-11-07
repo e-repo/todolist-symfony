@@ -26,7 +26,6 @@ class Form extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('userId', Type\HiddenType::class, ['attr' => ['value' => $options['userId']]])
             ->add('name', Type\TextType::class, ['attr' => [
                 'placeholder' => $this->translator->trans('Task name', [], 'task')
             ]])
@@ -40,7 +39,6 @@ class Form extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Command::class,
-            'userId' => '',
         ]);
     }
 }

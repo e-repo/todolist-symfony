@@ -26,7 +26,6 @@ class Form extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('taskId', Type\HiddenType::class, ['attr' => ['value' => $options['taskId']]])
             ->add('name', Type\TextType::class, ['attr' => [
                 'placeholder' => $this->translator->trans('Task name', [], 'task')
             ]])
@@ -39,8 +38,7 @@ class Form extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Command::class,
-            'taskId' => '',
+            'data_class' => Command::class
         ]);
     }
 }
