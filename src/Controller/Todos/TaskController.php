@@ -10,6 +10,7 @@ use App\Model\User\Entity\User\User;
 use App\ReadModel\Task\Filter;
 use App\ReadModel\Task\FilterBar;
 use App\ReadModel\Task\TaskFetcher;
+use App\Security\Voter\Task\TaskAccess;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -161,10 +162,12 @@ class TaskController extends AbstractController
      */
     public function editByModal(Task $task, Request $request, UseCase\Update\Handler $handler): Response
     {
+        $this->denyAccessUnlessGranted(TaskAccess::EDIT, $task->getUser());
+
         $command = new UseCase\Update\Command();
         $command->createFromTask($task);
 
-        $form = $this->createForm(UseCase\Update\Form::class, $command, ['taskId' => $task->getId()->getValue()]);
+        $form = $this->createForm(UseCase\Update\Form::class, $command);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -197,9 +200,12 @@ class TaskController extends AbstractController
      */
     public function addByModal(User $user, Request $request, UseCase\Create\Handler $handler): Response
     {
-        $command = new UseCase\Create\Command();
+        $this->denyAccessUnlessGranted(TaskAccess::ADD, $user);
 
-        $form = $this->createForm(UseCase\Create\Form::class, $command, ['userId' => $user->getId()->getValue()]);
+        $command = new UseCase\Create\Command();
+        $command->userId = $user->getId()->getValue();
+
+        $form = $this->createForm(UseCase\Create\Form::class, $command);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -270,7 +276,7 @@ class TaskController extends AbstractController
             $this->addFlash('success', $this->translator->trans('Task deleted successfully.', [], 'task'));
         } catch (\Exception $e) {
             $this->logger->warning($e->getMessage(), ['exception' => $e]);
-            $this->addFlash('warning', $e->getMessage(), [], 'task');
+            $this->addFlash('warning', $e->getMessage());
         }
 
         return $this->redirectToRoute('tasks.user', ['id' => $task->getUser()->getId()->getValue()]);
@@ -285,6 +291,7 @@ class TaskController extends AbstractController
      */
     public function deleteByModal(Task $task, UseCase\Delete\Handler $handler): Response
     {
+        $this->denyAccessUnlessGranted(TaskAccess::DELETE, $task->getUser());
         $command = new UseCase\Delete\Command($task->getId()->getValue());
 
         try {
@@ -293,7 +300,7 @@ class TaskController extends AbstractController
             $errorMessage = '';
         } catch (\Exception $e) {
             $this->logger->warning($e->getMessage(), ['exception' => $e]);
-            $this->addFlash('warning', $e->getMessage(), [], 'task');
+            $this->addFlash('warning', $e->getMessage());
             $errorMessage = $e->getMessage();
         }
 
@@ -316,7 +323,8 @@ class TaskController extends AbstractController
             $this->addFlash('success', $this->translator->trans('Task fulfilled successfully.', [], 'task'));
         } catch (\Exception $e) {
             $this->logger->warning($e->getMessage(), ['exception' => $e]);
-            $this->addFlash('warning', $e->getMessage(), [], 'task');
+            $this->addFlash('warning', $e->getMessage());
+            $this->addFlash('warning', $e->getMessage());
         }
 
         return $this->redirectToRoute('tasks.user', ['id' => $task->getUser()->getId()->getValue()]);
@@ -330,6 +338,7 @@ class TaskController extends AbstractController
      */
     public function fulfilledByModal(Task $task, UseCase\Fulfilled\Handler $handler): Response
     {
+        $this->denyAccessUnlessGranted(TaskAccess::FULFILLED, $task->getUser());
         $command = new UseCase\Fulfilled\Command($task->getId()->getValue());
 
         try {
@@ -338,7 +347,7 @@ class TaskController extends AbstractController
             $errorMessage = '';
         } catch (\Exception $e) {
             $this->logger->warning($e->getMessage(), ['exception' => $e]);
-            $this->addFlash('warning', $e->getMessage(), [], 'task');
+            $this->addFlash('warning', $e->getMessage());
             $errorMessage = $e->getMessage();
         }
 
@@ -361,7 +370,7 @@ class TaskController extends AbstractController
             $this->addFlash('success', $this->translator->trans('Task published successfully.', [], 'task'));
         } catch (\Exception $e) {
             $this->logger->warning($e->getMessage(), ['exception' => $e]);
-            $this->addFlash('warning', $e->getMessage(), [], 'task');
+            $this->addFlash('warning', $e->getMessage());
         }
 
         return $this->redirectToRoute('tasks.user', ['id' => $task->getUser()->getId()->getValue()]);
@@ -375,6 +384,7 @@ class TaskController extends AbstractController
      */
     public function publishedByModal(Task $task, UseCase\Published\Handler $handler): Response
     {
+        $this->denyAccessUnlessGranted(TaskAccess::REVOKE, $task->getUser());
         $command = new UseCase\Published\Command($task->getId()->getValue());
 
         try {
@@ -383,7 +393,7 @@ class TaskController extends AbstractController
             $errorMessage = '';
         } catch (\Exception $e) {
             $this->logger->warning($e->getMessage(), ['exception' => $e]);
-            $this->addFlash('warning', $e->getMessage(), [], 'task');
+            $this->addFlash('warning', $e->getMessage());
             $errorMessage = $e->getMessage();
         }
 
