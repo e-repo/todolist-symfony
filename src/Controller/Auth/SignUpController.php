@@ -68,7 +68,7 @@ class SignUpController extends AbstractController
     }
 
     /**
-     * @Route("/signup/{token}", name="auth.signup.confirm")
+     * @Route("/signup/{token}", name="auth.signup_confirm")
      * @param string $token
      * @param SignUp\Confirm\ByToken\Handler $handler
      * @return Response

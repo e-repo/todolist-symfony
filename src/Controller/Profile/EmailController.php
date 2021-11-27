@@ -64,7 +64,7 @@ class EmailController extends AbstractController
     }
 
     /**
-     * @Route("/{token}", name="profile.email.confirm")
+     * @Route("/{token}", name="profile.email_confirm")
      * @param $token
      * @param Email\Confirm\Handler $handler
      * @return Response

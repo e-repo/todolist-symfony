@@ -39,7 +39,7 @@ class NameController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="profile.change.name")
+     * @Route("/{id}", name="profile.change_name")
      * @param string $id
      * @param Request $request
      * @param Name\Handler $handler

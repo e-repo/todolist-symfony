@@ -154,7 +154,7 @@ class TaskController extends AbstractController
     }
 
     /**
-     * @Route("/bar/{id}/edit-by-modal", name=".bar.edit-by-modal", methods={"POST"})
+     * @Route("/bar/{id}/edit-by-modal", name=".bar.edit_by_modal", methods={"POST"})
      * @param Task $task
      * @param Request $request
      * @param UseCase\Update\Handler $handler
@@ -192,7 +192,7 @@ class TaskController extends AbstractController
     }
 
     /**
-     * @Route("/user/{id}/add-by-modal", name=".user.add-by-modal", methods={"POST"})
+     * @Route("/user/{id}/add-by-modal", name=".user.add_by_modal", methods={"POST"})
      * @param User $user
      * @param Request $request
      * @param UseCase\Create\Handler $handler
@@ -283,7 +283,7 @@ class TaskController extends AbstractController
     }
 
     /**
-     * @Route("/ajax-delete/{id}", name=".delete-by-modal", methods={"POST"})
+     * @Route("/ajax-delete/{id}", name=".delete_by_modal", methods={"POST"})
      *
      * @param Task $task
      * @param UseCase\Delete\Handler $handler
@@ -331,7 +331,7 @@ class TaskController extends AbstractController
     }
 
     /**
-     * @Route("/ajax-fulfilled/{id}", name=".fulfilled-by-modal", methods={"POST"})
+     * @Route("/ajax-fulfilled/{id}", name=".fulfilled_by_modal", methods={"POST"})
      * @param Task $task
      * @param UseCase\Fulfilled\Handler $handler
      * @return Response
@@ -377,7 +377,7 @@ class TaskController extends AbstractController
     }
 
     /**
-     * @Route("/ajax-published/{id}", name=".published-by-modal", methods={"POST"})
+     * @Route("/ajax-published/{id}", name=".published_by_modal", methods={"POST"})
      * @param Task $task
      * @param UseCase\Published\Handler $handler
      * @return Response
