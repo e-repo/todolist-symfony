@@ -50,20 +50,18 @@ export default class ProfileCropper {
 
                 formData.append('croppedImage', blob, this._profileImage.dataset.imageName);
 
-                console.log($);
-
-                // $.ajax('/path/to/upload', {
-                //     method: 'POST',
-                //     data: formData,
-                //     processData: false,
-                //     contentType: false,
-                //     success() {
-                //         console.log('Upload success');
-                //     },
-                //     error() {
-                //         console.log('Upload error');
-                //     },
-                // });
+                $.ajax('/profile/image-upload', {
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success() {
+                        console.log('Upload success');
+                    },
+                    error() {
+                        console.log('Upload error');
+                    },
+                });
             });
         });
     }

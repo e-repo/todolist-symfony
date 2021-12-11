@@ -6,11 +6,11 @@ namespace App\Controller\Profile;
 
 use App\Model\User\Entity\User\Id;
 use App\Model\User\Entity\User\NetworkRepository;
-use App\Model\User\Entity\User\User;
 use App\Model\User\Entity\User\UserRepository;
-use App\ReadModel\User\UserFetcher;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -49,5 +49,22 @@ class ProfileController extends AbstractController
     {
         $user = $this->users->get(new Id($this->getUser()->getId()));
         return $this->render('app/profile/show.html.twig', compact('user'));
+    }
+
+    /**
+     * @Route("/profile/image-upload", name="profile.image_upload")
+     * @param Request $request
+     * @return Response
+     */
+    public function uploadProfileImage(Request $request): Response
+    {
+        /** @var UploadedFile $uploadedFile */
+        $uploadedFile = $request->files->get('croppedImage');
+        $uploadedFile->move(
+            $this->getParameter('kernel.project_dir') . '/public/uploads',
+            $uploadedFile->getClientOriginalName()
+        );
+
+        dd('cool');
     }
 }
