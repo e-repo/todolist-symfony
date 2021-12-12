@@ -48,7 +48,8 @@ export default class ProfileCropper {
             this._cropper.getCroppedCanvas().toBlob((blob) => {
                 const formData = new FormData();
 
-                formData.append('croppedImage', blob, this._profileImage.dataset.imageName);
+                formData.append('cropped-image', blob, this._profileImage.getAttribute('data-image-name'));
+                formData.append('user-id', this._profileImage.getAttribute('data-user-id'))
 
                 $.ajax('/profile/image-upload', {
                     method: 'POST',

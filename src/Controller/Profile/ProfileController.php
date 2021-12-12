@@ -7,12 +7,18 @@ namespace App\Controller\Profile;
 use App\Model\User\Entity\User\Id;
 use App\Model\User\Entity\User\NetworkRepository;
 use App\Model\User\Entity\User\UserRepository;
+use App\Service\Upload\UploadHelper;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mime\MimeTypesInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @IsGranted("ROLE_USER")
@@ -21,24 +27,26 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class ProfileController extends AbstractController
 {
-    /**
-     * @var UserRepository
-     */
     private UserRepository $users;
-    /**
-     * @var NetworkRepository
-     */
-    private NetworkRepository $networks;
+    private ValidatorInterface $validator;
+    private MimeTypesInterface $mimeTypes;
+    private UploadHelper $uploadHelper;
 
     /**
      * ProfileController constructor.
      * @param UserRepository $users
-     * @param NetworkRepository $networks
+     * @param ValidatorInterface $validator
+     * @param MimeTypesInterface $mimeTypes
      */
-    public function __construct(UserRepository $users, NetworkRepository $networks)
+    public function __construct(
+        UserRepository $users,
+        ValidatorInterface $validator,
+        MimeTypesInterface $mimeTypes
+    )
     {
         $this->users = $users;
-        $this->networks = $networks;
+        $this->validator = $validator;
+        $this->mimeTypes = $mimeTypes;
     }
 
     /**
@@ -54,17 +62,39 @@ class ProfileController extends AbstractController
     /**
      * @Route("/profile/image-upload", name="profile.image_upload")
      * @param Request $request
+     * @param UploadHelper $uploadHelper
      * @return Response
+     * @throws \League\Flysystem\FileExistsException
      */
-    public function uploadProfileImage(Request $request): Response
+    public function uploadProfileImage(Request $request, UploadHelper $uploadHelper, UserRepository $userRepository): Response
     {
         /** @var UploadedFile $uploadedFile */
-        $uploadedFile = $request->files->get('croppedImage');
-        $uploadedFile->move(
-            $this->getParameter('kernel.project_dir') . '/public/uploads',
-            $uploadedFile->getClientOriginalName()
-        );
+        $uploadedFile = $request->files->get('cropped-image');
+        $userId = $request->get('user-id');
 
+        $user = $userRepository->get(new Id($userId));
+
+        $violations = $this->validator->validate($uploadedFile, [
+           new NotBlank(),
+           new File([
+               'maxSize' => '5M',
+               'mimeTypes' => array_merge($this->mimeTypes->getMimeTypes('jpeg'), $this->mimeTypes->getMimeTypes('png'))
+           ])
+        ]);
+
+        if ($violations->count() > 0) {
+            /** @var ConstraintViolation $violation */
+            $violation = $violations[0];
+
+            $this->addFlash('error', $violation->getMessage());
+            return $this->redirectToRoute('profile');
+        }
+
+        $filename = $uploadHelper->uploadFile(
+            $uploadedFile,
+            (new \ReflectionClass($user))->getShortName(),
+            $user->getId()->getValue()
+        );
         dd('cool');
     }
 }
