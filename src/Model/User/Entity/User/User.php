@@ -51,6 +51,12 @@ class User
     private $networks = null;
 
     /**
+     * @var Image[] | ArrayCollection | null
+     * @ORM\OneToMany(targetEntity="Image", mappedBy="user", orphanRemoval=true, cascade={"persist"})
+     */
+    private $images = null;
+
+    /**
      * @ORM\Column(type="user_user_email", nullable=true)
      */
     private ?Email $email = null;
@@ -428,11 +434,10 @@ class User
         $this->name = $name;
     }
     /**
-     * Событие жизенного цикла доктрины
+     * Событие жизненного цикла доктрины
      * Срабатывает каждый раз после мапинга сущности из базы
      *
-     * Метода сбрасывает значение resetToken и networks в null
-     * при мапинге.
+     * Метод сбрасывает значение resetToken при мапинге.
      * Поведение по умолчанию у доктрины на примере ResetToken:
      * ResetToken::token = null
      * ResetToken::expires = null

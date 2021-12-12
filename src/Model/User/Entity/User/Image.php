@@ -1,0 +1,152 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Model\User\Entity\User;
+
+use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+
+/**
+ * Class Image
+ * @package App\Model\User\Entity\User
+ * @ORM\Entity()
+ * @ORM\Table(
+ *     name="user_user_images",
+ *     uniqueConstraints={@ORM\UniqueConstraint(columns={"filename"})}
+ * )
+ */
+class Image
+{
+    /**
+     * @var string
+     * @ORM\Column(type="guid")
+     * @ORM\Id()
+     */
+    private string $id;
+    /**
+     * @var User
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="images")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
+     */
+    private User $user;
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=150, nullable=false)
+     */
+    private string $filename;
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=150, nullable=false)
+     */
+    private string $originalFilename;
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=150, nullable=true)
+     */
+    private string $mimeType;
+    /**
+     * @var \DateTimeImmutable
+     * @ORM\Column(type="datetime_immutable", length=150, nullable=false)
+     */
+    private \DateTimeImmutable $createdAt;
+
+    public function __construct(string $filename, UploadedFile $uploadedFile, User $user)
+    {
+        $this->id = Uuid::uuid4()->toString();
+        $this->filename = $filename;
+        $this->user = $user;
+        $this->originalFilename = $uploadedFile->getClientOriginalName();
+        $this->mimeType = $uploadedFile->getMimeType();
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return User
+     */
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param User $user
+     */
+    public function setUser(User $user): void
+    {
+        $this->user = $user;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFilename(): string
+    {
+        return $this->filename;
+    }
+
+    /**
+     * @param string $filename
+     */
+    public function setFilename(string $filename): void
+    {
+        $this->filename = $filename;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOriginalFilename(): string
+    {
+        return $this->originalFilename;
+    }
+
+    /**
+     * @param string $originalFilename
+     */
+    public function setOriginalFilename(string $originalFilename): void
+    {
+        $this->originalFilename = $originalFilename;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMimeType(): string
+    {
+        return $this->mimeType;
+    }
+
+    /**
+     * @param string $mimeType
+     */
+    public function setMimeType(string $mimeType): void
+    {
+        $this->mimeType = $mimeType;
+    }
+
+    /**
+     * @return \DateTimeImmutable
+     */
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param \DateTimeImmutable $createdAt
+     */
+    public function setCreatedAt(\DateTimeImmutable $createdAt): void
+    {
+        $this->createdAt = $createdAt;
+    }
+}
