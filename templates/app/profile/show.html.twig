@@ -17,7 +17,11 @@
         <div class="col">
 
             <div style="max-width: 600px; ">
-                <img id="profile-image" src="{{ asset('img/work_image2.jpg') }}" data-user-id="{{ user.id }}" alt="Работа" data-image-name="Работа.jpg">
+                <img id="profile-image" src="{{
+                activeImage
+                    ? uploaded_asset(activeImage.getFilepath)
+                    : asset('img/user_default_img.png')
+                }}" data-user-id="{{ user.id }}" alt="Работа" data-image-name="Работа.jpg">
             </div>
 
         </div>

@@ -56,11 +56,11 @@ export default class ProfileCropper {
                     data: formData,
                     processData: false,
                     contentType: false,
-                    success() {
-                        console.log('Upload success');
+                    success(data) {
+                        document.location.reload();
                     },
-                    error() {
-                        console.log('Upload error');
+                    error(data) {
+                        window.alert(data.responseText);
                     },
                 });
             });

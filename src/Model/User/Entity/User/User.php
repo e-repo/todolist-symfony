@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Model\User\Entity\User;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -472,5 +473,22 @@ class User
         }
 
         $this->networks->add(new Network($this, $network, $identity));
+    }
+
+    public function attachImage(Image $image): void
+    {
+        if (! $this->images instanceof Collection) {
+            $this->images = new ArrayCollection();
+        }
+
+        foreach ($this->images as $existing) {
+            if ($existing->isImageAttached($image->getFilename())) {
+                throw new \DomainException('Image is already attached.');
+            }
+
+            $existing->setInactive();
+        }
+
+        $this->images->add($image);
     }
 }

@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Controller\Profile;
 
 use App\Model\User\Entity\User\Id;
-use App\Model\User\Entity\User\NetworkRepository;
+use App\Model\User\Entity\User\ImageRepository;
 use App\Model\User\Entity\User\UserRepository;
 use App\Service\Upload\UploadHelper;
+use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -16,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\MimeTypesInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\File;
+use App\Model\User\UseCase\Image;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -31,22 +33,30 @@ class ProfileController extends AbstractController
     private ValidatorInterface $validator;
     private MimeTypesInterface $mimeTypes;
     private UploadHelper $uploadHelper;
+    private LoggerInterface $logger;
+    private ImageRepository $images;
 
     /**
      * ProfileController constructor.
      * @param UserRepository $users
+     * @param ImageRepository $images
      * @param ValidatorInterface $validator
      * @param MimeTypesInterface $mimeTypes
+     * @param LoggerInterface $logger
      */
     public function __construct(
         UserRepository $users,
+        ImageRepository $images,
         ValidatorInterface $validator,
-        MimeTypesInterface $mimeTypes
+        MimeTypesInterface $mimeTypes,
+        LoggerInterface $logger
     )
     {
         $this->users = $users;
         $this->validator = $validator;
         $this->mimeTypes = $mimeTypes;
+        $this->logger = $logger;
+        $this->images = $images;
     }
 
     /**
@@ -56,23 +66,20 @@ class ProfileController extends AbstractController
     public function index(): Response
     {
         $user = $this->users->get(new Id($this->getUser()->getId()));
-        return $this->render('app/profile/show.html.twig', compact('user'));
+        $activeImage = $this->images->findActiveImageByUserId($user->getId());
+        return $this->render('app/profile/show.html.twig', compact('user', 'activeImage'));
     }
 
     /**
      * @Route("/profile/image-upload", name="profile.image_upload")
      * @param Request $request
-     * @param UploadHelper $uploadHelper
+     * @param Image\Attach\Handler $handler
      * @return Response
-     * @throws \League\Flysystem\FileExistsException
      */
-    public function uploadProfileImage(Request $request, UploadHelper $uploadHelper, UserRepository $userRepository): Response
+    public function uploadProfileImage(Request $request, Image\Attach\Handler $handler): Response
     {
         /** @var UploadedFile $uploadedFile */
         $uploadedFile = $request->files->get('cropped-image');
-        $userId = $request->get('user-id');
-
-        $user = $userRepository->get(new Id($userId));
 
         $violations = $this->validator->validate($uploadedFile, [
            new NotBlank(),
@@ -90,11 +97,16 @@ class ProfileController extends AbstractController
             return $this->redirectToRoute('profile');
         }
 
-        $filename = $uploadHelper->uploadFile(
-            $uploadedFile,
-            (new \ReflectionClass($user))->getShortName(),
-            $user->getId()->getValue()
-        );
-        dd('cool');
+        $command = new Image\Attach\Command($uploadedFile, $request->get('user-id'));
+
+        try {
+            $handler->handle($command);
+            $this->addFlash('success', 'Image is successful attached.');
+        } catch (\Exception $e) {
+            $this->logger->warning($e->getMessage(), ['exception' => $e]);
+            $this->addFlash('error', 'Error attached image.');
+        }
+
+        return $this->redirectToRoute('profile');
     }
 }

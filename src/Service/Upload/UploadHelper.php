@@ -7,6 +7,7 @@ namespace App\Service\Upload;
 use Gedmo\Sluggable\Util\Urlizer;
 use League\Flysystem\FilesystemInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Asset\Context\RequestStackContext;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -14,30 +15,40 @@ class UploadHelper
 {
     private FilesystemInterface $filesystem;
     private LoggerInterface $logger;
+    private RequestStackContext $requestStackContext;
+    private string $uploadedAssetsBaseUrl;
 
     /**
      * UploadHelper constructor.
-     * @param FilesystemInterface $filesystem
+     * @param RequestStackContext $requestStackContext
+     * @param FilesystemInterface $uploadsFilesystem
      * @param LoggerInterface $logger
+     * @param string $uploadedAssetsBaseUrl
      */
-    public function __construct(FilesystemInterface $uploadsFilesystem, LoggerInterface $logger)
+    public function __construct(
+        string $uploadedAssetsBaseUrl,
+        RequestStackContext $requestStackContext,
+        FilesystemInterface $uploadsFilesystem,
+        LoggerInterface $logger
+    )
     {
         $this->filesystem = $uploadsFilesystem;
         $this->logger = $logger;
+        $this->requestStackContext = $requestStackContext;
+        $this->uploadedAssetsBaseUrl = $uploadedAssetsBaseUrl;
     }
 
     /**
      * @param File $file
      * @param string|null $entityName
      * @param string|null $entityId
+     * @param null $newName
      * @return string
      * @throws \League\Flysystem\FileExistsException
      */
-    public function uploadFile(File $file, string $entityName = '', ?string $entityId = ''): string
+    public function uploadFile(File $file, string $entityName = '', ?string $entityId = '', $newName = null): string
     {
-        $originalFileName = $this->getOriginalFileName($file);
-        $newFilename = Urlizer::transliterate($originalFileName) . \uniqid() . '.' . $file->guessExtension();
-
+        $newFilename = $newName ?? $this->getNewFileName($file);
         $entityPath = $this->defineEntityPath($entityName, $entityId);
 
         $stream = \fopen($file->getPathname(), 'r');
@@ -55,6 +66,24 @@ class UploadHelper
         }
 
         return $newFilename;
+    }
+
+    public function getNewFileName(File $file): string
+    {
+        $originalFileName = $this->getOriginalFileName($file);
+        return Urlizer::transliterate($originalFileName) . \uniqid() . '.' . $file->guessExtension();
+    }
+
+    public function getPublicPath(string $path): string
+    {
+        /**
+         * requestStackContext - для случаев, если н-р сайт был развернут в подкаталоге домена
+         * (служба используется для определения подкаталога)
+         */
+        return \sprintf('%s/%s',
+            $this->requestStackContext->getBasePath() . $this->uploadedAssetsBaseUrl,
+            $path
+        );
     }
 
     private function getOriginalFileName(File $file): string
@@ -78,5 +107,4 @@ class UploadHelper
 
         return '';
     }
-
 }
