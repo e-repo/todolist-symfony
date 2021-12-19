@@ -43,6 +43,16 @@ class Image
     private string $originalFilename;
     /**
      * @var string
+     * @ORM\Column(type="string", length=255, nullable=false)
+     */
+    private string $filepath;
+    /**
+     * @var boolean
+     * @ORM\Column(type="boolean")
+     */
+    private bool $isActive;
+    /**
+     * @var string
      * @ORM\Column(type="string", length=150, nullable=true)
      */
     private string $mimeType;
@@ -60,6 +70,8 @@ class Image
         $this->originalFilename = $uploadedFile->getClientOriginalName();
         $this->mimeType = $uploadedFile->getMimeType();
         $this->createdAt = new \DateTimeImmutable();
+        $this->filepath = $this->getFileDirectory();
+        $this->setActive();
     }
 
     /**
@@ -148,5 +160,68 @@ class Image
     public function setCreatedAt(\DateTimeImmutable $createdAt): void
     {
         $this->createdAt = $createdAt;
+    }
+    /**
+     * @param string $filename
+     * @return bool
+     */
+    public function isImageAttached(string $filename): bool
+    {
+        return $this->filename === $filename;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFileDirectory(): string
+    {
+        if (isset($this->filepath)) {
+            return $this->filepath;
+        }
+
+        if ($this->user) {
+            return (new \ReflectionClass($this->user))->getShortName() . DIRECTORY_SEPARATOR . $this->user->getId()->getValue();
+        }
+
+        return '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getFilePath(): string
+    {
+        if ($fileDirectory = $this->getFileDirectory()) {
+            return $fileDirectory . DIRECTORY_SEPARATOR . $this->filename;
+        }
+
+        return '';
+    }
+
+    /**
+     * @param string $filepath
+     */
+    public function setFilepath(string $filepath): void
+    {
+        $this->filepath = $filepath;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+
+    public function setActive(): void
+    {
+        $this->isActive = true;
+    }
+
+    public function setInactive(): void
+    {
+        $this->isActive = false;
     }
 }
