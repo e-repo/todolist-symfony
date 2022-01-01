@@ -1,7 +1,8 @@
 UID=1000
 DOCKER_ARGS=--log-level=ERROR
-PHP_SERVICE_NAME=todo-nginx
+WEB_SERVICE_NAME=todo-nginx
 CLI_SERVICE_NAME=todo-php-cli
+FPM_SERVICE_NAME=todo-php-fpm
 
 up: docker-up
 down: docker-down
@@ -10,8 +11,13 @@ test: todo-test
 ps: docker-ps
 restart: down up
 cli-shell: todo-cli-shell
+fpm-shell: todo-fpm-shell
 node-shell: todo-node-shell
 watch-logs: node-watch-logs
+
+shell:
+	@docker-compose exec $(WEB_SERVICE_NAME) /bin/sh
+	@$(MAKE) -s chown
 
 docker-up:
 	docker-compose up -d
@@ -30,10 +36,6 @@ todo-clear:
 
 docker-pull:
 	docker-compose pull
-
-shell:
-	@docker-compose exec $(PHP_SERVICE_NAME) /bin/sh
-	@$(MAKE) -s chown
 
 docker-build:
 	docker-compose build
@@ -76,7 +78,7 @@ todo-ready:
 	docker run --rm -v ${PWD}:/app --workdir=/app alpine touch .ready
 
 chown:
-	@docker-compose $(DOCKER_ARGS) exec $(PHP_SERVICE_NAME) chown -R $(UID):$(UID) ./
+	@docker-compose $(DOCKER_ARGS) exec $(WEB_SERVICE_NAME) chown -R $(UID):$(UID) ./
 
-cli:
-	@docker-compose run --rm $(CLI_SERVICE_NAME) /bin/bash
+todo-fpm-shell:
+	@docker-compose run --rm $(FPM_SERVICE_NAME) /bin/bash
