@@ -89,24 +89,28 @@ class ProfileController extends AbstractController
            ])
         ]);
 
+        $responseData['error'] = false;
+
         if ($violations->count() > 0) {
             /** @var ConstraintViolation $violation */
             $violation = $violations[0];
+            $responseData['error'] = true;
+            $responseData['message'] = $violation->getMessage();
 
-            $this->addFlash('error', $violation->getMessage());
-            return $this->redirectToRoute('profile');
+            return $this->json($responseData, 422);
         }
 
         $command = new Image\Attach\Command($uploadedFile, $request->get('user-id'));
 
         try {
             $handler->handle($command);
-            $this->addFlash('success', 'Image is successful attached.');
         } catch (\Exception $e) {
-            $this->logger->warning($e->getMessage(), ['exception' => $e]);
-            $this->addFlash('error', 'Error attached image.');
+            $responseData['error'] = true;
+            $responseData['message'] = $e->getMessage();
+
+            return $this->json($responseData, 422);
         }
 
-        return $this->redirectToRoute('profile');
+        return $this->json($responseData);
     }
 }

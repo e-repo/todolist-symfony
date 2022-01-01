@@ -453,9 +453,9 @@ class User
         }
     }
     /**
-     * @return Network[]|ArrayCollection
+     * @return array
      */
-    public function getNetworks()
+    public function getNetworks(): array
     {
         return $this->networks->toArray();
     }
@@ -473,6 +473,14 @@ class User
         }
 
         $this->networks->add(new Network($this, $network, $identity));
+    }
+
+    /**
+     * @return Image[]|ArrayCollection|null
+     */
+    public function getImages()
+    {
+        return $this->images;
     }
 
     public function attachImage(Image $image): void

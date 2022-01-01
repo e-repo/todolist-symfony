@@ -60,7 +60,10 @@ export default class ProfileCropper {
                         document.location.reload();
                     },
                     error(data) {
-                        window.alert(data.responseText);
+                        const response = data.responseJSON;
+                        if (response.error === true) {
+                            bootbox.alert(response.message);
+                        }
                     },
                 });
             });

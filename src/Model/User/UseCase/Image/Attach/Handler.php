@@ -62,7 +62,7 @@ class Handler
             $this->entityManager->getConnection()->commit();
         } catch (\Exception $e) {
             $this->entityManager->getConnection()->rollBack();
-            throw new \DomainException($e->getMessage());
+            throw new \RuntimeException($e->getMessage());
         }
     }
 }

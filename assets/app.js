@@ -7,6 +7,9 @@ import './styles/app.scss';
 // Import core-ui theme
 require('@coreui/coreui');
 
+// Import Bootbox
+import 'bootbox';
+
 // require jQuery normally
 // const $ = require('jquery');
 
