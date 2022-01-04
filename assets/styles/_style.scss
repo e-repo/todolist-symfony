@@ -8,6 +8,11 @@ footer {
   background-color: #f5f5f5;
 }
 
+.dz-preview .dz-image {
+  width: 180px !important;
+  height: 180px !important;
+}
+
 footer {
   & > .container {
     padding-right: 15px;

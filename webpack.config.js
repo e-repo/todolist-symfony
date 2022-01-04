@@ -25,6 +25,7 @@ Encore
      */
     .addEntry('app', './assets/app.js')
     .addEntry('task-page', './assets/js/tasks/user-page/index.js')
+    .addEntry('task-files', './assets/vue/tasks/files/main.js')
     .addEntry('bar-page', './assets/js/tasks/bar-page/index.js')
     .addEntry('profile-page', './assets/js/profile/index.js')
     //.addEntry('page2', './assets/page2.js')
@@ -71,6 +72,9 @@ Encore
     .autoProvideVariables({
         'bootbox': 'bootbox'
     })
+
+    // Vue js
+    .enableVueLoader()
 
     // uncomment if you use API Platform Admin (composer req api-admin)
     //.enableReactPreset()

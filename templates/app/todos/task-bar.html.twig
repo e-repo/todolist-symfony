@@ -11,10 +11,15 @@
     <li class="breadcrumb-item active">{% trans from 'task' %}Task bar user{% endtrans %}</li>
 {% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('task-files') }}
+{% endblock %}
+
 {% block right_navbar_content %}
     <li class="c-header-nav-item mx-2">
         <div class="c-header-nav-link">
-            <button id="js-add-task" class="btn btn-square btn-outline-danger d-flex" data-user="{{ user.id }}">
+            <button id="js-add-task" class="btn btn-square btn-outline-info d-flex" data-user="{{ user.id }}">
                 <i class="cil-plus mr-1"></i>
                 {% trans from 'task' %}Add task{% endtrans %}
             </button>
@@ -38,16 +43,21 @@
                         <b>{{ task.date|date('d.m.Y H:i:s') }}</b>
                     </div>
                 </div>
-                <div class="card-footer text-right">
-                    <button class="btn btn-outline-dark js-delete-task"><i class="fas fa-trash-alt"></i></button>
-                    <button class="btn btn-outline-info js-modal-edit">
-                        <i class="fas fa-pencil-alt"></i>
-                    </button>
-                    {% if task.status == 'published' %}
-                        <a href="#" class="btn btn-outline-success js-fulfilled-task"><i class="fas fa-check"></i></a>
-                    {% else %}
-                        <a href="#" class="btn btn-outline-danger js-published-task"><i class="fas fa-redo"></i></a>
-                    {% endif %}
+                <div class="card-footer d-flex justify-content-between">
+                    <div>
+                        <button class="btn btn-outline-primary js-documents"><i class="fas fa-file"></i></button>
+                    </div>
+                    <div>
+                        <button class="btn btn-outline-dark js-delete-task"><i class="fas fa-trash-alt"></i></button>
+                        <button class="btn btn-outline-primary js-modal-edit">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+                        {% if task.status == 'published' %}
+                            <a href="#" class="btn btn-outline-success js-fulfilled-task"><i class="fas fa-check"></i></a>
+                        {% else %}
+                            <a href="#" class="btn btn-outline-danger js-published-task"><i class="fas fa-redo"></i></a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -78,9 +88,13 @@
         </div>
     </div>
 
+    <!-- Application modal -->
+    <div id="app-modal"></div>
+
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
     {{ encore_entry_script_tags('bar-page') }}
+    {{ encore_entry_script_tags('task-files') }}
 {% endblock %}
