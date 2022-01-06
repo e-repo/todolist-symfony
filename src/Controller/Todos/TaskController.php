@@ -17,7 +17,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mime\MimeTypesInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -32,16 +36,27 @@ class TaskController extends AbstractController
 
     private LoggerInterface $logger;
     private TranslatorInterface $translator;
+    private ValidatorInterface $validator;
+    private MimeTypesInterface $mimeTypes;
 
     /**
      * TaskController constructor.
+     * @param ValidatorInterface $validator
+     * @param MimeTypesInterface $mimeTypes
      * @param LoggerInterface $logger
      * @param TranslatorInterface $translator
      */
-    public function __construct(LoggerInterface $logger, TranslatorInterface $translator)
+    public function __construct(
+        ValidatorInterface $validator,
+        MimeTypesInterface $mimeTypes,
+        LoggerInterface $logger,
+        TranslatorInterface $translator
+    )
     {
         $this->logger = $logger;
         $this->translator = $translator;
+        $this->validator = $validator;
+        $this->mimeTypes = $mimeTypes;
     }
 
     /**
@@ -398,5 +413,73 @@ class TaskController extends AbstractController
         }
 
         return new JsonResponse(['error' => $errorMessage]);
+    }
+
+    /**
+     * @Route("/{id}/file", name=".file", methods={"POST"})
+     * @param Request $request
+     * @param Task $task
+     * @param UseCase\File\Attach\Handler $handler
+     * @return Response
+     */
+    public function uploadTaskFile(Request $request, Task $task, UseCase\File\Attach\Handler $handler): Response
+    {
+       $uploadedFile = $request->files->get('file');
+
+       $violations = $this->validator->validate($uploadedFile, [
+           new NotBlank(),
+           new File([
+               'maxSize' => '5M',
+               'mimeTypes' => \array_merge($this->mimeTypes->getMimeTypes('xlsx'), $this->mimeTypes->getMimeTypes('pdf'))
+           ])
+       ]);
+
+       if ($violations->count() > 0) {
+           $violation = $violations[0];
+           return $this->json($violation->getMessage(), 422);
+       }
+
+       $command = new UseCase\File\Attach\Command($uploadedFile, $task->getId()->getValue());
+
+       try {
+           $handler->handle($command);
+       } catch (\Exception $e) {
+           return $this->json($e->getMessage(), 422);
+       }
+
+       return $this->json('File upload.');
+    }
+
+    /**
+     * @Route("/{id}/files", name=".files", methods={"GET"})
+     * @param Task $task
+     * @return Response
+     */
+    public function taskFiles(Task $task): Response
+    {
+        return $this->json($task->getFiles(), 200, [], [
+            'groups' => 'show_files'
+        ]);
+    }
+
+    /**
+     * @Route("/file-delete/{id}", name=".file-delete", methods={"DELETE"})
+     * @param \App\Model\Todos\Entity\Task\File $file
+     * @param UseCase\File\Delete\Handler $handler
+     * @return Request
+     */
+    public function taskFileDelete(
+        \App\Model\Todos\Entity\Task\File $file,
+        UseCase\File\Delete\Handler $handler
+    ): Response
+    {
+        $command = new UseCase\File\Delete\Command($file->getId());
+
+        try {
+            $handler->handle($command);
+            return $this->json('File deleted.', 200);
+        } catch (\Exception $e) {
+            return $this->json($e->getMessage(), 422);
+        }
     }
 }

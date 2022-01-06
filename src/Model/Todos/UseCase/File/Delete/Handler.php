@@ -2,62 +2,47 @@
 
 declare(strict_types=1);
 
-namespace App\Model\User\UseCase\Image\Attach;
+namespace App\Model\Todos\UseCase\File\Delete;
 
-use App\Model\User\Entity\User\Id;
-use App\Model\User\Entity\User\Image;
-use App\Model\User\Entity\User\UserRepository;
+
+use App\Model\Todos\Entity\Task\FileRepository;
 use App\Service\Upload\UploadHelper;
 use Doctrine\ORM\EntityManagerInterface;
 
 class Handler
 {
     private UploadHelper $uploadHelper;
-    private UserRepository $userRepository;
+    private FileRepository $fileRepository;
     private EntityManagerInterface $entityManager;
 
     /**
      * Handler constructor.
      * @param UploadHelper $uploadHelper
-     * @param UserRepository $userRepository
+     * @param FileRepository $fileRepository
      * @param EntityManagerInterface $entityManager
      */
     public function __construct(
         UploadHelper $uploadHelper,
-        UserRepository $userRepository,
+        FileRepository $fileRepository,
         EntityManagerInterface $entityManager
     )
     {
         $this->uploadHelper = $uploadHelper;
-        $this->userRepository = $userRepository;
+        $this->fileRepository = $fileRepository;
         $this->entityManager = $entityManager;
     }
 
-    /**
-     * @param Command $command
-     * @throws \League\Flysystem\FileExistsException
-     */
     public function handle(Command $command): void
     {
-        $user = $this->userRepository->get(new Id($command->userId));
+        $file = $this->fileRepository->get($command->fileId);
 
         $this->entityManager->getConnection()->beginTransaction();
 
         try {
-            $fileName = $this->uploadHelper->getNewFileName($command->file);
-            $image = new Image($fileName, $command->file, $user);
-
-            $user->attachImage($image);
-
-            $this->entityManager->persist($user);
+            $this->entityManager->remove($file);
             $this->entityManager->flush();
 
-            $this->uploadHelper->uploadFile(
-                $command->file,
-                (new \ReflectionClass($user))->getShortName(),
-                $user->getId()->getValue(),
-                $fileName
-            );
+            $this->uploadHelper->deleteFile($file->getFilePath());
 
             $this->entityManager->getConnection()->commit();
         } catch (\Exception $e) {

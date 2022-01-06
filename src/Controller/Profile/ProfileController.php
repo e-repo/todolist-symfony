@@ -85,7 +85,7 @@ class ProfileController extends AbstractController
            new NotBlank(),
            new File([
                'maxSize' => '5M',
-               'mimeTypes' => array_merge($this->mimeTypes->getMimeTypes('jpeg'), $this->mimeTypes->getMimeTypes('png'))
+               'mimeTypes' => \array_merge($this->mimeTypes->getMimeTypes('jpeg'), $this->mimeTypes->getMimeTypes('png'))
            ])
         ]);
 

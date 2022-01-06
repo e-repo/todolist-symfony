@@ -2,12 +2,20 @@
   <div class="modal-body">
     <div class="modal-body__error"></div>
     <div class="modal-body__content">
+
+      <files-list v-if="filesList" :filesList="filesList"></files-list>
+
+      <div v-else class="mb-3">
+        <preloader></preloader>
+      </div>
+
       <vue-dropzone
         ref="dropzoneTaskFiles"
         id="dropzone"
         :options="dropzoneOptions"
         @vdropzone-complete="dropzoneComplete"
       ></vue-dropzone>
+
     </div>
   </div>
 </template>
@@ -15,9 +23,14 @@
 <script>
 import vueDropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
+import Preloader from "../../../UI/Preloader";
+import FilesList from "./FilesList";
+import axios from 'axios';
 
 export default {
   components: {
+    FilesList,
+    Preloader,
     vueDropzone
   },
   props: {
@@ -35,26 +48,44 @@ export default {
         dictDefaultMessage: "<i class='fas fa-upload mr-1'></i>Загрузка файлов",
         addRemoveLinks: true,
         dictRemoveFile: "<i class='fas fa-trash-alt'></i>"
-      }
+      },
+      filesList: null,
     }
   },
   methods: {
     dropzoneComplete() {
-      console.log('dropzone-complete.')
+      this.showFilesList();
+    },
+    removeAllFiles() {
+      this.$refs.dropzoneTaskFiles
+          .removeAllFiles();
+    },
+    showFilesList() {
+      axios.get(`/tasks/${this.taskId}/files`)
+        .then((response) => {
+          this.filesList = response.data;
+        })
+        .catch((error) => {
+          window.alert(error.toString());
+        });
     },
   },
   watch: {
     taskId() {
-      this.dropzoneComplete();
       this.$refs.dropzoneTaskFiles
           .setOption('url', `/tasks/${this.taskId}/file`);
+
+      this.removeAllFiles();
+      this.showFilesList();
     }
   },
   mounted() {
     this.$root.$on('onClearDropzone', () => {
-      this.$refs.dropzoneTaskFiles
-          .removeAllFiles();
-    })
+      this.removeAllFiles();
+    });
+    this.$root.$on('onDeleteFile', () => {
+      this.showFilesList();
+    });
   }
 }
 </script>

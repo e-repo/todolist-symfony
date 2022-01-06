@@ -68,6 +68,16 @@ class UploadHelper
         return $newFilename;
     }
 
+    /**
+     * @param string $filePath
+     * @return bool
+     * @throws \League\Flysystem\FileNotFoundException
+     */
+    public function deleteFile(string $filePath): bool
+    {
+        return $this->filesystem->delete($filePath);
+    }
+
     public function getNewFileName(File $file): string
     {
         $originalFileName = $this->getOriginalFileName($file);

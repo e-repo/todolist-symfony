@@ -2,60 +2,61 @@
 
 declare(strict_types=1);
 
-namespace App\Model\User\UseCase\Image\Attach;
+namespace App\Model\Todos\UseCase\File\Attach;
 
-use App\Model\User\Entity\User\Id;
-use App\Model\User\Entity\User\Image;
-use App\Model\User\Entity\User\UserRepository;
+use App\Model\Todos\Entity\Task\File;
+use App\Model\Todos\Entity\Task\Id;
+use App\Model\Todos\Entity\Task\TaskRepository;
 use App\Service\Upload\UploadHelper;
 use Doctrine\ORM\EntityManagerInterface;
+
 
 class Handler
 {
     private UploadHelper $uploadHelper;
-    private UserRepository $userRepository;
+    private TaskRepository $taskRepository;
     private EntityManagerInterface $entityManager;
 
     /**
      * Handler constructor.
      * @param UploadHelper $uploadHelper
-     * @param UserRepository $userRepository
+     * @param TaskRepository $taskRepository
      * @param EntityManagerInterface $entityManager
      */
     public function __construct(
         UploadHelper $uploadHelper,
-        UserRepository $userRepository,
+        TaskRepository $taskRepository,
         EntityManagerInterface $entityManager
     )
     {
         $this->uploadHelper = $uploadHelper;
-        $this->userRepository = $userRepository;
+        $this->taskRepository = $taskRepository;
         $this->entityManager = $entityManager;
     }
 
     /**
      * @param Command $command
-     * @throws \League\Flysystem\FileExistsException
+     * @throws \Doctrine\ORM\EntityNotFoundException
      */
     public function handle(Command $command): void
     {
-        $user = $this->userRepository->get(new Id($command->userId));
+        $task = $this->taskRepository->get(new Id($command->taskId));
 
         $this->entityManager->getConnection()->beginTransaction();
 
         try {
             $fileName = $this->uploadHelper->getNewFileName($command->file);
-            $image = new Image($fileName, $command->file, $user);
+            $file = new File($fileName, $command->file, $task);
 
-            $user->attachImage($image);
+            $task->attachFile($file);
 
-            $this->entityManager->persist($user);
+            $this->entityManager->persist($task);
             $this->entityManager->flush();
 
             $this->uploadHelper->uploadFile(
                 $command->file,
-                (new \ReflectionClass($user))->getShortName(),
-                $user->getId()->getValue(),
+                (new \ReflectionClass($task))->getShortName(),
+                $task->getId()->getValue(),
                 $fileName
             );
 

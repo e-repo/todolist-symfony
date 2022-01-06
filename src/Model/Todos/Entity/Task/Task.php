@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Model\Todos\Entity\Task;
 
 use App\Model\User\Entity\User\User;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Webmozart\Assert\Assert;
 
@@ -41,6 +43,11 @@ class Task
      * @ORM\Column(type="string", length=50, nullable=false)
      */
     private string $status;
+    /**
+     * @var File[] | Collection | null
+     * @ORM\OneToMany(targetEntity="File", mappedBy="task", orphanRemoval=true, cascade={"persist"})
+     */
+    private $files = null;
     /**
      * @ORM\Column(type="datetime_immutable", nullable=true)
      */
@@ -189,5 +196,30 @@ class Task
         }
 
         $this->status = self::STATUS_PUBLISHED;
+    }
+
+    public function attachFile(File $file): void
+    {
+        if (! $this->files instanceof Collection) {
+            $this->files = new ArrayCollection();
+        }
+
+        foreach ($this->files as $existing) {
+            if ($existing->isFileAttached($file->getFilename())) {
+                throw new \DomainException('File is already attached.');
+            }
+
+            $existing->setInactive();
+        }
+
+        $this->files->add($file);
+    }
+
+    /**
+     * @return File[]|Collection|null
+     */
+    public function getFiles()
+    {
+        return $this->files->toArray();
     }
 }
