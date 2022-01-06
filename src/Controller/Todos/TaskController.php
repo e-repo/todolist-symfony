@@ -11,12 +11,15 @@ use App\ReadModel\Task\Filter;
 use App\ReadModel\Task\FilterBar;
 use App\ReadModel\Task\TaskFetcher;
 use App\Security\Voter\Task\TaskAccess;
+use App\Service\Upload\UploadHelper;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Mime\MimeTypesInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\File;
@@ -481,5 +484,37 @@ class TaskController extends AbstractController
         } catch (\Exception $e) {
             return $this->json($e->getMessage(), 422);
         }
+    }
+
+    /**
+     * @Route("/file-download/{id}", name=".file-download", methods={"GET"})
+     * @param \App\Model\Todos\Entity\Task\File $file
+     * @param UploadHelper $uploadHelper
+     * @return Response
+     */
+    public function taskFileDownload(
+        \App\Model\Todos\Entity\Task\File $file,
+        UploadHelper $uploadHelper
+    ): Response
+    {
+        $response = new StreamedResponse(function () use ($file, $uploadHelper) {
+            if (! $filePath = $file->getFilePath()) {
+                throw new \DomainException('Path to file not defined.');
+            }
+
+            $outputStream = \fopen('php://output', 'wb');
+            $fileStream = $uploadHelper->readStream($filePath);
+
+            \stream_copy_to_stream($fileStream, $outputStream);
+        });
+
+        $response->headers->set('Content-Type', $file->getMimeType());
+        $disposition = HeaderUtils::makeDisposition(
+            HeaderUtils::DISPOSITION_ATTACHMENT,
+            $file->getFilename()
+        );
+        $response->headers->set('Content-Disposition', $disposition);
+
+        return $response;
     }
 }

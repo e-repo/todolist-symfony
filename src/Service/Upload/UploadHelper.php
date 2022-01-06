@@ -70,6 +70,22 @@ class UploadHelper
 
     /**
      * @param string $filePath
+     * @return resource
+     * @throws \League\Flysystem\FileNotFoundException
+     */
+    public function readStream(string $filePath)
+    {
+        $resource = $this->filesystem->readStream($filePath);
+
+        if ($resource === false) {
+            throw new \RuntimeException(\sprintf('Error opening stream for "%s"', $filePath));
+        }
+
+        return $resource;
+    }
+
+    /**
+     * @param string $filePath
      * @return bool
      * @throws \League\Flysystem\FileNotFoundException
      */
