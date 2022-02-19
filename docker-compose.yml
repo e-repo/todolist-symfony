@@ -1,56 +1,105 @@
 version: '3'
 services:
 
-  todo-nginx:
+  traefik:
+    container_name: traefik
+    image: traefik:v2.6
+    command:
+      --providers.docker=true
+      --providers.docker.exposedByDefault=false
+      --entryPoints.http.address=:80
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+    networks:
+      - traefik-public
+
+  frontend-todo:
+    container_name: ft
     build:
-      context: ./docker/development
+      context: frontend/docker/development/nginx
+    networks:
+      - traefik-public
+      - default
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      - traefik.http.routers.frontend-todo.rule=Host(`localhost`) || Host(`www.localhost`)
+      - traefik.http.routers.frontend-todo.entryPoints=http
+      - traefik.http.services.frontend-todo.loadBalancer.server.port=80
+      - traefik.http.middlewares.frontend-redirect.redirectRegex.regex=^(https?://)www.localhost/(.*)$$
+      - traefik.http.middlewares.frontend-redirect.redirectRegex.replacement=$${1}localhost/$${2}
+      - traefik.http.middlewares.frontend-redirect.redirectRegex.permanent=true
+      - traefik.http.routers.frontend-todo.middlewares=frontend-redirect
+
+  frontend-todo-node:
+    container_name: ft-node
+    build:
+      context: frontend/docker/development/node
+    volumes:
+      - ./frontend:/app
+    tty: true
+    command: yarn serve
+
+  backend-todo-nginx:
+    container_name: bt-nginx
+    build:
+      context: ./backend/docker/development
       dockerfile: nginx.docker
     volumes:
-      - ./:/app
+      - ./backend/:/app
     depends_on:
-      - todo-php-fpm
-    ports:
-      - "8040:80"
+      - backend-todo-fpm
+    networks:
+      - traefik-public
+      - default
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      - traefik.http.routers.backend-todo-nginx.rule=Host(`todo.localhost`)
+      - traefik.http.routers.backend-todo-nginx.entryPoints=http
+      - traefik.http.services.backend-todo-nginx.loadBalancer.server.port=80
 
-  todo-php-fpm:
+  backend-todo-fpm:
+    container_name: bt-fpm
     build:
-      context: ./docker/development
+      context: ./backend/docker/development
       dockerfile: php-fpm.docker
     environment:
       PHP_IDE_CONFIG: "serverName=todolist-symfony.local"
     volumes:
-      - ./:/app
+      - ./backend/:/app
     depends_on:
-      - todo-postgres
-      - mailer
-      - todo-redis
+      - backend-todo-postgres
+      - backend-todo-mailer
+      - backend-todo-redis
 
-  todo-php-cli:
+  backend-todo-cli:
+    container_name: bt-cli
     build:
-      context: ./docker/development
+      context: ./backend/docker/development
       dockerfile: php-cli.docker
     volumes:
-      - ./:/app
+      - ./backend/:/app
       - composer:/root/.composer/cache
     depends_on:
-      - todo-postgres
-      - todo-redis
-      - mailer
+      - backend-todo-postgres
+      - backend-todo-redis
+      - backend-todo-mailer
 
-  todo-node-watch:
+  backend-todo-node:
+    container_name: bt-node
     image: node:14.15-alpine
     volumes:
-      - ./:/app
-    working_dir: /app
-    command: sh -c "until [ -f .ready ] ; do sleep 1 ; done && npm run watch"
-
-  todo-node:
-    image: node:14.15-alpine
-    volumes:
-      - ./:/app
+      - ./backend/:/app
     working_dir: /app
 
-  todo-postgres:
+  backend-todo-postgres:
+    container_name: bt-postgres
     image: postgres:11.2-alpine
     volumes:
       - todo-postgres:/var/lib/postgresql/data
@@ -61,13 +110,15 @@ services:
     ports:
       - "54322:5432"
 
-  todo-redis:
+  backend-todo-redis:
+    container_name: bt-redis
     image: redis:5.0-alpine
     volumes:
       - todo-redis:/data
     command: redis-server --requirepass secret
 
-  mailer:
+  backend-todo-mailer:
+    container_name: bt-mailer
     image: mailhog/mailhog
     ports:
       - "8081:8025"
@@ -76,3 +127,7 @@ volumes:
   todo-postgres:
   todo-redis:
   composer:
+
+networks:
+  traefik-public:
+#    name: traefik-public
