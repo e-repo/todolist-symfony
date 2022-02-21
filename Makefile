@@ -4,18 +4,21 @@ NGINX_SERVICE=backend-todo-nginx
 CLI_SERVICE=backend-todo-cli
 FPM_SERVICE=backend-todo-fpm
 
+init: docker-down-clear docker-pull docker-build docker-up todo-init post-install
+
+up-and-serve: docker-up f-serve
 up: docker-up
 down: docker-down
-init: docker-down-clear docker-pull docker-build docker-up todo-init post-install
+restart: down up
 test: todo-test
 ps: docker-ps
-restart: down up
+
+logs-btn: logs-backend-todo-node
+logs-ftn: logs-frontend-todo-node
+
 cli-shell: todo-cli-shell
 fpm-shell: todo-fpm-shell
 b-node-shell: todo-node-shell
-watch-logs: node-watch-logs
-ftn-logs: ft-node-logs
-
 f-shell:
 	@docker exec -it ft-node sh
 	@$(MAKE) -s f-chown
@@ -25,6 +28,9 @@ b-shell:
 
 docker-up:
 	docker-compose up -d
+
+f-serve:
+	@docker exec -it ft-node yarn serve
 
 docker-ps:
 	docker-compose ps
@@ -49,10 +55,10 @@ todo-composer-install:
 todo-assets-install:
 	docker-compose run --rm backend-todo-node yarn install
 
-node-watch-logs:
-	docker-compose logs todo-node-watch
+logs-backend-todo-node:
+	docker-compose logs backend-todo-node
 
-ft-node-logs:
+logs-frontend-todo-node:
 	@docker-compose logs -- frontend-todo-node
 
 todo-assets-dev:

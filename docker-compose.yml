@@ -40,10 +40,12 @@ services:
     container_name: ft-node
     build:
       context: frontend/docker/development/node
+    ports:
+      - "3000:3000"
     volumes:
       - ./frontend:/app
     tty: true
-    command: yarn serve
+#    command: yarn serve
 
   backend-todo-nginx:
     container_name: bt-nginx
