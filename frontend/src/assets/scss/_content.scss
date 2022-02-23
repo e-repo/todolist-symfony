@@ -1,3 +1,19 @@
 .content {
   margin-left: 250px;
 }
+
+.main {
+  min-height: calc(100vh - 82px);
+}
+
+.footer {
+  height: 40px;
+  box-sizing: content-box;
+
+  &__wrapper {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
