@@ -7,3 +7,16 @@
   background-color: $gray-800;
   color: $gray-100;
 }
+
+.logo {
+  height: 40px;
+  box-sizing: content-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid #4b545c;
+
+  &__link {
+    text-transform: uppercase;
+  }
+}

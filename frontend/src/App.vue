@@ -2,7 +2,44 @@
   <div class="wrapper">
     <aside class="l-sidebar">
       <div class="container-fluid">
-        Side bar
+        <div class="logo">
+          <a class="logo__link text-decoration-none text-warning" href="#">
+            <font-awesome-icon class="me-2" icon="tractor" />
+            Evening production
+          </a>
+        </div>
+        <div class="nav-sidebar mt-3">
+          <ul class="nav nav-pills flex-column">
+            <li class="nav-item">
+              <a class="nav-link text-white active" href="#">
+                <font-awesome-icon class="me-2" icon="house" />
+                Главная
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="#">
+                <font-awesome-icon class="me-2" icon="user-group" />
+                Пользователи
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="#">
+                <font-awesome-icon class="me-2" icon="list" />
+                Задачи
+              </a>
+              <div class="container-fluid">
+                <ul class="nav flex-column">
+                  <li class="nav-item">
+                    <a class="nav-link text-white" href="#">Новые</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link text-white" href="#">Выполненные</a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
     </aside>
     <div class="content">
