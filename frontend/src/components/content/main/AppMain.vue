@@ -1,7 +1,7 @@
 <template>
   <main class="main">
     <div class="container-fluid">
-      Main content
+      <h2 class="text-center pt-4">Main content</h2>
     </div>
   </main>
 </template>
