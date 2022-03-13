@@ -1,5 +1,8 @@
 <template>
-  <div class="content">
+  <div
+      class="content"
+      :class="{'ms-0': !sidebarToggle}"
+  >
     <app-navbar></app-navbar>
     <app-main></app-main>
     <app-footer></app-footer>
@@ -13,7 +16,12 @@ import AppFooter from "@/components/content/footer/AppFooter";
 
 export default {
   name: 'AppContent',
-  components: { AppNavbar, AppMain, AppFooter }
+  components: { AppNavbar, AppMain, AppFooter },
+  props: {
+    sidebarToggle: {
+      type: Boolean
+    }
+  }
 }
 </script>
 

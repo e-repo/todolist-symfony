@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
-    <app-sidebar></app-sidebar>
-    <app-content></app-content>
+    <app-sidebar @sidebar-toggle="changeSidebarToggle"></app-sidebar>
+    <app-content :sidebarToggle="sidebarToggle"></app-content>
   </div>
 </template>
 
@@ -11,7 +11,17 @@ import AppContent from "@/components/content/AppContent";
 
 export default {
   name: 'App',
-  components: { AppSidebar, AppContent }
+  components: { AppSidebar, AppContent },
+  data() {
+    return {
+      sidebarToggle: true
+    }
+  },
+  methods: {
+    changeSidebarToggle: function (toggle) {
+      this.sidebarToggle = toggle;
+    }
+  }
 }
 </script>
 
