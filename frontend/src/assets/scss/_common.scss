@@ -5,3 +5,11 @@
 .cursor-pointer {
   cursor: pointer;
 }
+
+.dropdown-menu__show-right {
+  display: block;
+  position: absolute;
+  margin: 0;
+  top: 40px;
+  right: 0;
+}

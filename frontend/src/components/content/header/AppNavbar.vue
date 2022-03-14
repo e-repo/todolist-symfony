@@ -2,17 +2,17 @@
   <header class="header">
     <ul class="nav justify-content-end bg-light border-bottom">
       <li class="nav-item">
-        <a class="nav-link active" aria-current="page" href="#">Active</a>
+        <a class="nav-link link-secondary" href="#">Active</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Link</a>
+        <a class="nav-link link-dark" href="#">Link</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Link</a>
+        <a class="nav-link link-dark" href="#">Link</a>
       </li>
       <li class="nav-item position-relative">
         <button
-          class="btn btn-link text-decoration-none shadow-none"
+          class="btn btn-link text-decoration-none shadow-none text-dark"
           type="button"
           @click="dropdownProfileToggle = ! dropdownProfileToggle"
         >
@@ -20,11 +20,11 @@
         </button>
         <ul
           class="dropdown-menu"
-          :class="{'dropdown-profile__show': dropdownProfileToggle}"
+          :class="{'dropdown-menu__show-right': dropdownProfileToggle}"
         >
           <li><a class="dropdown-item" href="#">Action</a></li>
           <li><a class="dropdown-item" href="#">Another action</a></li>
-          <li><a class="dropdown-item" href="#">Something else here</a></li>
+          <li><a class="dropdown-item" href="#">Something else</a></li>
         </ul>
       </li>
     </ul>
@@ -42,11 +42,5 @@ export default {
 </script>
 
 <style scoped>
-  .dropdown-profile__show {
-    display: block;
-    position: absolute;
-    inset: 0 auto auto 0;
-    margin: 0;
-    transform: translate(-26px, 40px);
-  }
+
 </style>
