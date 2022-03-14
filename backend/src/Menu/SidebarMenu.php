@@ -6,6 +6,7 @@ namespace App\Menu;
 
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
+use Knp\Menu\MenuItem;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -14,6 +15,8 @@ class SidebarMenu
     private FactoryInterface $factory;
     private TranslatorInterface $translator;
     private AuthorizationCheckerInterface $authorizationChecker;
+
+    private ?ItemInterface $menu = null;
 
     /**
      * SidebarMenu constructor.
@@ -32,8 +35,12 @@ class SidebarMenu
         $this->authorizationChecker = $authorizationChecker;
     }
 
-    public function buildSidebarMenu(array $options): ItemInterface
+    public function buildSidebarMenu(): ItemInterface
     {
+        if (null !== $this->menu) {
+            return $this->menu;
+        }
+
         $menu = $this->factory->createItem('root')
             ->setChildrenAttribute('class', 'c-sidebar-nav');
 
@@ -81,6 +88,34 @@ class SidebarMenu
                     ['pattern' => '/^tasks\.bar\.fulfilled.+/']
                 ]);
 
-        return $menu;
+        $this->menu = $menu;
+
+        return $this->menu;
+    }
+
+    /**
+     * @param ItemInterface $menu
+     * @return array
+     * @throws \Exception
+     */
+    public function toArray(ItemInterface $menu): array
+    {
+        $sidebarMenuList = [];
+        $subMenu = [];
+
+        /** @var MenuItem $menuItem */
+        foreach ($menu as $menuItem) {
+            if (true === $menuItem->hasChildren()) {
+                $subMenu = $this->toArray($menuItem);
+            }
+
+            $sidebarMenuList[] = [
+                'name' => $menuItem->getName(),
+                'uri' => $menuItem->getUri(),
+                'subMenu' => $subMenu,
+            ];
+        }
+
+        return $sidebarMenuList;
     }
 }
