@@ -50,6 +50,11 @@
 
 <script>
 export default {
+  props: {
+    sidebarTree: {
+      type: Object
+    }
+  },
   data() {
     return {
       menuItems: [
@@ -67,6 +72,11 @@ export default {
         },
         { name: 'Тест', icon: 'house', link: '#' },
       ],
+    }
+  },
+  watch: {
+    sidebarTree(sidebarTree) {
+      console.log(sidebarTree);
     }
   }
 }

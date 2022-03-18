@@ -17,27 +17,40 @@
           Evening production
         </a>
       </div>
-      <sidebar-nav></sidebar-nav>
+      <sidebar-nav :sidebarTree="sidebarTree"></sidebar-nav>
     </div>
   </aside>
 </template>
 
 <script>
 import SidebarNav from "@/components/sidebar/navigation/SidebarNav";
+import axios from 'axios';
 
 export default {
   name: 'AppSidebar',
   components: { SidebarNav },
   data() {
     return {
-      toggle: true
+      toggle: true,
+      sidebarTree: {},
     }
   },
   methods: {
     emitSidebarToggle: function () {
       this.toggle = ! this.toggle;
       this.$emit('sidebarToggle', this.toggle)
+    },
+    loadSidebarMenu: function () {
+      axios
+          .get('/api/v1/sidebar-menu')
+          .then(response => {
+            console.log(response.data)
+            this.sidebarTree = response.data;
+          })
     }
+  },
+  mounted() {
+    this.loadSidebarMenu()
   }
 }
 </script>
