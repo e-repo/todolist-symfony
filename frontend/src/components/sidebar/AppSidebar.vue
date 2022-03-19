@@ -17,7 +17,7 @@
           Evening production
         </a>
       </div>
-      <sidebar-nav :sidebarTree="sidebarTree"></sidebar-nav>
+      <sidebar-nav :sidebarMenu="sidebarMenu"></sidebar-nav>
     </div>
   </aside>
 </template>
@@ -32,7 +32,7 @@ export default {
   data() {
     return {
       toggle: true,
-      sidebarTree: {},
+      sidebarMenu: null,
     }
   },
   methods: {
@@ -44,8 +44,7 @@ export default {
       axios
           .get('/api/v1/sidebar-menu')
           .then(response => {
-            console.log(response.data)
-            this.sidebarTree = response.data;
+            this.sidebarMenu = response.data;
           })
     }
   },

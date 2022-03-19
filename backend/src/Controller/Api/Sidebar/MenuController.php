@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Api\Sidebar;
 
-use App\Menu\Api\SidebarMenuApi;
+use App\Menu\SidebarMenu;
 use App\Service\JsonApi\JsonApiHelper;
 use App\Service\JsonApi\ResponseDataBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,22 +18,22 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class MenuController extends AbstractController
 {
     private JsonApiHelper $apiHelper;
-    private SidebarMenuApi $sidebarMenuApi;
+    private SidebarMenu $sidebarMenu;
     private UrlGeneratorInterface $urlGenerator;
 
     /**
      * @param JsonApiHelper $apiHelper
-     * @param SidebarMenuApi $sidebarMenuApi
+     * @param SidebarMenu $sidebarMenu
      * @param UrlGeneratorInterface $urlGenerator
      */
     public function __construct(
         JsonApiHelper         $apiHelper,
-        SidebarMenuApi        $sidebarMenuApi,
+        SidebarMenu           $sidebarMenu,
         UrlGeneratorInterface $urlGenerator
     )
     {
         $this->apiHelper = $apiHelper;
-        $this->sidebarMenuApi = $sidebarMenuApi;
+        $this->sidebarMenu = $sidebarMenu;
         $this->urlGenerator = $urlGenerator;
     }
 
@@ -45,8 +45,8 @@ class MenuController extends AbstractController
     public function getSidebarMenu(): JsonResponse
     {
         try {
-            $rootSidebarMenuItem = $this->sidebarMenuApi->build();
-            $sidebarMenuTree = $this->sidebarMenuApi->toArray($rootSidebarMenuItem);
+            $rootSidebarMenuItem = $this->sidebarMenu->build();
+            $sidebarMenuTree = $this->sidebarMenu->toArray($rootSidebarMenuItem);
 
             $linkSelf = $this->urlGenerator->generate(
                 'sidebar_menu.list',

@@ -1,6 +1,6 @@
 <template>
   <div class="nav-sidebar mt-3">
-    <ul class="nav nav-pills flex-column">
+    <ul v-if="sidebarMenu" class="nav nav-pills flex-column">
       <li
         class="nav-item"
         v-for="(menuItem, index) in menuItems"
@@ -9,7 +9,7 @@
 
         <span
           class="nav-link text-white cursor-pointer nav-sidebar_sub-menu"
-          v-if="menuItem.subMenu"
+          v-if="menuItem.subMenu.length > 0"
           @click="menuItem.isSubMenuShow = ! menuItem.isSubMenuShow"
         >
           <font-awesome-icon class="me-2" :icon=menuItem.icon />
@@ -24,7 +24,7 @@
         <a
           v-else
           class="nav-link text-white"
-          :href=menuItem.link
+          :href=menuItem.uri
         >
           <font-awesome-icon class="me-2" :icon=menuItem.icon />
           {{ menuItem.name }}
@@ -32,12 +32,12 @@
 
         <Transition name="sub-menu">
         <div
-          v-if="menuItem.subMenu && menuItem.isSubMenuShow"
+          v-if="menuItem.subMenu.length > 0 && menuItem.isSubMenuShow"
           class="container-fluid"
         >
           <ul class="nav flex-column">
-            <li class="nav-item" v-for="(subMenuItems, index) in menuItem.subMenu" :key=index>
-              <a class="nav-link text-white" href="#">{{ subMenuItems.name }}</a>
+            <li class="nav-item" v-for="(subMenuItem, index) in menuItem.subMenu" :key=index>
+              <a class="nav-link text-white" :href="subMenuItem.uri">{{ subMenuItem.name }}</a>
             </li>
           </ul>
         </div>
@@ -45,38 +45,45 @@
 
       </li>
     </ul>
+    <app-preloader v-else ></app-preloader>
   </div>
 </template>
 
 <script>
+import AppPreloader from "@/components/UI/AppPreloader";
+const SIDEBAR_ICONS_BY_NAME = {
+  'Home': 'house',
+  'Users': 'user-group',
+  'ToDo': 'list',
+};
+
 export default {
+  name: 'SidebarNav',
+  components: {AppPreloader},
   props: {
-    sidebarTree: {
+    sidebarMenu: {
       type: Object
     }
   },
   data() {
     return {
-      menuItems: [
-        { name: 'Главная', icon: 'house', link: '#' },
-        { name: 'Пользователи', icon: 'user-group', link: '#' },
-        {
-          name: 'Задачи',
-          icon: 'list',
-          link: '#',
-          isSubMenuShow: false,
-          subMenu: [
-            { name: 'Главная' },
-            { name: 'Выполненные' },
-          ],
-        },
-        { name: 'Тест', icon: 'house', link: '#' },
-      ],
+      menuItems: [],
     }
   },
   watch: {
-    sidebarTree(sidebarTree) {
-      console.log(sidebarTree);
+    sidebarMenu(menu) {
+      this.menuItems = menu.data.attributes.tree
+          .map(menuItem => {
+            menuItem.isSubMenuShow = false;
+
+            if (menuItem.name in SIDEBAR_ICONS_BY_NAME) {
+              menuItem.icon = SIDEBAR_ICONS_BY_NAME[menuItem.name]
+            }
+
+            return menuItem;
+          });
+
+      console.log(this.menuItems);
     }
   }
 }
