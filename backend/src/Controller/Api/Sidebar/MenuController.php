@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace App\Controller\Api\Sidebar;
 
-use App\Menu\SidebarMenu;
-use App\Service\JsonApi\ResponseDataBuilder;
+use App\Menu\Api\SidebarMenuApi;
 use App\Service\JsonApi\JsonApiHelper;
-use Knp\Menu\MenuItem;
+use App\Service\JsonApi\ResponseDataBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
  * @Route("/api", name="sidebar_menu")
@@ -20,23 +18,22 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class MenuController extends AbstractController
 {
     private JsonApiHelper $apiHelper;
-    private SidebarMenu $sidebarMenu;
-    private NormalizerInterface $normalizer;
+    private SidebarMenuApi $sidebarMenuApi;
     private UrlGeneratorInterface $urlGenerator;
 
     /**
      * @param JsonApiHelper $apiHelper
-     * @param SidebarMenu $sidebarMenu
+     * @param SidebarMenuApi $sidebarMenuApi
      * @param UrlGeneratorInterface $urlGenerator
      */
     public function __construct(
-        JsonApiHelper $apiHelper,
-        SidebarMenu   $sidebarMenu,
+        JsonApiHelper         $apiHelper,
+        SidebarMenuApi        $sidebarMenuApi,
         UrlGeneratorInterface $urlGenerator
     )
     {
         $this->apiHelper = $apiHelper;
-        $this->sidebarMenu = $sidebarMenu;
+        $this->sidebarMenuApi = $sidebarMenuApi;
         $this->urlGenerator = $urlGenerator;
     }
 
@@ -48,8 +45,9 @@ class MenuController extends AbstractController
     public function getSidebarMenu(): JsonResponse
     {
         try {
-            $rootSidebarMenuItem = $this->sidebarMenu->buildSidebarMenu();
-            $sidebarMenuTree = $this->sidebarMenu->toArray($rootSidebarMenuItem);
+            $rootSidebarMenuItem = $this->sidebarMenuApi->build();
+            $sidebarMenuTree = $this->sidebarMenuApi->toArray($rootSidebarMenuItem);
+
             $linkSelf = $this->urlGenerator->generate(
                 'sidebar_menu.list',
                 [],
