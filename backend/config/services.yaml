@@ -36,11 +36,6 @@ services:
         tags:
             - { name: knp_menu.menu_builder, method: build, alias: sidebar_menu }
 
-    App\Menu\Api\SidebarMenuApi:
-        arguments: [ "@knp_menu.factory" ]
-        tags:
-            - { name: knp_menu.menu_builder, method: build, alias: sidebar_menu_api }
-
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
     App\Controller\:
