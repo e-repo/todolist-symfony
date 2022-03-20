@@ -4,19 +4,19 @@
       :class="{'ms-0': !sidebarToggle}"
   >
     <app-navbar></app-navbar>
-    <app-main></app-main>
+    <users-content></users-content>
     <app-footer></app-footer>
   </div>
 </template>
 
 <script>
-import AppNavbar from "@/components/content/header/AppNavbar";
-import AppMain from "@/components/content/main/AppMain";
+import AppNavbar from "@/components/content/header/AppHeader";
+import UsersContent from "@/pages/users/UsersContent";
 import AppFooter from "@/components/content/footer/AppFooter";
 
 export default {
   name: 'AppContent',
-  components: { AppNavbar, AppMain, AppFooter },
+  components: { AppNavbar, UsersContent, AppFooter },
   props: {
     sidebarToggle: {
       type: Boolean

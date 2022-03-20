@@ -21,14 +21,14 @@
           />
         </span>
 
-        <a
+        <router-link
           v-else
+          :to="menuItem.uri"
           class="nav-link text-white"
-          :href=menuItem.uri
         >
           <font-awesome-icon class="me-2" :icon=menuItem.icon />
           {{ menuItem.name }}
-        </a>
+        </router-link>
 
         <Transition name="sub-menu">
         <div
@@ -37,7 +37,12 @@
         >
           <ul class="nav flex-column">
             <li class="nav-item" v-for="(subMenuItem, index) in menuItem.subMenu" :key=index>
-              <a class="nav-link text-white" :href="subMenuItem.uri">{{ subMenuItem.name }}</a>
+              <router-link
+                  :to="subMenuItem.uri"
+                  class="nav-link text-white"
+              >
+                {{ subMenuItem.name }}
+              </router-link>
             </li>
           </ul>
         </div>
@@ -82,8 +87,6 @@ export default {
 
             return menuItem;
           });
-
-      console.log(this.menuItems);
     }
   }
 }

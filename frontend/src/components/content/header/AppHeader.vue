@@ -30,7 +30,9 @@ export default {
   },
   methods: {
     onClickOutside: function () {
-      this.dropdownProfileToggle = ! this.dropdownProfileToggle
+      if (true === this.dropdownProfileToggle) {
+        this.dropdownProfileToggle = ! this.dropdownProfileToggle
+      }
     }
   }
 }

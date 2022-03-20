@@ -1,17 +1,16 @@
 <template>
   <div class="wrapper">
     <app-sidebar @sidebar-toggle="changeSidebarToggle"></app-sidebar>
-    <app-content :sidebarToggle="sidebarToggle"></app-content>
+    <router-view :sidebarToggle="sidebarToggle"></router-view>
   </div>
 </template>
 
 <script>
 import AppSidebar from "@/components/sidebar/AppSidebar";
-import AppContent from "@/components/content/AppContent";
 
 export default {
   name: 'App',
-  components: { AppSidebar, AppContent },
+  components: { AppSidebar },
   data() {
     return {
       sidebarToggle: true
