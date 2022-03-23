@@ -6,7 +6,7 @@ namespace App\Controller\Api\Sidebar;
 
 use App\Menu\SidebarMenu;
 use App\Service\JsonApi\JsonApiHelper;
-use App\Service\JsonApi\ResponseDataBuilder;
+use App\Service\JsonApi\ResponseBuilder\ResponseDataBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;

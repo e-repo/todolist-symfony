@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\JsonApi;
 
+use App\Service\JsonApi\ResponseBuilder\ResponseDataBuilder;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;

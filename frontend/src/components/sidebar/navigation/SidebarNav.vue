@@ -77,7 +77,8 @@ export default {
   },
   watch: {
     sidebarMenu(menu) {
-      this.menuItems = menu.data.attributes.tree
+      const [menuData] = menu.data;
+      this.menuItems = menuData.attributes.tree
           .map(menuItem => {
             menuItem.isSubMenuShow = false;
 
