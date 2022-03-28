@@ -1,13 +1,13 @@
 security:
 
     encoders:
-        App\Model\User\Entity\User:
+        App\Domain\User\Entity\User:
             algorithm: auto
 
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
         fetcher:
-            id: App\Security\UserProvider
+            id: App\Infrastructure\Security\UserProvider
 
     firewalls:
         dev:
@@ -15,12 +15,12 @@ security:
             security: false
         main:
             anonymous: lazy
-            user_checker: App\Security\UserChecker
+            user_checker: App\Infrastructure\Security\UserChecker
             guard:
                 authenticators:
-                    - App\Security\FormLoginAuthenticator
-                    - App\Security\VkontakteAuthenticator
-                entry_point: App\Security\FormLoginAuthenticator
+                    - App\Infrastructure\Security\FormLoginAuthenticator
+                    - App\Infrastructure\Security\VkontakteAuthenticator
+                entry_point: App\Infrastructure\Security\FormLoginAuthenticator
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800

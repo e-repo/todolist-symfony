@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Widget\User;
 
-use App\Security\UserIdentity;
+use App\Infrastructure\Security\UserIdentity;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;

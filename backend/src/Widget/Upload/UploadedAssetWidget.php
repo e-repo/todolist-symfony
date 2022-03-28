@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Widget\Upload;
 
-use App\Service\Upload\UploadHelper;
-use Psr\Container\ContainerInterface;
+use App\Infrastructure\Upload\UploadHelper;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 

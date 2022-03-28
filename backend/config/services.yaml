@@ -31,24 +31,24 @@ services:
             - '../src/Kernel.php'
             - '../src/Tests/'
 
-    App\Menu\SidebarMenu:
+    App\Domain\Service\Menu\SidebarMenu:
         arguments: [ "@knp_menu.factory" ]
         tags:
             - { name: knp_menu.menu_builder, method: build, alias: sidebar_menu }
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
-    App\Controller\:
-        resource: '../src/Controller/'
+    App\Http\Controller\:
+        resource: '../src/Http/Controller/'
         tags: ['controller.service_arguments']
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-    App\Model\User\Service\ResetTokenizer:
-        factory: 'App\Container\Model\User\Service\ResetTokenizerFactory:create'
+    App\Domain\User\Service\ResetTokenizer:
+        factory: 'App\Infrastructure\Container\Domain\User\ResetTokenizerFactory:create'
         arguments: ['PT1H']
 
-    App\Service\Email\AppTemplateCreator:
+    App\Infrastructure\Email\AppTemplateCreator:
         arguments: ['%env(MAILER_FROM_EMAIL)%']
 
     Predis\Client:

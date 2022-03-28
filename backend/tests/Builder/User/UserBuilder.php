@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Builder\User;
 
-use App\Model\User\Entity\User\Email;
-use App\Model\User\Entity\User\Id;
-use App\Model\User\Entity\User\Name;
-use App\Model\User\Entity\User\User;
+use App\Domain\User\Entity\User\Email;
+use App\Domain\User\Entity\User\Id;
+use App\Domain\User\Entity\User\Name;
+use App\Domain\User\Entity\User\User;
 
 class UserBuilder
 {
