@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Service\JsonApi\ResponseBuilder\Params;
 
-class LinkParams extends AbstractParams
+class LinksParams extends AbstractParams
 {
     private ?string $linkSelf = null;
     private ?string $linkFirst = null;
@@ -20,57 +20,63 @@ class LinkParams extends AbstractParams
         'last'
     ];
 
-    public function getLinkSelf(): ?string
+    public function getLinksSelf(): ?string
     {
         return $this->linkSelf;
     }
 
-    public function setLinkSelf(?string $linkSelf): void
+    public function setLinksSelf(?string $linkSelf): void
     {
         $this->linkSelf = $linkSelf;
     }
 
-    public function getLinkFirst(): ?string
+    public function getLinksFirst(): ?string
     {
         return $this->linkFirst;
     }
 
-    public function setLinkFirst(?string $linkFirst): void
+    public function setLinksFirst(?string $linkFirst): void
     {
         $this->linkFirst = $linkFirst;
     }
 
-    public function getLinkPrev(): ?string
+    public function getLinksPrev(): ?string
     {
         return $this->linkPrev;
     }
 
-    public function setLinkPrev(?string $linkPrev): void
+    public function setLinksPrev(?string $linkPrev): void
     {
         $this->linkPrev = $linkPrev;
     }
 
-    public function getLinkNext(): ?string
+    public function getLinksNext(): ?string
     {
         return $this->linkNext;
     }
 
-    public function setLinkNext(?string $linkNext): void
+    public function setLinksNext(?string $linkNext): void
     {
         $this->linkNext = $linkNext;
     }
 
-    public function getLinkLast(): ?string
+    public function getLinksLast(): ?string
     {
         return $this->linkLast;
     }
 
-    public function setLinkLast(?string $linkLast): void
+    public function setLinksLast(?string $linkLast): void
     {
         $this->linkLast = $linkLast;
     }
 
-    public function getProperties(): array
+    public function createProperties(): array
+    {
+        [$linksParams] = parent::createProperties();
+        return $linksParams;
+    }
+
+    protected function getProperties(): array
     {
         return $this->linkProperties;
     }

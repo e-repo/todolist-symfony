@@ -19,7 +19,11 @@ class PayloadArgumentResolver implements ArgumentValueResolverInterface
 
         $instance = null;
         if (\class_exists($className)) {
-            $instance = new $className();
+            try {
+                $instance = new $className();
+            } catch (\Throwable $exception) {
+                return false;
+            }
         }
 
         return $instance instanceof BasePayloadInterface;

@@ -38,7 +38,7 @@ class JsonApiHelper
     ): JsonResponse
     {
         $responseDataBuilder = new ResponseDataBuilder();
-        $responseDataBuilder->setErrorDetail($error->getMessage());
+        $responseDataBuilder->setErrorsDetail($error->getMessage());
 
         return $this->createJsonResponse(
             $responseDataBuilder,

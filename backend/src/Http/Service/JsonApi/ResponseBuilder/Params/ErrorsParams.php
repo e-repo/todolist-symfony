@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Service\JsonApi\ResponseBuilder\Params;
 
-class ErrorParams extends AbstractParams
+class ErrorsParams extends AbstractParams
 {
     private ?string $errorDetail = null;
 
@@ -12,18 +12,18 @@ class ErrorParams extends AbstractParams
         'detail'
     ];
 
-    public function getErrorDetail(): ?string
+    public function getErrorsDetail(): ?string
     {
         return $this->errorDetail;
     }
 
-    public function setErrorDetail(?string $errorDetail): self
+    public function setErrorsDetail(?string $errorDetail): self
     {
         $this->errorDetail = $errorDetail;
         return $this;
     }
 
-    public function getProperties(): array
+    protected function getProperties(): array
     {
         return $this->errorProperties;
     }

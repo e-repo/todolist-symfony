@@ -4,18 +4,20 @@ declare(strict_types=1);
 
 namespace App\Http\Service\JsonApi\ResponseBuilder;
 
-use App\Http\Service\JsonApi\ResponseBuilder\Params\AbstractParams;
 use App\Http\Service\JsonApi\ResponseBuilder\Params\DataParams;
-use App\Http\Service\JsonApi\ResponseBuilder\Params\ErrorParams;
-use App\Http\Service\JsonApi\ResponseBuilder\Params\LinkParams;
+use App\Http\Service\JsonApi\ResponseBuilder\Params\ErrorsParams;
+use App\Http\Service\JsonApi\ResponseBuilder\Params\LinksParams;
+use App\Http\Service\JsonApi\ResponseBuilder\Params\MetaParams;
 
 class ResponseDataBuilder
 {
     private DataParams $dataParams;
 
-    private LinkParams $linkParams;
+    private LinksParams $linksParams;
 
-    private ErrorParams $errorParams;
+    private ErrorsParams $errorsParams;
+
+    private MetaParams $metaParams;
 
     public function __construct()
     {
@@ -30,59 +32,70 @@ class ResponseDataBuilder
         return $build;
     }
 
-    public function setLinkSelf(?string $linkSelf): self
+    public function setLinksSelf(?string $linkSelf): self
     {
-        $this->linkParams->setLinkSelf($linkSelf);
+        $this->linksParams->setLinksSelf($linkSelf);
         return $this;
     }
 
-    public function getLinkSelf(): ?string
+    public function getLinksSelf(): ?string
     {
-        return $this->linkParams->getLinkSelf();
+        return $this->linksParams->getLinksSelf();
     }
 
-    public function setLinkFirst(?string $linkSelf): self
+    public function setLinksFirst(?string $linkSelf): self
     {
-        $this->linkParams->setLinkFirst($linkSelf);
+        $this->linksParams->setLinksFirst($linkSelf);
         return $this;
     }
 
-    public function getLinkFirst(): ?string
+    public function getLinksFirst(): ?string
     {
-        return $this->linkParams->getLinkFirst();
+        return $this->linksParams->getLinksFirst();
     }
 
-    public function setLinkPrev(?string $linkSelf): self
+    public function setLinksPrev(?string $linkSelf): self
     {
-        $this->linkParams->setLinkPrev($linkSelf);
+        $this->linksParams->setLinksPrev($linkSelf);
         return $this;
     }
 
-    public function getLinkPrev(): ?string
+    public function getLinksPrev(): ?string
     {
-        return $this->linkParams->getLinkPrev();
+        return $this->linksParams->getLinksPrev();
     }
 
-    public function setLinkNext(?string $linkSelf): self
+    public function setLinksNext(?string $linkSelf): self
     {
-        $this->linkParams->setLinkNext($linkSelf);
+        $this->linksParams->setLinksNext($linkSelf);
         return $this;
     }
 
-    public function getLinkNext(): ?string
+    public function getLinksNext(): ?string
     {
-        return $this->linkParams->getLinkNext();
+        return $this->linksParams->getLinksNext();
     }
 
-    public function setLinkLast(?string $linkSelf): self
+    public function setLinksLast(?string $linkSelf): self
     {
-        $this->linkParams->setLinkLast($linkSelf);
+        $this->linksParams->setLinksLast($linkSelf);
         return $this;
     }
 
-    public function getLinkLast(): ?string
+    public function getLinksLast(): ?string
     {
-        return $this->linkParams->getLinkLast();
+        return $this->linksParams->getLinksLast();
+    }
+
+    public function setDataAllParams(iterable $params): self
+    {
+        $this->dataParams->setDataAllParams($params);
+        return $this;
+    }
+
+    public function getDataAllParams(): iterable
+    {
+        return $this->dataParams->getDataAllParams();
     }
 
     public function setDataType(string $dataType): self
@@ -123,14 +136,30 @@ class ResponseDataBuilder
         return $this;
     }
 
-    public function getErrorDetail(): ?string
+    public function setMetaAttribute(string $key, $value): self
     {
-        return $this->errorParams->getErrorDetail();
+        $this->metaParams->setMetaAttribute($key, $value);
+        return $this;
     }
 
-    public function setErrorDetail(?string $errorDetail): void
+    public function getMetaAttributes(): array
     {
-        $this->errorParams->setErrorDetail($errorDetail);
+        return $this->metaParams->getMetaAttributes();
+    }
+
+    public function findMetaAttribute(string $key)
+    {
+        return $this->metaParams->findMetaAttribute($key);
+    }
+
+    public function getErrorsDetail(): ?string
+    {
+        return $this->errorsParams->getErrorsDetail();
+    }
+
+    public function setErrorsDetail(?string $errorDetail): void
+    {
+        $this->errorsParams->setErrorsDetail($errorDetail);
     }
 
     /**
@@ -139,61 +168,35 @@ class ResponseDataBuilder
      */
     public function toArray(): array
     {
-        $data = $this->createProperties($this->dataParams);
-        $links = $this->createProperties($this->linkParams);
-        $error = $this->createProperties($this->errorParams);
+        $dataParams = $this->dataParams->createProperties();
+        $errorsParams = $this->errorsParams->createProperties();
+        $linksParams = $this->linksParams->createProperties();
+        $metaParams = $this->metaParams->createProperties();
 
         $result = [];
 
-        if ([] !== $data) {
-            $result['data'][] = $data;
+        $result['data'] = $dataParams;
+
+        if (false === empty($errorsParams[0])) {
+            $result['errors'] = $errorsParams;
         }
 
-        if ([] !== $error) {
-            $result['errors'] = $error;
+        if (false === empty($linksParams)) {
+            $result['links'] = $linksParams;
         }
 
-        if ([] !== $links) {
-            $result['links'] = $links;
+        if (false === empty($metaParams)) {
+            $result['meta'] = $metaParams;
         }
 
         return $result;
     }
 
-    /**
-     * @param AbstractParams $params
-     * @return array
-     * @throws GetterNotFoundException
-     */
-    private function createProperties(AbstractParams $params): array
-    {
-
-        $paramsClassName = (new \ReflectionClass($params))->getShortName();
-        $partsClassName = \array_filter(
-            \preg_split('/(?=[A-Z])/', $paramsClassName)
-        );
-        $firstPartClassName = \array_shift($partsClassName);
-
-        $properties = [];
-        foreach ($params->getProperties() as $property) {
-            $getterName = \sprintf('get' . $firstPartClassName . '%s', \ucfirst($property));
-
-            if (! \method_exists($this, $getterName)) {
-                throw new GetterNotFoundException($getterName);
-            }
-
-            if ($value = $this->$getterName()) {
-                $properties[$property] = $value;
-            }
-        }
-
-        return $properties;
-    }
-
     protected function init(): void
     {
-        $this->linkParams = new LinkParams();
+        $this->linksParams = new LinksParams();
         $this->dataParams = new DataParams();
-        $this->errorParams = new ErrorParams();
+        $this->errorsParams = new ErrorsParams();
+        $this->metaParams = new MetaParams();
     }
 }

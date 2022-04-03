@@ -56,7 +56,7 @@ class MenuController extends AbstractController
 
             $responseDataBuilder = ResponseDataBuilder::create()
                 ->setDataType('Sidebar menu')
-                ->setLinkSelf($linkSelf)
+                ->setLinksSelf($linkSelf)
                 ->setDataAttribute('tree', $sidebarMenuTree);
 
             return $this->apiHelper->createJsonResponse($responseDataBuilder);

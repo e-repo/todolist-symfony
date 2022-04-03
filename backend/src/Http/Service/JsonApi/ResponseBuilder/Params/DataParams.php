@@ -7,12 +7,12 @@ namespace App\Http\Service\JsonApi\ResponseBuilder\Params;
 class DataParams extends AbstractParams
 {
     private ?int $dataId = null;
-
     private array $dataAttributes = [];
-
+    private ?iterable $dataParams = null;
     private ?string $dataType = null;
 
     private array $dataProperties = [
+        'allParams',
         'type',
         'id',
         'attributes'
@@ -53,6 +53,17 @@ class DataParams extends AbstractParams
         return $this->dataAttributes[$key] ?? null;
     }
 
+    public function setDataAllParams(iterable $params): self
+    {
+        $this->dataParams = $params;
+        return $this;
+    }
+
+    public function getDataAllParams(): ?iterable
+    {
+        return $this->dataParams;
+    }
+
     public function getDataId(): ?int
     {
         return $this->dataId;
@@ -64,7 +75,7 @@ class DataParams extends AbstractParams
         return $this;
     }
 
-    public function getProperties(): array
+    protected function getProperties(): array
     {
         return $this->dataProperties;
     }
