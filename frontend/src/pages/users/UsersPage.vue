@@ -16,6 +16,11 @@ import AppFooter from "@/components/content/footer/AppFooter";
 
 export default {
   name: 'AppContent',
+  data() {
+    return {
+      users: null
+    }
+  },
   components: { AppNavbar, UsersContent, AppFooter },
   props: {
     sidebarToggle: {

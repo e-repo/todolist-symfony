@@ -18,7 +18,7 @@ export default {
   },
   methods: {
     changeSidebarToggle: function (toggle) {
-      this.sidebarToggle = toggle;
+      this.sidebarToggle = toggle
     }
   }
 }

@@ -10,13 +10,19 @@ import './assets/scss/app.scss';
 import { library } from '@fortawesome/fontawesome-svg-core';
 
 /* import specific icons */
-import { faTractor, faHouse, faUserGroup, faList, faAngleLeft, faXmark, faBars } from '@fortawesome/free-solid-svg-icons';
+import {
+    faTractor, faHouse, faUserGroup, faList, faAngleLeft,
+    faXmark, faBars, faAnglesLeft, faAnglesRight, faAngleRight
+} from '@fortawesome/free-solid-svg-icons';
 
 /* import font awesome icon component */
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 /* add icons to the library */
-library.add(faTractor, faHouse, faUserGroup, faList, faAngleLeft, faXmark, faBars);
+library.add(
+    faTractor, faHouse, faUserGroup, faList, faAngleLeft,
+    faAngleRight, faXmark, faBars, faAnglesLeft, faAnglesRight
+);
 
 const app = createApp(App);
 

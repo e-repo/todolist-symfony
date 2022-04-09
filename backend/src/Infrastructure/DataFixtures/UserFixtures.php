@@ -57,7 +57,7 @@ class UserFixtures extends Fixture
 
         $user = User::signUpByEmail(
             Id::next(),
-            new \DateTimeImmutable(),
+            \DateTimeImmutable::createFromMutable($this->faker->dateTimeBetween('-1 year')),
             new Name(self::FIRST_NAME, self::LAST_NAME),
             new Email(self::ADMIN_EMAIL),
             $passwordHash,
@@ -77,7 +77,7 @@ class UserFixtures extends Fixture
         for ($i = 1; $i <= $count; $i++) {
             $user = User::signUpByEmail(
                 Id::next(),
-                new \DateTimeImmutable(),
+                \DateTimeImmutable::createFromMutable($this->faker->dateTimeBetween('-1 year')),
                 new Name($this->faker->firstName(), $this->faker->lastName()),
                 new Email(\sprintf('user_%s@test.ru', $i)),
                 $passwordHash,

@@ -20,7 +20,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  */
 class UserController extends AbstractController
 {
-    private const PER_PAGE = 20;
+    private const PER_PAGE = 15;
     private UserFetcher $fetcher;
     private JsonApiHelper $apiHelper;
     private UrlGeneratorInterface $urlGenerator;
@@ -64,36 +64,48 @@ class UserController extends AbstractController
         );
 
         $total = $pagination->getTotalItemCount();
-        $numberOrPages = (int)\ceil($total/self::PER_PAGE);
+        $numberOfPages = (int)\ceil($total/self::PER_PAGE);
 
         $linkSelf = $this->urlGenerator->generate(
             'user.list',
-            [],
+            ['page' => $pagination->getCurrentPageNumber()],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
-        $linkFirst = \sprintf('%s?page=%s', $linkSelf, 1);
+
+        $linkFirst = $this->urlGenerator->generate(
+            'user.list',
+            ['page' => 1],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
 
         $responseDataBuilder = ResponseDataBuilder::create()
             ->setLinksSelf($linkSelf)
             ->setLinksFirst($linkFirst)
-            ->setMetaAttribute('totalPage', $numberOrPages)
+            ->setMetaAttribute('totalPage', $numberOfPages)
+            ->setMetaAttribute('currentPage', $pagination->getCurrentPageNumber())
+            ->setMetaAttribute('perPage', self::PER_PAGE)
             ->setDataAllParams($pagination->getItems());
 
-        if ($numberOrPages > 1) {
+        if ($numberOfPages > 1) {
+            $linkLast = $this->urlGenerator->generate(
+                'user.list',
+                ['page' => $numberOfPages],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
+            $responseDataBuilder
+                ->setLinksLast($linkLast);
+        }
+
+        if ($pagination->getCurrentPageNumber() < $numberOfPages) {
             $linkNext = $this->urlGenerator->generate(
                 'user.list',
                 ['page' => $pagination->getCurrentPageNumber() + 1],
                 UrlGeneratorInterface::ABSOLUTE_URL
             );
-            $linkLast = $this->urlGenerator->generate(
-                'user.list',
-                ['page' => $numberOrPages],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            );
 
             $responseDataBuilder
-                ->setLinksNext($linkNext)
-                ->setLinksLast($linkLast);
+                ->setLinksNext($linkNext);
         }
 
         if ($pagination->getCurrentPageNumber() > 1) {

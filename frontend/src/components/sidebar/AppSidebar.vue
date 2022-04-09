@@ -38,13 +38,13 @@ export default {
   methods: {
     emitSidebarToggle: function () {
       this.toggle = ! this.toggle;
-      this.$emit('sidebarToggle', this.toggle)
+      this.$emit('sidebarToggle', this.toggle);
     },
     loadSidebarMenu: function () {
       axios
           .get('/api/v1/sidebar-menu')
           .then(response => {
-            this.sidebarMenu = response.data;
+            this.sidebarMenu = response.data
           })
     }
   },
