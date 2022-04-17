@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Controller\Api\User;
 
+use App\Domain\User\Entity\User\Role;
+use App\Domain\User\Entity\User\User;
 use App\Domain\User\Read\Filter\Filter;
 use App\Domain\User\Read\UserFetcher;
 use App\Http\Payload\Api\User\UserListPayload;
 use App\Http\Service\JsonApi\JsonApiHelper;
 use App\Http\Service\JsonApi\ResponseBuilder\ResponseDataBuilder;
+use App\Infrastructure\Security\RolesHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,21 +27,25 @@ class UserController extends AbstractController
     private UserFetcher $fetcher;
     private JsonApiHelper $apiHelper;
     private UrlGeneratorInterface $urlGenerator;
+    private RolesHelper $rolesHelper;
 
     /**
      * @param UserFetcher $fetcher
      * @param JsonApiHelper $apiHelper
      * @param UrlGeneratorInterface $urlGenerator
+     * @param RolesHelper $rolesHelper
      */
     public function __construct(
         UserFetcher $fetcher,
         JsonApiHelper $apiHelper,
-        UrlGeneratorInterface $urlGenerator
+        UrlGeneratorInterface $urlGenerator,
+        RolesHelper $rolesHelper
     )
     {
         $this->fetcher = $fetcher;
         $this->apiHelper = $apiHelper;
         $this->urlGenerator = $urlGenerator;
+        $this->rolesHelper = $rolesHelper;
     }
 
     /**
@@ -118,6 +125,46 @@ class UserController extends AbstractController
             $responseDataBuilder
                 ->setLinksPrev($linkPrev);
         }
+
+        return $this->apiHelper->createJsonResponse($responseDataBuilder);
+    }
+
+    /**
+     * @Route("/v1/user/role/list", name="_role.list", methods={"GET"})
+     * @return JsonResponse
+     */
+    public function getUserRoles(): JsonResponse
+    {
+        $linkSelf = $this->urlGenerator->generate(
+            'user_role.list',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        $responseDataBuilder = ResponseDataBuilder::create()
+            ->setLinksSelf($linkSelf)
+            ->setDataType('User roles')
+            ->setDataAttribute('roles', $this->rolesHelper->getRoles());
+
+        return $this->apiHelper->createJsonResponse($responseDataBuilder);
+    }
+
+    /**
+     * @Route("/v1/user/status/list", name="_status.list", methods={"GET"})
+     * @return JsonResponse
+     */
+    public function getUserStatuses(): JsonResponse
+    {
+        $linkSelf = $this->urlGenerator->generate(
+            'user_status.list',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        $responseDataBuilder = ResponseDataBuilder::create()
+            ->setLinksSelf($linkSelf)
+            ->setDataType('User statuses')
+            ->setDataAttribute('statuses', User::allStatuses());
 
         return $this->apiHelper->createJsonResponse($responseDataBuilder);
     }

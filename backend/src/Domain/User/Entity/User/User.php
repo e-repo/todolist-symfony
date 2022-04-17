@@ -418,6 +418,15 @@ class User
         return $this->status;
     }
 
+    public static function allStatuses(): array
+    {
+        return [
+            self::STATUS_ACTIVE,
+            self::STATUS_BLOCKED,
+            self::STATUS_WAIT
+        ];
+    }
+
     /**
      * @param Name $name
      */

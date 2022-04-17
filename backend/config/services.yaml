@@ -59,6 +59,9 @@ services:
         arguments:
             - '@Predis\Client'
 
+    App\Infrastructure\Security\RolesHelper:
+        arguments: [ '%security.role_hierarchy.roles%' ]
+
     App\Widget\:
         resource: '../src/Widget'
         tags:
