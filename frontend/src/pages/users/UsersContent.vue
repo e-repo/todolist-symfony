@@ -13,17 +13,25 @@
           <div class="col-2">
             <select class="form-select form-control">
               <option selected>Все роли</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
+              <option
+                  v-for="(roleName, index) in userRoles"
+                  :key="index"
+                  :value="roleName"
+              >
+                {{ this.getRoleName(roleName) }}
+              </option>
             </select>
           </div>
           <div class="col-2">
             <select class="form-select form-control">
               <option selected>Все статусы</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
+              <option
+                v-for="(statusName, index) in userStatuses"
+                :key="index"
+                :value="statusName"
+              >
+                {{ statusName.toUpperCase() }}
+              </option>
             </select>
           </div>
           <div class="col-4">
@@ -97,8 +105,8 @@
 </template>
 
 <script>
-import { API_V1 } from "@/api"
-import { ROLE_BADGE, STATUS_BADGE } from "@/pages/users/conf"
+import { ROLE_NAMES_RU, BADGE } from "@/conf";
+import { API_V1 } from "@/conf/api"
 import AppPreloader from "@/components/UI/AppPreloader"
 import BootstrapPaginate from "@/components/UI/BootstrapPaginate";
 import moment from 'moment'
@@ -109,14 +117,18 @@ export default {
   data() {
     return {
       users: null,
+      userRoles: null,
+      userStatuses: null,
       pageItems: [],
       usersColumnsName: ['№', 'ФИО', 'Email', 'Роль', 'Статус', 'Дата создания']
     }
   },
   methods: {
-    getRoleClass: (role) => ROLE_BADGE[role] ? ROLE_BADGE[role].class : '',
-    getRoleName: (role) => ROLE_BADGE[role] ? ROLE_BADGE[role].name : '',
-    getStatusClass: (status) => STATUS_BADGE[status.toUpperCase()] ? STATUS_BADGE[status.toUpperCase()].class : '',
+    getRoleClass: (role) => BADGE.USER_ROLE_BADGE[role] ? BADGE.USER_ROLE_BADGE[role].class : '',
+    getRoleName: (role) => ROLE_NAMES_RU[role] ? ROLE_NAMES_RU[role] : '',
+    getStatusClass: (status) => BADGE.USER_STATUS_BADGE[status.toUpperCase()]
+        ? BADGE.USER_STATUS_BADGE[status.toUpperCase()].class
+        : '',
     formatUserDate: (value) => moment(value).format('DD.MM.YYYY hh:mm:ss'),
     getUserNumber: function (index) {
       return (this.users.meta.currentPage - 1) * this.users.meta.perPage + index
@@ -143,9 +155,31 @@ export default {
           this.users = response.data
         })
     },
+    loadRoles: function () {
+      axios
+        .get(API_V1.USER_ROLE_LIST)
+        .then(response => {
+          const roles = response.data
+          const [rolesData] = roles.data
+
+          this.userRoles = rolesData.attributes.roles
+        })
+    },
+    loadStatuses: function () {
+      axios
+          .get(API_V1.USER_STATUS_LIST)
+          .then(response => {
+            const statuses = response.data
+            const [statusesData] = statuses.data
+
+            this.userStatuses = statusesData.attributes.statuses
+          })
+    }
   },
   mounted() {
     this.loadUsers()
+    this.loadRoles()
+    this.loadStatuses()
   }
 }
 </script>
