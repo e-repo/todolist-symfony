@@ -1,13 +1,13 @@
 <template>
   <nav v-if="totalPage > 1">
     <ul class="pagination">
-      <li v-if="this.getUrlToFirstPage()" class="page-item">
-        <button type="button" class="page-link text-dark" @click="loadPageEmit(this.getUrlToFirstPage())">
+      <li v-if="this.geFirstPageNumber()" class="page-item">
+        <button type="button" class="page-link text-dark" @click="loadPageEmit(this.geFirstPageNumber())">
           <font-awesome-icon class="me-2" icon="angles-left" />
         </button>
       </li>
-      <li v-if="this.getUrlToPrevPage()" class="page-item">
-        <button type="button" class="page-link text-dark" @click="loadPageEmit(this.getUrlToPrevPage())">
+      <li v-if="this.getPrevPageNumber()" class="page-item">
+        <button type="button" class="page-link text-dark" @click="loadPageEmit(this.getPrevPageNumber())">
           <font-awesome-icon class="me-2" icon="angle-left" />
         </button>
       </li>
@@ -22,19 +22,19 @@
         <button
             type="button"
             class="page-link text-dark"
-            @click="loadPageEmit(page.url)"
+            @click="loadPageEmit(page.number)"
         >
           {{ page.number }}
         </button>
       </li>
 
-      <li v-if="this.getUrlToNextPage()" class="page-item">
-        <button type="button" class="page-link text-dark" @click="loadPageEmit(this.getUrlToNextPage())">
+      <li v-if="this.getNextPageNumber()" class="page-item">
+        <button type="button" class="page-link text-dark" @click="loadPageEmit(this.getNextPageNumber())">
           <font-awesome-icon class="me-2" icon="angle-right" />
         </button>
       </li>
-      <li v-if="this.getUrlToLastPage()" class="page-item" >
-        <button type="button" class="page-link text-dark" @click="loadPageEmit(this.getUrlToLastPage())">
+      <li v-if="this.getLastPageNumber()" class="page-item" >
+        <button type="button" class="page-link text-dark" @click="loadPageEmit(this.getLastPageNumber())">
           <font-awesome-icon class="me-2" icon="angles-right" />
         </button>
       </li>
@@ -49,7 +49,6 @@ export default {
   props: {
     totalPage: {type: Number, default: 1},
     currentPage: {type: Number, default: 1},
-    pageUrl: {type: String, default: window.location.pathname},
     numberPaginationItems: {type: Number, default: NUMBER_PAGINATION_ITEMS},
   },
   data() {
@@ -58,21 +57,21 @@ export default {
     }
   },
   methods: {
-    getUrlToFirstPage: function () {
-      return this.pageUrl + '?page=1'
+    geFirstPageNumber: function () {
+      return 1
     },
-    getUrlToNextPage: function () {
+    getNextPageNumber: function () {
       return this.currentPage < this.totalPage
-          ? this.pageUrl + `?page=${this.currentPage + 1}`
+          ? this.currentPage + 1
           : null
     },
-    getUrlToPrevPage: function () {
+    getPrevPageNumber: function () {
       return this.currentPage > 1
-          ? this.pageUrl + `?page=${this.currentPage - 1}`
+          ? this.currentPage - 1
           : null
     },
-    getUrlToLastPage: function () {
-      return this.pageUrl + `?page=${this.totalPage}`
+    getLastPageNumber: function () {
+      return this.totalPage
     },
     createPaginationItems: function () {
       const pageSuit = Math.ceil((this.currentPage + 1) / this.numberPaginationItems)
@@ -86,22 +85,24 @@ export default {
       for (let i = offset; i < itemsCount; i++) {
         let pageNumber = i + 1;
         let page = {
-          number: pageNumber,
-          url: this.pageUrl + '?page=' + pageNumber
+          number: pageNumber
         }
         pages.push(page)
       }
 
       this.pageItems = pages;
     },
-    loadPageEmit: function (url = null) {
-      this.$emit('loadPage', url)
+    loadPageEmit: function (pageNumber = null) {
+      this.$emit('loadPage', pageNumber)
     },
     checkIsActive: function (pageNumber) {
       return pageNumber === this.currentPage
     }
   },
   watch: {
+    totalPage() {
+      this.createPaginationItems()
+    },
     currentPage() {
       this.createPaginationItems()
     }

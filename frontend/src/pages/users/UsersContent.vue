@@ -3,16 +3,26 @@
     <div class="container-fluid">
 
       <div class="p-3 mt-2 border">
-        <form class="row">
+        <form class="row" @submit.prevent="applyFilters()">
           <div class="col-2">
-            <input type="text" class="form-control" placeholder="Имя">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Имя"
+              v-model="filters.name"
+            >
           </div>
           <div class="col-2">
-            <input type="email" class="form-control" placeholder="Email">
+            <input
+              type="email"
+              class="form-control"
+              placeholder="Email"
+              v-model="filters.email"
+            >
           </div>
           <div class="col-2">
-            <select class="form-select form-control">
-              <option selected>Все роли</option>
+            <select class="form-select form-control" v-model="filters.role">
+              <option disabled value="">Все роли</option>
               <option
                   v-for="(roleName, index) in userRoles"
                   :key="index"
@@ -23,8 +33,8 @@
             </select>
           </div>
           <div class="col-2">
-            <select class="form-select form-control">
-              <option selected>Все статусы</option>
+            <select class="form-select form-control" v-model="filters.status">
+              <option selected value="">Все статусы</option>
               <option
                 v-for="(statusName, index) in userStatuses"
                 :key="index"
@@ -35,8 +45,8 @@
             </select>
           </div>
           <div class="col-4">
-            <button type="button" class="btn btn-success me-1">Фильтровать</button>
-            <button type="button" class="btn btn-primary me-1">Сбросить</button>
+            <button type="submit" class="btn btn-success me-1">Фильтровать</button>
+            <button type="button" class="btn btn-primary me-1" @click="resetFilters()">Сбросить</button>
           </div>
         </form>
       </div>
@@ -45,7 +55,7 @@
         <div class="col">
 
           <table
-              v-if="users"
+              v-if="usersData"
               class="table table-hover table-striped"
           >
             <thead>
@@ -61,7 +71,7 @@
             </thead>
             <tbody>
             <tr
-                v-for="(user, index) in users.data"
+                v-for="(user, index) in usersData"
                 :key="index"
             >
               <th scope="row">{{ getUserNumber(index + 1) }}</th>
@@ -87,14 +97,13 @@
             </tr>
             </tbody>
           </table>
-          <app-preloader v-if="! users"></app-preloader>
+          <app-preloader v-if="! usersData"></app-preloader>
 
           <bootstrap-paginate
-              v-if="users"
+              v-if="usersMeta"
               @load-page="toPage"
-              :total-page="users.meta.totalPage"
-              :current-page="users.meta.currentPage"
-              :page-url="this.$route.path"
+              :total-page="usersMeta.totalPage"
+              :current-page="usersMeta.currentPage"
           ></bootstrap-paginate>
 
         </div>
@@ -116,10 +125,17 @@ export default {
   components: { AppPreloader, BootstrapPaginate },
   data() {
     return {
-      users: null,
+      usersData: null,
+      usersMeta: null,
       userRoles: null,
       userStatuses: null,
-      pageItems: [],
+      pageNumber: null,
+      filters: {
+        name: '',
+        email: '',
+        role: '',
+        status: '',
+      },
       usersColumnsName: ['№', 'ФИО', 'Email', 'Роль', 'Статус', 'Дата создания']
     }
   },
@@ -131,28 +147,82 @@ export default {
         : '',
     formatUserDate: (value) => moment(value).format('DD.MM.YYYY hh:mm:ss'),
     getUserNumber: function (index) {
-      return (this.users.meta.currentPage - 1) * this.users.meta.perPage + index
+      return (this.usersMeta.currentPage - 1) * this.usersMeta.perPage + index
     },
-    toPage: function (url = null) {
-      if (null === url) {
+    toPage: function (pageNumber = null) {
+      if (null === pageNumber) {
         return;
       }
 
-      const userPage = new URL(`${window.location.protocol}/${url}`)
+      this.pageNumber = pageNumber
 
-      this.$router.push({path: '/users', query: {page: userPage.searchParams.get('page')}})
-      this.loadUsers(API_V1.USER_LIST + userPage.search)
+      this.$router.push({
+        path: '/users',
+        query: {
+          page: pageNumber,
+          name: this.filters.name,
+          email: this.filters.email,
+          role: this.filters.role,
+          status: this.filters.status
+        }
+      })
     },
-    loadUsers: function (url = null, params = null) {
-      const usersUrl = null !== url ? url : API_V1.USER_LIST + window.location.search
-      const searchParams = null !== params ? params : {status: 'active'}
+    applyFilters: function () {
+      this.$router.push({
+        path: '/users',
+        query: {
+          name: this.filters.name,
+          email: this.filters.email,
+          role: this.filters.role,
+          status: this.filters.status
+        }
+      })
+    },
+    resetFilters: function () {
+      this.filters = {
+        page: 1,
+        name: '',
+        email: '',
+        role: '',
+        status: '',
+      }
+      this.applyFilters()
+    },
+    loadFilters(params = null) {
+      if (null === params) {
+        return;
+      }
+
+      Object.keys(params).forEach(key => {
+        const filtersList = Object.keys(this.filters)
+
+        if (
+            filtersList.includes(key) &&
+            '' !== params[key].trim()
+        ) {
+          this.filters[key] = params[key]
+        }
+      })
+    },
+    loadUsers: function (params = null, url = null) {
+      const defaultParams = {status: 'active'}
+      const searchParams = null !== params
+          ? {...params, ...defaultParams}
+          : null
+
+      this.loadFilters(params)
+
+      console.log(this.filters)
+
+      const usersUrl = null !== url ? url : API_V1.USER_LIST
 
       axios
         .get(usersUrl, {
           params: searchParams
         })
         .then(response => {
-          this.users = response.data
+          this.usersData = response.data.data
+          this.usersMeta = response.data.meta
         })
     },
     loadRoles: function () {
@@ -177,9 +247,16 @@ export default {
     }
   },
   mounted() {
-    this.loadUsers()
+    this.loadUsers(this.$route.query)
     this.loadRoles()
     this.loadStatuses()
+
+    this.$watch(
+      () => this.$route.query,
+      (toParams) => {
+            this.loadUsers(toParams)
+          }
+    )
   }
 }
 </script>
