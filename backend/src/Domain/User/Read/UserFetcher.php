@@ -190,7 +190,10 @@ class UserFetcher extends ServiceEntityRepository
 
         if ($filter->name) {
             $qb->andWhere($qb->expr()->like('LOWER(CONCAT(name_first, \' \', name_last))', ':name'));
-            $qb->setParameter(':name', $filter->name);
+            $qb->setParameter(
+                ':name',
+                '%' . \addcslashes(\mb_strtolower($filter->name), '%_') . '%'
+            );
         }
 
         if ($filter->email) {
