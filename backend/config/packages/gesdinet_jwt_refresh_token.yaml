@@ -1,0 +1,3 @@
+gesdinet_jwt_refresh_token:
+    refresh_token_class: App\Domain\User\Entity\Jwt\RefreshToken
+    user_provider: App\Infrastructure\Security\UserProvider
