@@ -48,6 +48,12 @@ services:
         factory: 'App\Infrastructure\Container\Domain\User\ResetTokenizerFactory:create'
         arguments: ['PT1H']
 
+    acme_api.event.jwt_created_listener:
+        class: App\Infrastructure\Security\Event\JWTCreatedListener
+        arguments: [ '@request_stack' ]
+        tags:
+            - { name: kernel.event_listener, event: lexik_jwt_authentication.on_jwt_created, method: onJWTCreated }
+
     App\Infrastructure\Email\AppTemplateCreator:
         arguments: ['%env(MAILER_FROM_EMAIL)%']
 
