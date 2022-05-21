@@ -2,6 +2,7 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import directives from "@/directives";
 import router from "@/router/router";
+import { createPinia } from 'pinia'
 
 import 'bootstrap/scss/bootstrap.scss';
 import './assets/scss/app.scss';
@@ -33,4 +34,5 @@ directives.forEach(directive => {
 app
     .component('font-awesome-icon', FontAwesomeIcon)
     .use(router)
+    .use(createPinia())
     .mount('#app');

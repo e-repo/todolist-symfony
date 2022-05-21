@@ -15,7 +15,7 @@ import HomeContent from "@/pages/home/HomeContent";
 import AppFooter from "@/components/content/footer/AppFooter";
 
 export default {
-  name: 'AppContent',
+  name: 'HomePage',
   components: { AppNavbar, HomeContent, AppFooter },
   props: {
     sidebarToggle: {

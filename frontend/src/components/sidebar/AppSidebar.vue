@@ -23,12 +23,23 @@
 </template>
 
 <script>
-import SidebarNav from "@/components/sidebar/navigation/SidebarNav";
-import axios from 'axios';
+import SidebarNav from "@/components/sidebar/navigation/SidebarNav"
+import axios from 'axios'
+import { useAuthStore } from "@/store/auth"
+import { storeToRefs } from "pinia"
 
 export default {
   name: 'AppSidebar',
   components: { SidebarNav },
+  setup() {
+    const authStore = useAuthStore()
+    const { user } = storeToRefs(authStore)
+
+    return {
+      user,
+      authStore,
+    }
+  },
   data() {
     return {
       toggle: true,
@@ -41,11 +52,22 @@ export default {
       this.$emit('sidebarToggle', this.toggle);
     },
     loadSidebarMenu: function () {
-      axios
-          .get('/api/v1/sidebar-menu')
-          .then(response => {
-            this.sidebarMenu = response.data
-          })
+      if (true === this.user.isAuth) {
+        axios
+            .get('/api/v1/sidebar-menu', {
+              headers: {
+                Authorization: `Bearer ${this.user.token}`
+              }
+            }).then(response => {
+              this.sidebarMenu = response.data
+            }).catch((error) => {
+              const errorData = error.response.data;
+
+              if (401 === errorData.code) {
+                this.authStore.refreshToken(this.$router)
+              }
+            })
+      }
     }
   },
   mounted() {

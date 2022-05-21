@@ -14,7 +14,15 @@
           :class="{'dropdown-menu__show-right': dropdownProfileToggle}"
         >
           <li><a class="dropdown-item" href="#">Профиль пользователя</a></li>
-          <li><a class="dropdown-item" href="#">Выйти</a></li>
+          <li>
+            <a
+              class="dropdown-item"
+              href="#"
+              @click.prevent="logout()"
+            >
+              Выйти
+            </a>
+          </li>
         </ul>
       </li>
     </ul>
@@ -22,7 +30,16 @@
 </template>
 
 <script>
+import { useAuthStore } from "@/store/auth"
+
 export default {
+  setup() {
+    const authStore = useAuthStore()
+
+    return {
+      authStore
+    }
+  },
   data() {
     return {
       dropdownProfileToggle: false
@@ -33,6 +50,10 @@ export default {
       if (true === this.dropdownProfileToggle) {
         this.dropdownProfileToggle = ! this.dropdownProfileToggle
       }
+    },
+    logout: function () {
+      this.authStore.logout()
+      this.$router.push({name: 'Login'})
     }
   }
 }

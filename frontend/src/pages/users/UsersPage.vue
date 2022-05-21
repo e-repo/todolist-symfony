@@ -15,7 +15,7 @@ import UsersContent from "@/pages/users/UsersContent";
 import AppFooter from "@/components/content/footer/AppFooter";
 
 export default {
-  name: 'AppContent',
+  name: 'UserPage',
   data() {
     return {
       users: null
