@@ -114,15 +114,26 @@
 </template>
 
 <script>
-import { ROLE_NAMES_RU, BADGE } from "@/conf";
+import { ROLE_NAMES_RU, BADGE } from "@/conf"
 import { API_V1 } from "@/conf/api"
 import AppPreloader from "@/components/UI/AppPreloader"
-import BootstrapPaginate from "@/components/UI/BootstrapPaginate";
+import { useAuthStore } from "@/store/auth"
+import BootstrapPaginate from "@/components/UI/BootstrapPaginate"
 import moment from 'moment'
-import axios from "axios";
+import axios from "axios"
+import { storeToRefs } from "pinia"
 
 export default {
   components: { AppPreloader, BootstrapPaginate },
+  setup() {
+    const authStore = useAuthStore()
+    const { user } = storeToRefs(authStore)
+
+    return {
+      user,
+      authStore,
+    }
+  },
   data() {
     return {
       usersData: null,
@@ -212,41 +223,57 @@ export default {
 
       this.loadFilters(params)
 
-      console.log(this.filters)
-
       const usersUrl = null !== url ? url : API_V1.USER_LIST
 
       axios
         .get(usersUrl, {
+          headers: {
+            Authorization: `Bearer ${this.user.token}`
+          },
           params: searchParams
-        })
-        .then(response => {
+        }).then(response => {
           this.usersData = response.data.data
           this.usersMeta = response.data.meta
+        }).catch((error) => {
+          this.authStore.tryRefreshToken(error, this.$router)
         })
     },
     loadRoles: function () {
       axios
-        .get(API_V1.USER_ROLE_LIST)
-        .then(response => {
+        .get(API_V1.USER_ROLE_LIST, {
+          headers: {
+            Authorization: `Bearer ${this.user.token}`
+          },
+        }).then(response => {
           const roles = response.data
           const [rolesData] = roles.data
 
           this.userRoles = rolesData.attributes.roles
+        }).catch((error) => {
+          this.authStore.tryRefreshToken(error, this.$router)
         })
     },
     loadStatuses: function () {
       axios
-          .get(API_V1.USER_STATUS_LIST)
-          .then(response => {
+          .get(API_V1.USER_STATUS_LIST, {
+            headers: {
+              Authorization: `Bearer ${this.user.token}`
+            },
+          }).then(response => {
             const statuses = response.data
             const [statusesData] = statuses.data
 
             this.userStatuses = statusesData.attributes.statuses
+          }).catch((error) => {
+            this.authStore.tryRefreshToken(error, this.$router)
           })
     }
   },
   mounted() {
+    if (! this.user.isAuth) {
+      return;
+    }
+
     this.loadUsers(this.$route.query)
     this.loadRoles()
     this.loadStatuses()

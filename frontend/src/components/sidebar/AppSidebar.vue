@@ -61,11 +61,7 @@ export default {
             }).then(response => {
               this.sidebarMenu = response.data
             }).catch((error) => {
-              const errorData = error.response.data;
-
-              if (401 === errorData.code) {
-                this.authStore.refreshToken(this.$router)
-              }
+              this.authStore.tryRefreshToken(error, this.$router)
             })
       }
     }

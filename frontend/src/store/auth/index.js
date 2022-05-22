@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import axios from "axios";
+import axios from "axios"
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
@@ -34,7 +34,13 @@ export const useAuthStore = defineStore('auth', {
                 }
             })
         },
-        refreshToken($router = null) {
+        tryRefreshToken(error, $router = null) {
+            const errorData = error.response.data
+
+            if (401 !== errorData.code) {
+                return
+            }
+
             axios.post('/api/token/refresh', {
                 refresh_token: this.user.refreshToken
             }).then((response) => {
@@ -50,7 +56,7 @@ export const useAuthStore = defineStore('auth', {
                     $router.go()
                 }
             }).catch((error) => {
-                console.log(error.message)
+                throw new Error(error.message)
             })
         },
         setUserData(data) {
@@ -73,7 +79,22 @@ export const useAuthStore = defineStore('auth', {
             this.user.refreshToken = null;
 
             localStorage.removeItem('user')
+        }
+    },
+    getters: {
+        findUserFromToken() {
+            if (null === this.user.token) {
+                return;
+            }
 
+            const tokenParts = this.user.token.split('.')
+            const tokenPayload = JSON.parse(atob(tokenParts[1]))
+
+            if (! tokenPayload) {
+                return null
+            }
+
+            return tokenPayload.user
         }
     }
 })

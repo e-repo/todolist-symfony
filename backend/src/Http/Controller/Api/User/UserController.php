@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Controller\Api\User;
 
-use App\Domain\User\Entity\User\Role;
 use App\Domain\User\Entity\User\User;
 use App\Domain\User\Read\Filter\Filter;
 use App\Domain\User\Read\UserFetcher;
@@ -165,6 +164,31 @@ class UserController extends AbstractController
             ->setLinksSelf($linkSelf)
             ->setDataType('User statuses')
             ->setDataAttribute('statuses', User::allStatuses());
+
+        return $this->apiHelper->createJsonResponse($responseDataBuilder);
+    }
+
+    /**
+     * @Route("/v1/user/{id}", name="_profile", methods={"GET"})
+     * @param User $user
+     * @return JsonResponse
+     */
+    public function getUser(User $user): JsonResponse
+    {
+        $linkSelf = $this->urlGenerator->generate(
+            'user_profile',
+            ['id' => $user->getId()->getValue()],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        $responseDataBuilder = ResponseDataBuilder::create()
+            ->setLinksSelf($linkSelf)
+            ->setDataType('User profile')
+            ->setDataAttribute('name', $user->getName()->getFull())
+            ->setDataAttribute('email', $user->getEmail()->getValue())
+            ->setDataAttribute('createdAt', $user->getDate()->format('d.m.Y H:i:s'))
+            ->setDataAttribute('role', $user->getRole()->name())
+            ->setDataAttribute('status', $user->getStatus());
 
         return $this->apiHelper->createJsonResponse($responseDataBuilder);
     }

@@ -7,20 +7,28 @@
           type="button"
           @click="dropdownProfileToggle = ! dropdownProfileToggle"
         >
-          Админ Админов
+          {{ this.username() }}
         </button>
         <ul
           class="dropdown-menu"
           :class="{'dropdown-menu__show-right': dropdownProfileToggle}"
         >
-          <li><a class="dropdown-item" href="#">Профиль пользователя</a></li>
+          <li>
+            <a
+              class="dropdown-item"
+              href="#"
+              @click.prevent="toProfilePage()"
+            >
+                User profile
+            </a>
+          </li>
           <li>
             <a
               class="dropdown-item"
               href="#"
               @click.prevent="logout()"
             >
-              Выйти
+              Logout
             </a>
           </li>
         </ul>
@@ -37,7 +45,8 @@ export default {
     const authStore = useAuthStore()
 
     return {
-      authStore
+      authStore,
+      userFromToken: authStore.findUserFromToken
     }
   },
   data() {
@@ -54,6 +63,12 @@ export default {
     logout: function () {
       this.authStore.logout()
       this.$router.push({name: 'Login'})
+    },
+    username: function () {
+      return this.userFromToken ? `${this.userFromToken.first} ${this.userFromToken.last}` : '';
+    },
+    toProfilePage: function () {
+      this.$router.push({path: `/profile/${this.userFromToken.id}`})
     }
   }
 }

@@ -2,9 +2,9 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomePage from "@/pages/home/HomePage";
 import UsersPage from "@/pages/users/UsersPage";
 import LoginPage from "@/pages/login/LoginPage";
+import ProfilePage from "@/pages/userProfile/ProfilePage";
 
 import { useAuthStore } from "@/store/auth";
-
 import guest from "@/router/middleware/guest";
 import auth from "@/router/middleware/auth";
 import middlewarePipeline from "@/router/middleware/middlewarePipeline";
@@ -34,6 +34,16 @@ const routes = [
         path: '/users',
         name: 'Users',
         component: UsersPage,
+        meta: {
+            middleware: [
+                auth,
+            ]
+        }
+    },
+    {
+        path: '/profile/:id',
+        name: 'Profile',
+        component: ProfilePage,
         meta: {
             middleware: [
                 auth,
