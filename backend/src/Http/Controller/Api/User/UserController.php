@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controller\Api\User;
 
 use App\Domain\User\Entity\User\User;
+use App\Domain\User\Entity\User\UserRepository;
 use App\Domain\User\Read\Filter\Filter;
 use App\Domain\User\Read\UserFetcher;
 use App\Http\Payload\Api\User\UserListPayload;
@@ -14,6 +15,7 @@ use App\Infrastructure\Security\RolesHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -27,15 +29,18 @@ class UserController extends AbstractController
     private JsonApiHelper $apiHelper;
     private UrlGeneratorInterface $urlGenerator;
     private RolesHelper $rolesHelper;
+    private UserRepository $userRepository;
 
     /**
      * @param UserFetcher $fetcher
+     * @param UserRepository $userRepository
      * @param JsonApiHelper $apiHelper
      * @param UrlGeneratorInterface $urlGenerator
      * @param RolesHelper $rolesHelper
      */
     public function __construct(
         UserFetcher $fetcher,
+        UserRepository $userRepository,
         JsonApiHelper $apiHelper,
         UrlGeneratorInterface $urlGenerator,
         RolesHelper $rolesHelper
@@ -45,6 +50,7 @@ class UserController extends AbstractController
         $this->apiHelper = $apiHelper;
         $this->urlGenerator = $urlGenerator;
         $this->rolesHelper = $rolesHelper;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -170,11 +176,21 @@ class UserController extends AbstractController
 
     /**
      * @Route("/v1/user/{id}", name="_profile", methods={"GET"})
-     * @param User $user
+     * @param string $id
      * @return JsonResponse
      */
-    public function getUser(User $user): JsonResponse
+    public function getUserProfile(string $id): JsonResponse
     {
+        $user = $this->userRepository->findById($id);
+
+        if (null === $user) {
+            $responseDataBuilder = ResponseDataBuilder::create()
+                ->setErrorsStatus(400)
+                ->setErrorsDetail('User not found.');
+
+            return $this->apiHelper->createJsonResponse($responseDataBuilder, Response::HTTP_NOT_FOUND);
+        }
+
         $linkSelf = $this->urlGenerator->generate(
             'user_profile',
             ['id' => $user->getId()->getValue()],

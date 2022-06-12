@@ -27,6 +27,7 @@ abstract class AbstractParams
 
         $properties = [];
         foreach ($this->getProperties() as $property) {
+
             $getterName = \sprintf('get' . \ucfirst($firstPartClassName) . '%s', \ucfirst($property));
 
             if (! \method_exists($this, $getterName)) {

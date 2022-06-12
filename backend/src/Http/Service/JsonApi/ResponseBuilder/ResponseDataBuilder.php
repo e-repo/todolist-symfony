@@ -136,6 +136,17 @@ class ResponseDataBuilder
         return $this;
     }
 
+    public function getDataUuid(): ?string
+    {
+        return $this->dataParams->getDataUuid();
+    }
+
+    public function setDataUuid(?string $dataUuid): self
+    {
+        $this->dataParams->setDataUuid($dataUuid);
+        return $this;
+    }
+
     public function setMetaAttribute(string $key, $value): self
     {
         $this->metaParams->setMetaAttribute($key, $value);
@@ -152,14 +163,26 @@ class ResponseDataBuilder
         return $this->metaParams->findMetaAttribute($key);
     }
 
-    public function getErrorsDetail(): ?string
+    public function getErrorsDetail(): ?array
     {
         return $this->errorsParams->getErrorsDetail();
     }
 
-    public function setErrorsDetail(?string $errorDetail): void
+    public function setErrorsDetail(?string $errorDetail): self
     {
         $this->errorsParams->setErrorsDetail($errorDetail);
+        return $this;
+    }
+
+    public function getErrorsStatus(): ?array
+    {
+        return $this->errorsParams->getErrorsStatus();
+    }
+
+    public function setErrorsStatus(?int $errorStatus): self
+    {
+        $this->errorsParams->setErrorsStatus($errorStatus);
+        return $this;
     }
 
     /**
@@ -175,7 +198,9 @@ class ResponseDataBuilder
 
         $result = [];
 
-        $result['data'] = $dataParams;
+        if (false === empty($dataParams[0])) {
+            $result['data'] = $dataParams;
+        }
 
         if (false === empty($errorsParams[0])) {
             $result['errors'] = $errorsParams;

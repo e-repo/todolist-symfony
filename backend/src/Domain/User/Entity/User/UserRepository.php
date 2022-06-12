@@ -44,6 +44,15 @@ class UserRepository
     }
 
     /**
+     * @param string $id
+     * @return User|null
+     */
+    public function findById(string $id): ?User
+    {
+        return $this->repository->find(new Id($id));
+    }
+
+    /**
      * @param string $email
      * @return User|object
      */
