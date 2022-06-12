@@ -9,12 +9,13 @@
   </div>
 </template>
 
-<script>
-import AppNavbar from "@/components/content/header/AppHeader";
-import HomeContent from "@/pages/home/HomeContent";
-import AppFooter from "@/components/content/footer/AppFooter";
+<script lang="ts">
+import AppNavbar from "@/components/content/header/AppHeader.vue";
+import HomeContent from "@/pages/home/HomeContent.vue";
+import AppFooter from "@/components/content/footer/AppFooter.vue";
+import { defineComponent } from "vue";
 
-export default {
+export default defineComponent({
   name: 'HomePage',
   components: { AppNavbar, HomeContent, AppFooter },
   props: {
@@ -22,7 +23,7 @@ export default {
       type: Boolean
     }
   }
-}
+})
 </script>
 
 <style scoped>

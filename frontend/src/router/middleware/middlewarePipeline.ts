@@ -1,4 +1,6 @@
-export default function middlewarePipeline(context, middleware, index) {
+import { Middleware, NextMiddleware, MiddlewareContext } from "@/router/middleware/types";
+
+export default function middlewarePipeline(context: MiddlewareContext, middleware: Middleware[], index: number): NextMiddleware | null {
     const nextMiddleware = middleware[index]
 
     if (! nextMiddleware) {

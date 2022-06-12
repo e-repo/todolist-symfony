@@ -116,9 +116,9 @@
 <script>
 import { ROLE_NAMES_RU, BADGE } from "@/conf"
 import { API_V1 } from "@/conf/api"
-import AppPreloader from "@/components/UI/AppPreloader"
+import AppPreloader from "@/components/ui-kit/preloader/AppPreloader"
 import { useAuthStore } from "@/store/auth"
-import BootstrapPaginate from "@/components/UI/BootstrapPaginate"
+import BootstrapPaginate from "@/components/ui-kit/paginate/BootstrapPaginate"
 import moment from 'moment'
 import axios from "axios"
 import { storeToRefs } from "pinia"

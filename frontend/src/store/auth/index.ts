@@ -1,18 +1,34 @@
-import { defineStore } from 'pinia'
+import { defineStore, StoreDefinition } from 'pinia'
 import axios from "axios"
 
-export const useAuthStore = defineStore('auth', {
-    state: () => ({
+interface AuthStoreUser {
+    isAuth: boolean,
+    token: string | null,
+    refreshToken: string | null,
+}
+
+interface AuthStoreLoginError {
+    message: string | null,
+    data: object | null
+}
+
+export interface AuthStore {
+    loginError: AuthStoreLoginError,
+    user: AuthStoreUser,
+}
+
+export const useAuthStore: StoreDefinition = defineStore('auth', {
+    state: (): AuthStore => ({
         user: {
-            isAuth: false,
-            token: null,
-            refreshToken: null,
-        },
+            isAuth: false as boolean,
+            token: null as string | null,
+            refreshToken: null as string | null,
+        } as AuthStoreUser,
         loginError: {
-            message: null,
-            data: null
-        }
-    }),
+            message: null as string | null,
+            data: null as object | null
+        } as AuthStoreLoginError
+    } as AuthStore),
     actions: {
         login(email, password) {
             axios.post('/api/login_check', {
@@ -96,5 +112,5 @@ export const useAuthStore = defineStore('auth', {
 
             return tokenPayload.user
         }
-    }
+    },
 })

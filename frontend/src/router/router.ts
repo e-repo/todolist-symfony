@@ -1,15 +1,17 @@
-import { createRouter, createWebHistory } from "vue-router";
-import HomePage from "@/pages/home/HomePage";
-import UsersPage from "@/pages/users/UsersPage";
-import LoginPage from "@/pages/login/LoginPage";
-import ProfilePage from "@/pages/userProfile/ProfilePage";
-
+import { createRouter, createWebHistory, RouteLocationNormalized, Router, RouteRecordRaw } from "vue-router";
+import { Middleware, MiddlewarePayload, MiddlewareContext } from "@/router/middleware/types";
 import { useAuthStore } from "@/store/auth";
+
+import HomePage from "@/pages/home/HomePage.vue";
+import UsersPage from "@/pages/users/UsersPage.vue";
+import LoginPage from "@/pages/login/LoginPage.vue";
+import ProfilePage from "@/pages/userProfile/ProfilePage.vue";
+
 import guest from "@/router/middleware/guest";
 import auth from "@/router/middleware/auth";
 import middlewarePipeline from "@/router/middleware/middlewarePipeline";
 
-const routes = [
+const routes: RouteRecordRaw[] = [
     {
         path: '/',
         name: 'Home',
@@ -17,7 +19,7 @@ const routes = [
         meta: {
             middleware: [
                 auth,
-            ]
+            ] as Middleware[]
         }
     },
     {
@@ -27,7 +29,7 @@ const routes = [
         meta: {
             middleware: [
                 guest,
-            ]
+            ] as Middleware[]
         }
     },
     {
@@ -37,7 +39,7 @@ const routes = [
         meta: {
             middleware: [
                 auth,
-            ]
+            ] as Middleware[]
         }
     },
     {
@@ -47,33 +49,35 @@ const routes = [
         meta: {
             middleware: [
                 auth,
-            ]
+            ] as Middleware[]
         }
     }
 ];
 
-const router = createRouter({
+const router: Router = createRouter({
     routes,
     history: createWebHistory(process.env.BASE_URL)
 });
 
-router.beforeEach((to, from) => {
+router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized) => {
     if (! to.meta.middleware) {
         return false;
     }
 
-    const middleware = to.meta.middleware
+    const middleware = to.meta.middleware as Middleware[]
 
-    const context = {
+    const context: MiddlewareContext = {
         to,
         from,
         authStore: useAuthStore(),
     }
 
-    return middleware[0]({
+    const payload: MiddlewarePayload = {
         ...context,
         nextMiddleware: middlewarePipeline(context, middleware, 1)
-    })
+    }
+
+    middleware[0](payload)
 })
 
 export default router

@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import AppPreloader from "@/components/UI/AppPreloader";
+import AppPreloader from "@/components/ui-kit/preloader/AppPreloader";
 const SIDEBAR_ICONS_BY_NAME = {
   'Home': 'house',
   'Users': 'user-group',
