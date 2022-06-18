@@ -45,86 +45,34 @@
   </div>
 </template>
 
-<script>
-import { useAuthStore } from "@/store/auth"
-import { storeToRefs } from "pinia"
-import { watch } from "vue";
+<script lang="ts">
+import { toRefs, watch, defineComponent } from "vue"
 
-export default {
+import LoginFormValidator from "@/pages/login/LoginFormValidator";
+import LoginPage from "@/pages/login/LoginPage";
+
+export default defineComponent({
   name: 'LoginPage',
   setup() {
-    const authStore = useAuthStore()
-    const { user, loginError } = storeToRefs(authStore)
+    const loginPage = new LoginPage()
+    const loginFormState = loginPage.getLoginFormState()
+    const validator = new LoginFormValidator(loginFormState)
+
+    watch(() => loginFormState.email, (email) => {
+      validator.checkEmail(email)
+    })
+
+    watch(() => loginFormState.password, (password) => {
+      validator.checkPassword(password)
+    })
 
     return {
-      user,
-      loginError,
-      authStore
+      ...toRefs(loginFormState),
+      login: loginPage.login(),
+      resetErrorMessage: loginPage.resetErrorMessage(),
     }
-  },
-  data() {
-    return {
-      email: null,
-      isValidEmail: null,
-      password: null,
-      isValidPassword: null,
-      errorMessage: null
-    }
-  },
-  methods: {
-    login: function () {
-      this.authStore.login(this.email, this.password)
-    },
-    resetErrorMessage: function () {
-      this.errorMessage = null
-    },
-    emailValidator: function (email) {
-      const mailFormat = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/;
-
-      if (email.length < 5) {
-        this.isValidEmail = false
-        return;
-      }
-
-      if (null === email.match(mailFormat)) {
-        this.isValidEmail = false
-        return;
-      }
-
-      this.isValidEmail = true
-    },
-    passwordValidator: function (password) {
-      if (password.length < 6) {
-        this.isValidPassword = false
-        return;
-      }
-
-      this.isValidPassword = true
-    }
-  },
-  watch: {
-    email(email) {
-      this.emailValidator(email)
-    },
-    password(password) {
-      this.passwordValidator(password)
-    }
-  },
-  mounted() {
-    watch(this.loginError, (error) => {
-      this.errorMessage = null
-
-      if (null !== error.message) {
-        this.errorMessage = error.data ? error.data.message : error.message
-      }
-    })
-    watch(this.user, (user) => {
-      if (true === user.isAuth) {
-        this.$router.push({name: 'Home'})
-      }
-    })
   }
-}
+})
 </script>
 
 <style scoped>

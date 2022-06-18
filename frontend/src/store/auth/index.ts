@@ -30,7 +30,7 @@ export const useAuthStore: StoreDefinition = defineStore('auth', {
         } as AuthStoreLoginError
     } as AuthStore),
     actions: {
-        login(email, password) {
+        login(email: string, password: string) {
             axios.post('/api/login_check', {
                 'username': email,
                 'password': password,
