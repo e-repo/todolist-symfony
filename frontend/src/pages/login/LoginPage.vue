@@ -4,9 +4,9 @@
 
       <div
           class="alert alert-danger d-flex justify-content-between"
-          v-if="errorMessage"
+          v-if="loginForm.errorMessage"
       >
-        <span>{{ errorMessage }}</span>
+        <span>{{ loginForm.errorMessage }}</span>
         <button type="button" class="btn-close" @click="resetErrorMessage()"></button>
       </div>
 
@@ -15,8 +15,8 @@
           type="email"
           class="form-control"
           id="email-input"
-          v-model="email"
-          :class="{'is-invalid': errorMessage || isValidEmail === false}"
+          v-model="loginForm.email"
+          :class="{'is-invalid': loginForm.errorMessage || loginForm.isValidEmail === false}"
         >
         <label for="email-input">Email address</label>
       </div>
@@ -25,8 +25,8 @@
           type="password"
           class="form-control"
           id="floatingPassword"
-          v-model="password"
-          :class="{'is-invalid': errorMessage || isValidPassword === false}"
+          v-model="loginForm.password"
+          :class="{'is-invalid': loginForm.errorMessage || loginForm.isValidPassword === false}"
         >
         <label for="floatingPassword">Password</label>
       </div>
@@ -45,34 +45,52 @@
   </div>
 </template>
 
-<script lang="ts">
-import { toRefs, watch, defineComponent } from "vue"
+<script setup lang="ts">
+import {reactive, watch} from "vue"
+ import { LoginFormState } from "@/pages/login/types/LoginFormState";
+ import { useEmailValidator, usePasswordValidator } from "@/pages/login/composables";
+ import { useAuthStore } from "@/store/auth";
+ import { useRouter } from "vue-router";
+ import {storeToRefs} from "pinia";
 
-import LoginFormValidator from "@/pages/login/LoginFormValidator";
-import LoginPage from "@/pages/login/LoginPage";
+ const authStore = useAuthStore()
+ const router = useRouter()
 
-export default defineComponent({
-  name: 'LoginPage',
-  setup() {
-    const loginPage = new LoginPage()
-    const loginForm = loginPage.getLoginFormState()
-    const validator = new LoginFormValidator(loginForm)
+ const { user, loginError } = storeToRefs(authStore)
 
-    watch(() => loginForm.email, (email) => {
-      validator.checkEmail(email)
-    })
+ const loginForm = reactive<LoginFormState>({
+   email: '',
+   password: '',
+   isValidEmail: true,
+   isValidPassword: true,
+   errorMessage: null
+ })
 
-    watch(() => loginForm.password, (password) => {
-      validator.checkPassword(password)
-    })
+ useEmailValidator(loginForm)
+ usePasswordValidator(loginForm)
 
-    return {
-      ...toRefs(loginForm),
-      login: loginPage.login(),
-      resetErrorMessage: loginPage.resetErrorMessage(),
+ const resetErrorMessage = (): void => {
+   loginForm.errorMessage = null
+ }
+
+ const login = (): void => {
+   authStore.login(loginForm.email, loginForm.password)
+ }
+
+  watch(loginError.value, (error) => {
+    loginForm.errorMessage = null
+
+    if (null !== error.message) {
+      loginForm.errorMessage = error.data ? error.data.message : error.message
     }
-  }
-})
+  })
+
+  watch(user.value, (user) => {
+    if (true === user.isAuth) {
+      router.push({name: 'Home'})
+    }
+  })
+
 </script>
 
 <style scoped>
