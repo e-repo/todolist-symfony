@@ -74,7 +74,7 @@
                 v-for="(user, index) in usersData"
                 :key="index"
             >
-              <th scope="row">{{ getUserNumber(index + 1) }}</th>
+              <th scope="row">{{ getRowNumber(index + 1) }}</th>
               <td>{{ user.name }}</td>
               <td>{{ user.email }}</td>
               <td>
@@ -113,179 +113,212 @@
   </main>
 </template>
 
-<script>
-import { ROLE_NAMES_RU, BADGE } from "@/conf"
-import { API_V1 } from "@/conf/api"
-import AppPreloader from "@/components/ui-kit/preloader/AppPreloader"
-import { useAuthStore } from "@/store/auth"
-import BootstrapPaginate from "@/components/ui-kit/paginate/BootstrapPaginate"
-import moment from 'moment'
+<script lang="ts">
+import AppPreloader from "@/components/ui-kit/preloader/AppPreloader.vue"
+import BootstrapPaginate from "@/components/ui-kit/paginate/BootstrapPaginate.vue"
 import axios from "axios"
+import { API_V1 } from "@/conf/api"
+import { useAuthStore } from "@/store/auth"
 import { storeToRefs } from "pinia"
+import { defineComponent, reactive, ref, toRefs, watch, onMounted } from "vue"
+import { TableFilters, UsersState } from "@/pages/users/types";
+import {UsersTableColumn } from "@/pages/users/enums/UsersTableColumn";
+import { useRoleClasses, useRoleNames, useStatusClasses } from "@/pages/users/composables";
+import { useDateTimeToFormat } from "@/components/composables/formatters";
+import { useRouter, useRoute } from "vue-router";
 
-export default {
+export default defineComponent({
   components: { AppPreloader, BootstrapPaginate },
   setup() {
     const authStore = useAuthStore()
+    const router = useRouter()
+    const route = useRoute()
     const { user } = storeToRefs(authStore)
 
-    return {
-      user,
-      authStore,
-    }
-  },
-  data() {
-    return {
+    const pageNumber = ref<number | null>(null)
+    const users = reactive<UsersState>({
       usersData: null,
       usersMeta: null,
       userRoles: null,
       userStatuses: null,
-      pageNumber: null,
-      filters: {
-        name: '',
-        email: '',
-        role: '',
-        status: '',
-      },
-      usersColumnsName: ['№', 'ФИО', 'Email', 'Роль', 'Статус', 'Дата создания']
+    })
+    let filters = reactive<TableFilters>({
+      name: '',
+      email: '',
+      role: '',
+      status: '',
+    })
+    const usersColumnsName = [
+      UsersTableColumn.rawNumber,
+      UsersTableColumn.fullName,
+      UsersTableColumn.email,
+      UsersTableColumn.role,
+      UsersTableColumn.status,
+      UsersTableColumn.createdAt
+    ]
+
+    const getRowNumber = (index: number): number | null => {
+      if (! users.usersMeta?.currentPage) {
+        return null
+      }
+
+      return (users.usersMeta.currentPage - 1) * users.usersMeta.perPage + index
     }
-  },
-  methods: {
-    getRoleClass: (role) => BADGE.USER_ROLE_BADGE[role] ? BADGE.USER_ROLE_BADGE[role].class : '',
-    getRoleName: (role) => ROLE_NAMES_RU[role] ? ROLE_NAMES_RU[role] : '',
-    getStatusClass: (status) => BADGE.USER_STATUS_BADGE[status.toUpperCase()]
-        ? BADGE.USER_STATUS_BADGE[status.toUpperCase()].class
-        : '',
-    formatUserDate: (value) => moment(value).format('DD.MM.YYYY hh:mm:ss'),
-    getUserNumber: function (index) {
-      return (this.usersMeta.currentPage - 1) * this.usersMeta.perPage + index
-    },
-    toPage: function (pageNumber = null) {
-      if (null === pageNumber) {
+
+    const toPage = (newPageNumber: number | null = null): void => {
+      if (null === newPageNumber) {
         return;
       }
 
-      this.pageNumber = pageNumber
+      pageNumber.value = newPageNumber
 
-      this.$router.push({
+      router.push({
         path: '/users',
         query: {
-          page: pageNumber,
-          name: this.filters.name,
-          email: this.filters.email,
-          role: this.filters.role,
-          status: this.filters.status
+          page: pageNumber.value,
+          ...filters
         }
       })
-    },
-    applyFilters: function () {
-      this.$router.push({
+    }
+
+    const applyFilters = (): void => {
+      router.push({
         path: '/users',
         query: {
-          name: this.filters.name,
-          email: this.filters.email,
-          role: this.filters.role,
-          status: this.filters.status
+          ...filters
         }
       })
-    },
-    resetFilters: function () {
-      this.filters = {
-        page: 1,
+    }
+
+    const resetPageNumber = (): number => pageNumber.value = 1
+
+    const resetFilters = (): void => {
+      filters = {
         name: '',
         email: '',
         role: '',
         status: '',
       }
-      this.applyFilters()
-    },
-    loadFilters(params = null) {
+
+      resetPageNumber()
+      applyFilters()
+    }
+
+    const loadFilters = (params: TableFilters | null = null): void => {
       if (null === params) {
         return;
       }
 
       Object.keys(params).forEach(key => {
-        const filtersList = Object.keys(this.filters)
-
-        if (
-            filtersList.includes(key) &&
-            '' !== params[key].trim()
-        ) {
-          this.filters[key] = params[key]
-        }
+          filters[key as keyof TableFilters] = params[key as keyof TableFilters]
       })
-    },
-    loadUsers: function (params = null, url = null) {
+    }
+
+    const paramFilter = (queryParams: object | null = null): TableFilters | null => {
+      if (null === queryParams) {
+        return null
+      }
+
+      let paramsList = Object.entries(queryParams)
+
+      paramsList = paramsList.filter(([keyParam]) => {
+        return keyParam in filters
+      })
+
+      return Object.fromEntries(paramsList)
+    }
+
+    const loadUsers = (queryParams: object | null = null, url: string = '') => {
       const defaultParams = {status: 'active'}
-      const searchParams = null !== params
-          ? {...params, ...defaultParams}
+      const searchParams = null !== queryParams
+          ? {...queryParams, ...defaultParams}
           : null
 
-      this.loadFilters(params)
+      loadFilters(paramFilter(queryParams))
 
-      const usersUrl = null !== url ? url : API_V1.USER_LIST
+      const usersUrl = '' !== url ? url : API_V1.USER_LIST
 
       axios
-        .get(usersUrl, {
-          headers: {
-            Authorization: `Bearer ${this.user.token}`
-          },
-          params: searchParams
-        }).then(response => {
-          this.usersData = response.data.data
-          this.usersMeta = response.data.meta
-        }).catch((error) => {
-          this.authStore.tryRefreshToken(error, this.$router)
-        })
-    },
-    loadRoles: function () {
-      axios
-        .get(API_V1.USER_ROLE_LIST, {
-          headers: {
-            Authorization: `Bearer ${this.user.token}`
-          },
-        }).then(response => {
-          const roles = response.data
-          const [rolesData] = roles.data
+          .get(usersUrl, {
+            headers: {
+              Authorization: `Bearer ${authStore.token}`
+            },
+            params: searchParams
+          }).then(response => {
+        users.usersData = response.data.data
+        users.usersMeta = response.data.meta
+      }).catch((error) => {
+        authStore.tryRefreshToken(error, router)
+      })
+    }
 
-          this.userRoles = rolesData.attributes.roles
-        }).catch((error) => {
-          this.authStore.tryRefreshToken(error, this.$router)
-        })
-    },
-    loadStatuses: function () {
+    const loadRoles = () => {
+      axios
+          .get(API_V1.USER_ROLE_LIST, {
+            headers: {
+              Authorization: `Bearer ${authStore.token}`
+            },
+          }).then(response => {
+        const roles = response.data
+        const [rolesData] = roles.data
+
+        users.userRoles = rolesData.attributes.roles
+      }).catch((error) => {
+        authStore.tryRefreshToken(error, router)
+      })
+    }
+
+    const loadStatuses = () => {
       axios
           .get(API_V1.USER_STATUS_LIST, {
             headers: {
-              Authorization: `Bearer ${this.user.token}`
+              Authorization: `Bearer ${authStore.token}`
             },
           }).then(response => {
-            const statuses = response.data
-            const [statusesData] = statuses.data
+        const statuses = response.data
+        const [statusesData] = statuses.data
 
-            this.userStatuses = statusesData.attributes.statuses
-          }).catch((error) => {
-            this.authStore.tryRefreshToken(error, this.$router)
-          })
-    }
-  },
-  mounted() {
-    if (! this.user.isAuth) {
-      return;
+        users.userStatuses = statusesData.attributes.statuses
+      }).catch((error) => {
+        authStore.tryRefreshToken(error, router)
+      })
     }
 
-    this.loadUsers(this.$route.query)
-    this.loadRoles()
-    this.loadStatuses()
+    onMounted(() => {
+      if (! authStore.isAuth) {
+        return;
+      }
 
-    this.$watch(
-      () => this.$route.query,
-      (toParams) => {
-            this.loadUsers(toParams)
-          }
-    )
+      loadUsers(route.query)
+      loadRoles()
+      loadStatuses()
+    })
+
+    watch(() => route.query, (toParams) => {
+      loadUsers(toParams)
+    })
+
+    return {
+      ...toRefs(users),
+      user,
+      filters,
+      pageNumber,
+      usersColumnsName,
+      getRowNumber,
+      toPage,
+      applyFilters,
+      resetFilters,
+      loadFilters,
+      loadUsers,
+      loadRoles,
+      loadStatuses,
+      getRoleClass: useRoleClasses,
+      getRoleName: useRoleNames,
+      getStatusClass: useStatusClasses,
+      formatUserDate: useDateTimeToFormat,
+    }
   }
-}
+})
 </script>
 
 <style scoped>

@@ -111,6 +111,12 @@ export const useAuthStore: StoreDefinition = defineStore('auth', {
             }
 
             return tokenPayload.user
+        },
+        token(): string | null {
+            return this.user.token
+        },
+        isAuth(): boolean {
+            return this.user.isAuth
         }
     },
 })

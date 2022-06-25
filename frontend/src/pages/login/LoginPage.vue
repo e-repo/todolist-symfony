@@ -55,19 +55,19 @@ export default defineComponent({
   name: 'LoginPage',
   setup() {
     const loginPage = new LoginPage()
-    const loginFormState = loginPage.getLoginFormState()
-    const validator = new LoginFormValidator(loginFormState)
+    const loginForm = loginPage.getLoginFormState()
+    const validator = new LoginFormValidator(loginForm)
 
-    watch(() => loginFormState.email, (email) => {
+    watch(() => loginForm.email, (email) => {
       validator.checkEmail(email)
     })
 
-    watch(() => loginFormState.password, (password) => {
+    watch(() => loginForm.password, (password) => {
       validator.checkPassword(password)
     })
 
     return {
-      ...toRefs(loginFormState),
+      ...toRefs(loginForm),
       login: loginPage.login(),
       resetErrorMessage: loginPage.resetErrorMessage(),
     }

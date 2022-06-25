@@ -9,25 +9,21 @@
   </div>
 </template>
 
-<script>
-import AppNavbar from "@/components/content/header/AppHeader";
-import UsersContent from "@/pages/users/UsersContent";
-import AppFooter from "@/components/content/footer/AppFooter";
+<script lang="ts">
+import AppNavbar from "@/components/content/header/AppHeader.vue";
+import UsersContent from "@/pages/users/UsersContent.vue";
+import AppFooter from "@/components/content/footer/AppFooter.vue";
+import { defineComponent } from "vue";
 
-export default {
+export default defineComponent({
   name: 'UserPage',
-  data() {
-    return {
-      users: null
-    }
-  },
   components: { AppNavbar, UsersContent, AppFooter },
   props: {
     sidebarToggle: {
       type: Boolean
     }
   }
-}
+})
 </script>
 
 <style scoped>
