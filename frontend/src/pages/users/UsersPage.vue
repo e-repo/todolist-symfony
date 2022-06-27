@@ -9,21 +9,16 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import AppNavbar from "@/components/content/header/AppHeader.vue";
 import UsersContent from "@/pages/users/UsersContent.vue";
 import AppFooter from "@/components/content/footer/AppFooter.vue";
-import { defineComponent } from "vue";
+import { defineProps } from "vue";
 
-export default defineComponent({
-  name: 'UserPage',
-  components: { AppNavbar, UsersContent, AppFooter },
-  props: {
-    sidebarToggle: {
-      type: Boolean
-    }
-  }
+defineProps({
+  sidebarToggle: { type: Boolean }
 })
+
 </script>
 
 <style scoped>

@@ -6,8 +6,6 @@
   </main>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 
-export default defineComponent({})
 </script>
