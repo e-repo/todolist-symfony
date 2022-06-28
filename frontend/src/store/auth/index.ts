@@ -1,5 +1,6 @@
 import { defineStore, StoreDefinition } from 'pinia'
 import axios from "axios"
+import { Router } from "vue-router";
 
 interface AuthStoreUser {
     isAuth: boolean,
@@ -50,7 +51,7 @@ export const useAuthStore: StoreDefinition = defineStore('auth', {
                 }
             })
         },
-        tryRefreshToken(error, $router = null) {
+        tryRefreshToken(error, router: Router | null = null) {
             const errorData = error.response.data
 
             if (401 !== errorData.code) {
@@ -68,8 +69,8 @@ export const useAuthStore: StoreDefinition = defineStore('auth', {
 
                 this.setUserData(data)
 
-                if (null !== $router) {
-                    $router.go()
+                if (null !== router) {
+                    router.go(0)
                 }
             }).catch((error) => {
                 throw new Error(error.message)

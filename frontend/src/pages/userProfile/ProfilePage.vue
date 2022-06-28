@@ -9,20 +9,16 @@
   </div>
 </template>
 
-<script>
-import AppNavbar from "@/components/content/header/AppHeader";
-import AppFooter from "@/components/content/footer/AppFooter";
-import ProfileContent from "@/pages/userProfile/ProfileContent";
+<script setup lang="ts">
+  import AppNavbar from "@/components/content/header/AppHeader.vue";
+  import AppFooter from "@/components/content/footer/AppFooter.vue";
+  import ProfileContent from "@/pages/userProfile/ProfileContent.vue";
+  import {defineProps} from "vue";
 
-export default {
-  name: 'ProfilePage',
-  components: { AppNavbar, ProfileContent, AppFooter },
-  props: {
-    sidebarToggle: {
-      type: Boolean
-    }
-  }
-}
+  defineProps({
+    sidebarToggle: { type: Boolean }
+  })
+
 </script>
 
 <style scoped>

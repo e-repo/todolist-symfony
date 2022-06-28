@@ -75,47 +75,55 @@
   </main>
 </template>
 
-<script>
-import axios from "axios";
-import { useAuthStore } from "@/store/auth"
-import { API_V1 } from "@/conf/api";
+<script setup lang="ts">
+  import { useAuthStore } from "@/store/auth"
+  import { API_V1 } from "@/conf/api";
+  import { onMounted, reactive } from "vue";
+  import { UserProfile } from "@/pages/userProfile/types";
+  import { useRouter, useRoute } from "vue-router";
+  import {useCreateAuthHeader, useGetResource} from "@/components/composables";
 
-export default {
-  name: "ProfileContent",
-  setup() {
-    const authStore = useAuthStore()
+  const authStore = useAuthStore()
+  const router = useRouter()
+  const route = useRoute()
 
-    return {
-      authStore,
-    }
-  },
-  data() {
-    return {
-      profile: null,
-    }
-  },
-  methods: {
-    loadProfile: function () {
-      axios
-          .get(API_V1.USER_PROFILE(this.$route.params.id), {
-            headers: {
-              Authorization: `Bearer ${this.authStore.user.token}`
-            },
-          }).then(response => {
-            const userData = response.data.data
+  const profile = reactive<UserProfile>({
+    name: '',
+    email: '',
+    createdAt: '',
+    role: '',
+    status: '',
+  })
 
-            this.profile = userData[0].attributes
-          }).catch((error) => {
-            this.authStore.tryRefreshToken(error, this.$router)
+  const loadProfile = (): void => {
+    const profileUrl = API_V1.USER_PROFILE(route.params.id as string)
+
+    let resource: Promise<any> = useGetResource(profileUrl, {
+      headers: {
+        Authorization: useCreateAuthHeader(authStore.token)
+      },
+      refreshTokenAction: authStore.tryRefreshToken,
+      router,
+    })
+
+    resource
+      .then(response => {
+        const profileData: UserProfile = response.data[0]?.attributes
+
+        if (profileData) {
+          Object.keys(profileData).forEach(key => {
+            profile[key as keyof UserProfile] = profileData[key as keyof UserProfile]
           })
-    }
-  },
-  mounted() {
-    if (this.authStore.user.isAuth) {
-      this.loadProfile()
-    }
+        }
+      })
   }
-}
+
+  onMounted(() =>{
+    if (authStore.isAuth) {
+      loadProfile()
+    }
+  })
+
 </script>
 
 <style scoped>
