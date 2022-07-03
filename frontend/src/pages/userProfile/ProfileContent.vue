@@ -23,6 +23,11 @@
                     <td>
                       {{ profile.name }}
                     </td>
+                    <td class="text-center">
+                      <button type="button" class="btn btn-outline-primary">
+                        <font-awesome-icon icon="pen" />
+                      </button>
+                    </td>
                   </tr>
 
                   <tr>
@@ -31,6 +36,11 @@
                     </td>
                     <td>
                       {{ profile.email }}
+                    </td>
+                    <td class="text-center">
+                      <button type="button" class="btn btn-outline-primary" @click="isModalShow = ! isModalShow">
+                        <font-awesome-icon icon="pen" />
+                      </button>
                     </td>
                   </tr>
 
@@ -41,6 +51,8 @@
                     <td>
                       {{ profile.createdAt }}
                     </td>
+                    <td>
+                    </td>
                   </tr>
 
                   <tr>
@@ -49,6 +61,8 @@
                     </td>
                     <td>
                       {{ profile.role }}
+                    </td>
+                    <td>
                     </td>
                   </tr>
 
@@ -59,12 +73,43 @@
                     <td>
                       {{ profile.status }}
                     </td>
+                    <td>
+                    </td>
                   </tr>
 
                 </tbody>
 
               </table>
             </div>
+
+            <bootstrap-modal
+              :is-modal-show="isModalShow"
+              @modalHide="modalHide"
+            >
+              <template #title>Change email</template>
+              <template #body>
+                <form>
+                  <div class="mb-3">
+                    <label for="new-email" class="form-label">Email address</label>
+                    <input type="email" class="form-control" id="new-email" v-model="profile.email">
+                  </div>
+                </form>
+              </template>
+              <template #footer>
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    @click="modalHide()"
+                >
+                  <slot name="close-btn-name">Close</slot>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-success"
+                  @click="changeEmail()"
+                >Save</button>
+              </template>
+            </bootstrap-modal>
 
           </div>
 
@@ -76,9 +121,10 @@
 </template>
 
 <script setup lang="ts">
+  import BootstrapModal from '@/components/ui-kit/modal/BootstrapModal.vue'
   import { useAuthStore } from "@/store/auth"
   import { API_V1 } from "@/conf/api";
-  import { onMounted, reactive } from "vue";
+  import { onMounted, reactive, ref } from "vue";
   import { UserProfile } from "@/pages/userProfile/types";
   import { useRouter, useRoute } from "vue-router";
   import {useCreateAuthHeader, useGetResource} from "@/components/composables";
@@ -94,6 +140,13 @@
     role: '',
     status: '',
   })
+
+  const isModalShow = ref<boolean>(false);
+  const modalHide = () => isModalShow.value = false
+
+  const changeEmail = () => {
+    console.log('Change email')
+  }
 
   const loadProfile = (): void => {
     const profileUrl = API_V1.USER_PROFILE(route.params.id as string)

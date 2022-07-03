@@ -13,7 +13,8 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 /* import specific icons */
 import {
     faTractor, faHouse, faUserGroup, faList, faAngleLeft,
-    faXmark, faBars, faAnglesLeft, faAnglesRight, faAngleRight
+    faXmark, faBars, faAnglesLeft, faAnglesRight, faAngleRight,
+    faPen
 } from '@fortawesome/free-solid-svg-icons';
 
 /* import font awesome icon component */
@@ -22,7 +23,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 /* add icons to the library */
 library.add(
     faTractor, faHouse, faUserGroup, faList, faAngleLeft,
-    faAngleRight, faXmark, faBars, faAnglesLeft, faAnglesRight
+    faAngleRight, faXmark, faBars, faAnglesLeft, faAnglesRight,
+    faPen
 );
 
 const app = createApp(App);
