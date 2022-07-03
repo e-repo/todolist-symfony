@@ -2,10 +2,10 @@
 
 namespace App\Http\Controller\User;
 
+use App\Domain\Auth\Entity\User\User;
+use App\Domain\Auth\Read\UserFetcher;
 use App\Domain\Todos\Read\Task\TaskFetcher;
-use App\Domain\User\Entity\User\User;
-use App\Domain\User\Read\UserFetcher;
-use App\Domain\User\UseCase;
+use App\Domain\Auth\UseCase;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -45,9 +45,9 @@ class UserController extends AbstractController
      */
     public function index(Request $request, UserFetcher $fetcher): Response
     {
-        $filter = new \App\Domain\User\Read\Filter\Filter();
+        $filter = new \App\Domain\Auth\Read\Filter\Filter();
 
-        $form = $this->createForm(\App\Domain\User\Read\Filter\Form::class, $filter);
+        $form = $this->createForm(\App\Domain\Auth\Read\Filter\Form::class, $filter);
         $form->handleRequest($request);
 
         $pagination = $fetcher->all(

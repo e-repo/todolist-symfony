@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domain\Todos\UseCase\Create;
 
+use App\Domain\Auth\Entity\User\Id as UserId;
+use App\Domain\Auth\Entity\User\UserRepository;
 use App\Domain\Service\Flusher;
 use App\Domain\Todos\Entity\Task\Content;
 use App\Domain\Todos\Entity\Task\Id;
 use App\Domain\Todos\Entity\Task\Task;
-use App\Domain\User\Entity\User\Id as UserId;
-use App\Domain\User\Entity\User\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class Handler

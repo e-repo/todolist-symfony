@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controller\User\Profile;
 
-use App\Domain\User\UseCase\Name;
+use App\Domain\Auth\UseCase\Name;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

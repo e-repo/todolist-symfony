@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Model\User\Entity\User\Network;
 
-use App\Domain\User\Entity\User\Network;
+use App\Domain\Auth\Entity\User\Network;
 use App\Tests\Builder\User\UserBuilder;
-use phpDocumentor\Reflection\Types\Mixed_;
 use PHPUnit\Framework\TestCase;
 
 class AuthTest extends TestCase

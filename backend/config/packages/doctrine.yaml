@@ -11,9 +11,9 @@ doctrine:
         url: '%env(resolve:DATABASE_URL)%'
 
         types:
-            user_user_id: 'App\Domain\User\Entity\User\IdType'
-            user_user_role: 'App\Domain\User\Entity\User\RoleType'
-            user_user_email: 'App\Domain\User\Entity\User\EmailType'
+            user_user_id: 'App\Domain\Auth\Entity\User\IdType'
+            user_user_role: 'App\Domain\Auth\Entity\User\RoleType'
+            user_user_email: 'App\Domain\Auth\Entity\User\EmailType'
             todos_task_id: 'App\Domain\Todos\Entity\Task\IdType'
 
     orm:
@@ -24,8 +24,8 @@ doctrine:
             User:
                 is_bundle: false
                 type: annotation
-                dir: '%kernel.project_dir%/src/Domain/User/Entity'
-                prefix: 'App\Domain\User\Entity'
+                dir: '%kernel.project_dir%/src/Domain/Auth/Entity'
+                prefix: 'App\Domain\Auth\Entity'
                 alias: User
             Task:
                 is_bundle: false

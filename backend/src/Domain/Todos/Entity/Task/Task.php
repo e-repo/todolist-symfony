@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Todos\Entity\Task;
 
-use App\Domain\User\Entity\User\User;
+use App\Domain\Auth\Entity\User\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 use Webmozart\Assert\Assert;
 
 /**

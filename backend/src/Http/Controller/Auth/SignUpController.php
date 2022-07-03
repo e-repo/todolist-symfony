@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controller\Auth;
 
-use App\Domain\User\UseCase\SignUp;
+use App\Domain\Auth\UseCase\SignUp;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

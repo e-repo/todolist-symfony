@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Command\User;
 
-use App\Domain\User\Read\UserFetcher;
+use App\Domain\Auth\Read\UserFetcher;
 use App\Domain\User\UseCase\SignUp\Confirm;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,16 +18,16 @@ class ConfirmCommand extends Command
      */
     private UserFetcher $users;
     /**
-     * @var Confirm\Manual\Handler
+     * @var \App\Domain\Auth\UseCase\SignUp\Confirm\Manual\Handler
      */
-    private Confirm\Manual\Handler $handler;
+    private \App\Domain\Auth\UseCase\SignUp\Confirm\Manual\Handler $handler;
 
     /**
      * ConfirmCommand constructor.
      * @param UserFetcher $users
-     * @param Confirm\Manual\Handler $handler
+     * @param \App\Domain\Auth\UseCase\SignUp\Confirm\Manual\Handler $handler
      */
-    public function __construct(UserFetcher $users, Confirm\Manual\Handler $handler)
+    public function __construct(UserFetcher $users, \App\Domain\Auth\UseCase\SignUp\Confirm\Manual\Handler $handler)
     {
         $this->users = $users;
         $this->handler = $handler;
@@ -51,7 +51,7 @@ class ConfirmCommand extends Command
             throw new \LogicException('User is not found.');
         }
 
-        $command = new Confirm\Manual\Command($user->id);
+        $command = new \App\Domain\Auth\UseCase\SignUp\Confirm\Manual\Command($user->id);
         $this->handler->handle($command);
 
         $output->writeln('<info>Done!</info>');

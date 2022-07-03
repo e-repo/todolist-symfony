@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controller\Todos;
 
+use App\Domain\Auth\Entity\User\User;
 use App\Domain\Todos\Entity\Task\Task;
 use App\Domain\Todos\Read\Task\TaskFetcher;
 use App\Domain\Todos\UseCase;
-use App\Domain\User\Entity\User\User;
 use App\Infrastructure\Security\Voter\Task\TaskAccess;
 use App\Infrastructure\Upload\UploadHelper;
 use Psr\Log\LoggerInterface;

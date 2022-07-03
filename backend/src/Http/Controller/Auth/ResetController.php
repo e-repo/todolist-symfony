@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controller\Auth;
 
-use App\Domain\User\Read\UserFetcher;
-use App\Domain\User\UseCase\Reset;
+use App\Domain\Auth\Read\UserFetcher;
+use App\Domain\Auth\UseCase\Reset;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -66,10 +66,10 @@ class ResetController extends AbstractController
      * @return Response
      */
     public function reset(
-        string $token,
-        Request $request,
+        string                                       $token,
+        Request                                      $request,
         Reset\Reset\Handler $handler,
-        UserFetcher $users
+        UserFetcher                                  $users
     ): Response
     {
         if (! $users->existByResetToken($token)) {

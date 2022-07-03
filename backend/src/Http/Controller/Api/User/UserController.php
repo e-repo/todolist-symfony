@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controller\Api\User;
 
-use App\Domain\User\Entity\User\User;
-use App\Domain\User\Entity\User\UserRepository;
-use App\Domain\User\Read\Filter\Filter;
-use App\Domain\User\Read\UserFetcher;
+use App\Domain\Auth\Entity\User\User;
+use App\Domain\Auth\Entity\User\UserRepository;
+use App\Domain\Auth\Read\Filter\Filter;
+use App\Domain\Auth\Read\UserFetcher;
 use App\Http\Payload\Api\User\UserListPayload;
 use App\Http\Service\JsonApi\JsonApiHelper;
 use App\Http\Service\JsonApi\ResponseBuilder\ResponseDataBuilder;

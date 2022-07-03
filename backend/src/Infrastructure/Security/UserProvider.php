@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Security;
 
-use App\Domain\User\Entity\User\Name;
-use App\Domain\User\Read\AuthView;
-use App\Domain\User\Read\UserFetcher;
+use App\Domain\Auth\Entity\User\Name;
+use App\Domain\Auth\Read\AuthView;
+use App\Domain\Auth\Read\UserFetcher;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;

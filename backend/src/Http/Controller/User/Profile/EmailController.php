@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controller\User\Profile;
 
-use App\Domain\User\UseCase\Email;
+use App\Domain\Auth\UseCase\Email;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -66,12 +66,12 @@ class EmailController extends AbstractController
     /**
      * @Route("/{token}", name="profile.email_confirm")
      * @param $token
-     * @param Email\Confirm\Handler $handler
+     * @param Email\confirm\Handler $handler
      * @return Response
      */
-    public function confirm($token, Email\Confirm\Handler $handler): Response
+    public function confirm($token, Email\confirm\Handler $handler): Response
     {
-        $command = new Email\Confirm\Command($this->getUser()->getId(), $token);
+        $command = new Email\confirm\Command($this->getUser()->getId(), $token);
 
         try {
             $handler->handle($command);

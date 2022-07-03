@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controller\User\Profile;
 
-use App\Domain\User\Entity\User\Id;
-use App\Domain\User\Entity\User\ImageRepository;
-use App\Domain\User\Entity\User\UserRepository;
-use App\Domain\User\UseCase\Image;
+use App\Domain\Auth\Entity\User\Id;
+use App\Domain\Auth\Entity\User\ImageRepository;
+use App\Domain\Auth\Entity\User\UserRepository;
+use App\Domain\Auth\UseCase\Image;
 use App\Infrastructure\Upload\UploadHelper;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
