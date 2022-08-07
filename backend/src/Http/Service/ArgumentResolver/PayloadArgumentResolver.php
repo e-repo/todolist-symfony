@@ -4,20 +4,39 @@ declare(strict_types=1);
 
 namespace App\Http\Service\ArgumentResolver;
 
+use App\Http\Service\JsonApi\HttpException\JsonApiHttpException;
+use App\Http\Service\JsonApi\ResponseBuilder\ResponseDataBuilder;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
+use Symfony\Component\Serializer\Exception\NotEncodableValueException;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class PayloadArgumentResolver implements ArgumentValueResolverInterface
 {
     private const ALLOW_SCALAR_TYPES = ['string', 'int', 'float', 'bool'];
     private const ALLOW_COMPOUND_TYPES = ['array'];
 
+    private SerializerInterface $serializer;
+    private ValidatorInterface $validator;
+
+    public function __construct(
+        SerializerInterface $serializer,
+        ValidatorInterface $validator
+    )
+    {
+        $this->serializer = $serializer;
+        $this->validator = $validator;
+    }
+
     public function supports(Request $request, ArgumentMetadata $argument): bool
     {
         $className = $argument->getType();
-
         $instance = null;
+
         if (\class_exists($className)) {
             try {
                 $instance = new $className();
@@ -37,16 +56,22 @@ class PayloadArgumentResolver implements ArgumentValueResolverInterface
      */
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
-        $classReflection = new \ReflectionClass($argument->getType());
-        $queryParams = $request->query->all();
+        if ($request->getContentType() === 'json') {
+            yield $this->jsonContentToPayload(
+                $request->getContent(),
+                $argument->getType()
+            );
+        } else {
+            $classReflection = new \ReflectionClass($argument->getType());
 
-        yield $this->hydratePayload($queryParams, $classReflection);
+            yield $this->queryParamsToPayload($request->query->all(), $classReflection);
+        }
     }
 
     /**
      * @throws \ReflectionException
      */
-    private function hydratePayload($queryParams, \ReflectionClass $classReflection): object
+    private function queryParamsToPayload($queryParams, \ReflectionClass $classReflection): object
     {
         $allowTypes = \array_merge(self::ALLOW_SCALAR_TYPES, self::ALLOW_COMPOUND_TYPES);
 
@@ -67,9 +92,10 @@ class PayloadArgumentResolver implements ArgumentValueResolverInterface
 
             if (null === $propertyType) {
                 $property->setValue($instance, $queryParams[$property->name]);
+                continue;
             }
 
-            if (false === \in_array($propertyType->getName(), $allowTypes, true)) {
+            if (! \in_array($propertyType->getName(), $allowTypes, true)) {
                 continue;
             }
 
@@ -79,7 +105,7 @@ class PayloadArgumentResolver implements ArgumentValueResolverInterface
                 continue;
             }
 
-            if (true === \in_array($propertyType->getName(), self::ALLOW_COMPOUND_TYPES)) {
+            if (\in_array($propertyType->getName(), self::ALLOW_COMPOUND_TYPES)) {
                 $property->setValue($instance, $this->castToCompoundType($value));
                 continue;
             }
@@ -130,5 +156,36 @@ class PayloadArgumentResolver implements ArgumentValueResolverInterface
         return \array_map(function ($paramValue) {
             return $this->prepareQueryParam($paramValue);
         }, $value);
+    }
+
+    private function jsonContentToPayload(string $jsonContent, string $payloadClassName): object
+    {
+        $responseDataBuilder = ResponseDataBuilder::create();
+
+        try {
+            $payload = $this->serializer->deserialize(
+                $jsonContent,
+                $payloadClassName,
+                'json'
+            );
+
+            $violations = $this->validator->validate($payload);
+            if ($violations->count() > 0) {
+                /** @var ConstraintViolation $violation */
+                foreach ($violations as $violation) {
+                    $responseDataBuilder
+                        ->setErrorsTitle('Data validation error.')
+                        ->setErrorsDetail($violation->getMessage());
+                }
+
+                throw new JsonApiHttpException(Response::HTTP_UNPROCESSABLE_ENTITY, $responseDataBuilder);
+            }
+
+            return $payload;
+        } catch (NotEncodableValueException $e) {
+            $responseDataBuilder
+                ->setErrorsDetail('Syntax error.');
+            throw new JsonApiHttpException(Response::HTTP_UNPROCESSABLE_ENTITY, $responseDataBuilder);
+        }
     }
 }

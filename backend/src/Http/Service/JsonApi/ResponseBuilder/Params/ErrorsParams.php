@@ -10,10 +10,12 @@ class ErrorsParams extends AbstractParams
 {
     private ?array $errorDetail = null;
     private ?array $errorStatus = null;
+    private ?array $errorTitle = null;
 
     private array $errorProperties = [
         'status',
-        'detail'
+        'detail',
+        'title',
     ];
 
     public function getErrorsDetail(): ?array
@@ -35,6 +37,17 @@ class ErrorsParams extends AbstractParams
     public function setErrorsStatus(?int $errorStatus): self
     {
         $this->errorStatus[] = $errorStatus;
+        return $this;
+    }
+
+    public function getErrorsTitle(): ?array
+    {
+        return $this->errorTitle;
+    }
+
+    public function setErrorsTitle(?string $errorTitle): self
+    {
+        $this->errorTitle[] = $errorTitle;
         return $this;
     }
 

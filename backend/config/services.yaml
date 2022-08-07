@@ -7,8 +7,12 @@ parameters:
     locale: 'ru'
     # Directory where we upload file
     uploads_dir_name: 'uploads'
+    # Site base URL
+    site_base_url: '%env(SITE_BASE_URL)%'
     # The base URL to the uploaded assets
-    uploads_base_url: '%env(SITE_BASE_URL)%/%uploads_dir_name%'
+    uploads_base_url: '%site_base_url%/%uploads_dir_name%'
+    # UI host
+    ui_host: '%env(UI_HOST)%'
 
 services:
     # default configuration for services in *this* file
@@ -53,6 +57,10 @@ services:
         arguments: [ '@request_stack' ]
         tags:
             - { name: kernel.event_listener, event: lexik_jwt_authentication.on_jwt_created, method: onJWTCreated }
+
+    App\Http\Service\JsonApi\JsonApiExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
 
     App\Infrastructure\Email\AppTemplateCreator:
         arguments: ['%env(MAILER_FROM_EMAIL)%']

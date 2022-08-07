@@ -185,6 +185,17 @@ class ResponseDataBuilder
         return $this;
     }
 
+    public function getErrorsTitle(): ?array
+    {
+        return $this->errorsParams->getErrorsTitle();
+    }
+
+    public function setErrorsTitle(?string $errorTitle): self
+    {
+        $this->errorsParams->setErrorsTitle($errorTitle);
+        return $this;
+    }
+
     /**
      * @return array
      * @throws GetterNotFoundException
@@ -198,11 +209,11 @@ class ResponseDataBuilder
 
         $result = [];
 
-        if (false === empty($dataParams[0])) {
+        if ([] !== end($dataParams)) {
             $result['data'] = $dataParams;
         }
 
-        if (false === empty($errorsParams[0])) {
+        if ([] !== end($errorsParams)) {
             $result['errors'] = $errorsParams;
         }
 
