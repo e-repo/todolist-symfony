@@ -8,8 +8,7 @@ use App\Domain\Auth\Entity\User\Email;
 use App\Domain\Auth\Entity\User\Id;
 use App\Domain\Auth\Entity\User\UserRepository;
 use App\Domain\Auth\Read\UserFetcher;
-use App\Domain\Auth\Service\NewEmailConfirmTokenizer;
-use App\Domain\Auth\Service\NewEmailConfirmTokenSender;
+use App\Domain\Auth\Service\ConfirmEmailSender;
 use App\Domain\Service\Flusher;
 
 class Handler
@@ -19,13 +18,9 @@ class Handler
      */
     private UserRepository $users;
     /**
-     * @var NewEmailConfirmTokenizer
+     * @var ConfirmEmailSender
      */
-    private NewEmailConfirmTokenizer $tokenizer;
-    /**
-     * @var NewEmailConfirmTokenSender
-     */
-    private NewEmailConfirmTokenSender $sender;
+    private ConfirmEmailSender $sender;
     /**
      * @var Flusher
      */
@@ -39,21 +34,18 @@ class Handler
      * Handler constructor.
      * @param UserRepository $users
      * @param UserFetcher $userFetcher
-     * @param NewEmailConfirmTokenizer $tokenizer
-     * @param NewEmailConfirmTokenSender $sender
+     * @param ConfirmEmailSender $sender
      * @param Flusher $flusher
      */
     public function __construct(
-        UserRepository $users,
-        UserFetcher $userFetcher,
-        NewEmailConfirmTokenizer $tokenizer,
-        NewEmailConfirmTokenSender $sender,
-        Flusher $flusher
+        UserRepository           $users,
+        UserFetcher              $userFetcher,
+        ConfirmEmailSender       $sender,
+        Flusher                  $flusher
     )
     {
         $this->users = $users;
         $this->userFetcher = $userFetcher;
-        $this->tokenizer = $tokenizer;
         $this->sender = $sender;
         $this->flusher = $flusher;
     }
@@ -62,18 +54,18 @@ class Handler
     {
         $user = $this->users->get(new Id($command->id));
 
-        $email = new Email($command->email);
+        $email = new Email($command->newEmail);
 
-        if ($this->userFetcher->hasByEmail($command->email)) {
+        if ($this->userFetcher->hasByEmail($command->newEmail)) {
             throw new \DomainException('Email is already in use.');
         }
 
         $user->requestEmailChanging(
             $email,
-            $token = $this->tokenizer->generate()
+            $command->token
         );
 
         $this->flusher->flush();
-        $this->sender->send($email, $token);
+        $this->sender->send($email, $command->confirmUrl);
     }
 }

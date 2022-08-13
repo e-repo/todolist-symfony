@@ -9,7 +9,7 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Twig\Environment;
 
-class NewEmailConfirmTokenSender
+class ConfirmEmailSender
 {
     /**
      * @var MailerInterface
@@ -31,17 +31,15 @@ class NewEmailConfirmTokenSender
         $this->twig = $twig;
     }
 
-    public function send(Email $email, string $token): void
+    public function send(Email $email, string $confirmUrl): void
     {
         $message = (new TemplatedEmail())
             ->from('mail@app.test')
             ->to($email->getValue())
             ->html($this->twig->render('mail/user/email.html.twig', [
-                'token' => $token
+                'confirmUrl' => $confirmUrl
             ]), 'text/html');
 
-        if (! $this->mailer->send($message)) {
-            throw new \RuntimeException('Unable to send message.');
-        }
+        $this->mailer->send($message);
     }
 }

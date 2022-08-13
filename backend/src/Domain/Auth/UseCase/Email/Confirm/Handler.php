@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Auth\UseCase\Email\confirm;
+namespace App\Domain\Auth\UseCase\Email\Confirm;
 
 use App\Domain\Auth\Entity\User\Id;
 use App\Domain\Auth\Entity\User\UserRepository;

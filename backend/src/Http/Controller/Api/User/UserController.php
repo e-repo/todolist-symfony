@@ -6,8 +6,11 @@ namespace App\Http\Controller\Api\User;
 
 use App\Domain\Auth\Entity\User\User;
 use App\Domain\Auth\Entity\User\UserRepository;
+use App\Domain\Auth\Service\NewEmailConfirmTokenizer;
+use App\Domain\Auth\UseCase\Email;
 use App\Domain\Auth\Read\Filter\Filter;
 use App\Domain\Auth\Read\UserFetcher;
+use App\Http\Payload\Api\User\ChangeEmailPayload;
 use App\Http\Payload\Api\User\UserListPayload;
 use App\Http\Service\JsonApi\JsonApiHelper;
 use App\Http\Service\JsonApi\ResponseBuilder\ResponseDataBuilder;
@@ -20,7 +23,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
- * @Route("/api", name="user")
+ * @Route("/api/v1/user", name="user")
  */
 class UserController extends AbstractController
 {
@@ -54,7 +57,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/v1/user/list", name=".list", methods={"GET"})
+     * @Route("/list", name=".list", methods={"GET"})
      * @param UserListPayload $payload
      * @return JsonResponse
      */
@@ -135,7 +138,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/v1/user/role/list", name="_role.list", methods={"GET"})
+     * @Route("/role/list", name="_role.list", methods={"GET"})
      * @return JsonResponse
      */
     public function getUserRoles(): JsonResponse
@@ -175,7 +178,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/v1/user/{id}", name="_profile", methods={"GET"})
+     * @Route("/{id}/profile", name="_profile", methods={"GET"})
      * @param string $id
      * @return JsonResponse
      */
@@ -202,9 +205,63 @@ class UserController extends AbstractController
             ->setDataType('User profile')
             ->setDataAttribute('name', $user->getName()->getFull())
             ->setDataAttribute('email', $user->getEmail()->getValue())
-            ->setDataAttribute('createdAt', $user->getDate()->format('d.m.Y H:i:s'))
+            ->setDataAttribute('createdAt', $user->getDate()->getTimestamp())
             ->setDataAttribute('role', $user->getRole()->name())
             ->setDataAttribute('status', $user->getStatus());
+
+        return $this->apiHelper->createJsonResponse($responseDataBuilder);
+    }
+
+    /**
+     * @Route("/change-email", name="_profile.change_email", methods={"PATCH"})
+     * @param ChangeEmailPayload $payload
+     * @param Email\Request\Handler $handler
+     * @param NewEmailConfirmTokenizer $tokenizer
+     * @return JsonResponse
+     */
+    public function changeEmail(
+        ChangeEmailPayload $payload,
+        Email\Request\Handler $handler,
+        NewEmailConfirmTokenizer $tokenizer
+    ): JsonResponse
+    {
+        $user = $this->userRepository->findById($payload->uuid);
+
+        if (null === $user) {
+            $responseDataBuilder = ResponseDataBuilder::create()
+                ->setErrorsStatus(404)
+                ->setErrorsDetail('User not found.');
+
+            return $this->apiHelper->createJsonResponse($responseDataBuilder, Response::HTTP_NOT_FOUND);
+        }
+
+        $token = $tokenizer->generate();
+        $confirmUrl = $this->generateUrl(
+            'profile.email_confirm_page',
+            [
+                'token' => $token,
+                'user_id' => $user->getId()->getValue()
+            ]
+        );
+
+        $command = (new Email\Request\Command())
+            ->setId($user->getId()->getValue())
+            ->setNewEmail($payload->email)
+            ->setToken($token)
+            ->setConfirmUrl($this->getParameter('site_base_url') . $confirmUrl);
+
+        $handler->handle($command);
+
+        $linkSelf = $this->urlGenerator->generate(
+            'user_profile.change_email',
+            ['id' => $user->getId()->getValue()],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        $responseDataBuilder = ResponseDataBuilder::create()
+            ->setLinksSelf($linkSelf)
+            ->setDataType('User profile')
+            ->setDataAttribute('message', 'Change email request sent successfully. Check your email.');
 
         return $this->apiHelper->createJsonResponse($responseDataBuilder);
     }
