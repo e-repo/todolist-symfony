@@ -73,7 +73,8 @@ export const useAuthStore: StoreDefinition = defineStore('auth', {
                     router.go(0)
                 }
             }).catch((error) => {
-                throw new Error(error.message)
+                this.logout()
+                router?.push('login')
             })
         },
         setUserData(data) {

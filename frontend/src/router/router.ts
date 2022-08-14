@@ -1,4 +1,11 @@
-import { createRouter, createWebHistory, RouteLocationNormalized, Router, RouteRecordRaw } from "vue-router";
+import {
+    createRouter,
+    createWebHistory,
+    RouteLocationNormalized,
+    RouteLocationRaw,
+    Router,
+    RouteRecordRaw
+} from "vue-router";
 import { Middleware, MiddlewarePayload, MiddlewareContext } from "@/router/middleware/types";
 import { useAuthStore } from "@/store/auth";
 
@@ -59,9 +66,9 @@ const router: Router = createRouter({
     history: createWebHistory(process.env.BASE_URL)
 });
 
-router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized) => {
+router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized): RouteLocationRaw | void => {
     if (! to.meta.middleware) {
-        return false;
+        return;
     }
 
     const middleware = to.meta.middleware as Middleware[]
@@ -77,7 +84,7 @@ router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized) =
         nextMiddleware: middlewarePipeline(context, middleware, 1)
     }
 
-    middleware[0](payload)
+    return middleware[0](payload)
 })
 
 export default router

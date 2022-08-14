@@ -1,6 +1,5 @@
 {% extends 'mail.html.twig' %}
 {% block body %}
     <p>{% trans %}Email confirm link:{% endtrans %}</p>
-    {% set url = url('profile.email_confirm', {'token': token}) %}
-    <p><a href="{{ url }}">{{ url }}</a></p>
+    <p><a href="{{ confirmUrl }}">{{ confirmUrl }}</a></p>
 {% endblock %}

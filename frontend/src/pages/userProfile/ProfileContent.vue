@@ -1,6 +1,15 @@
 <template>
   <main class="main pt-3 pb-3">
     <div class="container-fluid">
+      <div class="row">
+        <div class="col">
+          <bootstrap-alert
+            :message="alertMessage"
+            :is-alert-show="isAlertShow"
+            @alertHide="alertHide"
+          ></bootstrap-alert>
+        </div>
+      </div>
 
       <div class="row">
         <div class="col-6">
@@ -38,7 +47,7 @@
                       {{ profile.email }}
                     </td>
                     <td class="text-center">
-                      <button type="button" class="btn btn-outline-primary" @click="isModalShow = ! isModalShow">
+                      <button type="button" class="btn btn-outline-primary" @click="changeEmailModalShow = ! changeEmailModalShow">
                         <font-awesome-icon icon="pen" />
                       </button>
                     </td>
@@ -49,7 +58,7 @@
                       Created at:
                     </td>
                     <td>
-                      {{ profile.createdAt }}
+                      {{ createdAt }}
                     </td>
                     <td>
                     </td>
@@ -82,70 +91,105 @@
               </table>
             </div>
 
-            <bootstrap-modal
-              :is-modal-show="isModalShow"
-              @modalHide="modalHide"
-            >
-              <template #title>Change email</template>
-              <template #body>
-                <form>
-                  <div class="mb-3">
-                    <label for="new-email" class="form-label">Email address</label>
-                    <input type="email" class="form-control" id="new-email" v-model="profile.email">
-                  </div>
-                </form>
-              </template>
-              <template #footer>
-                <button
-                    type="button"
-                    class="btn btn-outline-secondary"
-                    @click="modalHide()"
-                >
-                  <slot name="close-btn-name">Close</slot>
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-success"
-                  @click="changeEmail()"
-                >Save</button>
-              </template>
-            </bootstrap-modal>
-
           </div>
 
         </div>
       </div>
+
+      <bootstrap-modal
+          :is-modal-show="changeEmailModalShow"
+          @modalHide="modalHide"
+      >
+        <template #title>Change email</template>
+        <template #body>
+          <form>
+            <div class="mb-3">
+              <label for="new-email" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="new-email" v-model="emailChangingForm.email">
+            </div>
+          </form>
+        </template>
+        <template #footer>
+          <button
+              type="button"
+              class="btn btn-outline-secondary"
+              @click="modalHide()"
+          >
+            <slot name="close-btn-name">Close</slot>
+          </button>
+          <button
+              type="button"
+              class="btn btn-success"
+              @click="changeEmail()"
+          >Save</button>
+        </template>
+      </bootstrap-modal>
 
     </div>
   </main>
 </template>
 
 <script setup lang="ts">
+  import BootstrapAlert from '@/components/ui-kit/alert/BootstrapAlert.vue'
   import BootstrapModal from '@/components/ui-kit/modal/BootstrapModal.vue'
+  import moment from "moment";
   import { useAuthStore } from "@/store/auth"
   import { API_V1 } from "@/conf/api";
-  import { onMounted, reactive, ref } from "vue";
-  import { UserProfile } from "@/pages/userProfile/types";
+  import { onMounted, reactive, ref, computed } from "vue";
+  import { ChangingEmailForm, UserProfile } from "@/pages/userProfile/types";
   import { useRouter, useRoute } from "vue-router";
-  import {useCreateAuthHeader, useGetResource} from "@/components/composables";
+  import { useCreateAuthHeader, useGetResource, usePatchResource } from "@/components/composables";
 
   const authStore = useAuthStore()
   const router = useRouter()
   const route = useRoute()
 
-  const profile = reactive<UserProfile>({
+  const profile: UserProfile = reactive<UserProfile>({
     name: '',
     email: '',
-    createdAt: '',
+    createdAt: null,
     role: '',
     status: '',
   })
 
-  const isModalShow = ref<boolean>(false);
-  const modalHide = () => isModalShow.value = false
+  const emailChangingForm: ChangingEmailForm = reactive<ChangingEmailForm>({
+    email: ''
+  })
+
+  const alertMessage = ref<string>('')
+  const isAlertShow = ref<boolean>(false)
+  const alertHide = () => isAlertShow.value = false
+
+  const changeEmailModalShow = ref<boolean>(false)
+  const createdAt = computed(
+      () => profile.createdAt ? moment.unix(profile.createdAt).format('DD.MM.YYYY') : ''
+  )
+  const modalHide = () => changeEmailModalShow.value = false
 
   const changeEmail = () => {
-    console.log('Change email')
+    let resource: Promise<any> = usePatchResource(API_V1.PROFILE_CHANGE_EMAIL,
+      {
+        uuid: route.params.id,
+        email: emailChangingForm.email
+      },
+      {
+        headers: {
+          Authorization: useCreateAuthHeader(authStore.token)
+        },
+        refreshTokenAction: authStore.tryRefreshToken,
+        router,
+      }
+    )
+
+    resource
+        .then(response => {
+          const responseAttributes = response.data[0]?.attributes
+
+          modalHide()
+
+          alertMessage.value = responseAttributes.message
+          isAlertShow.value = true
+        })
   }
 
   const loadProfile = (): void => {
@@ -161,13 +205,13 @@
 
     resource
       .then(response => {
-        const profileData: UserProfile = response.data[0]?.attributes
+        const profileData = response.data[0]?.attributes
 
-        if (profileData) {
-          Object.keys(profileData).forEach(key => {
-            profile[key as keyof UserProfile] = profileData[key as keyof UserProfile]
-          })
-        }
+        profile.name = profileData.name
+        profile.email = profileData.email
+        profile.createdAt = profileData.createdAt
+        profile.role = profileData.role
+        profile.status = profileData.status
       })
   }
 

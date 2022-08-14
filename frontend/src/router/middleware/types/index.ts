@@ -5,10 +5,10 @@ export interface MiddlewarePayload {
     to?: RouteLocationNormalized;
     from?: RouteLocationNormalized;
     authStore?: Store;
-    nextMiddleware?: NextMiddleware | null;
+    nextMiddleware?: NextMiddlewareCallable | null;
 }
 
-export type NextMiddleware = () => void
+export type NextMiddlewareCallable = () => RouteLocationRaw | void
 
 export interface MiddlewareContext {
     to?: RouteLocationNormalized;

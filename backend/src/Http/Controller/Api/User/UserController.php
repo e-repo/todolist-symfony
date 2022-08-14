@@ -158,7 +158,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/v1/user/status/list", name="_status.list", methods={"GET"})
+     * @Route("/status/list", name="_status.list", methods={"GET"})
      * @return JsonResponse
      */
     public function getUserStatuses(): JsonResponse
