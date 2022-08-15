@@ -11,6 +11,7 @@ use App\Domain\Auth\UseCase\Email;
 use App\Domain\Auth\Read\Filter\Filter;
 use App\Domain\Auth\Read\UserFetcher;
 use App\Http\Payload\Api\User\ChangeEmailPayload;
+use App\Http\Payload\Api\User\ChangeNamePayload;
 use App\Http\Payload\Api\User\UserListPayload;
 use App\Http\Service\JsonApi\JsonApiHelper;
 use App\Http\Service\JsonApi\ResponseBuilder\ResponseDataBuilder;
@@ -264,5 +265,17 @@ class UserController extends AbstractController
             ->setDataAttribute('message', 'Change email request sent successfully. Check your email.');
 
         return $this->apiHelper->createJsonResponse($responseDataBuilder);
+    }
+
+    /**
+     * @Route("/change-name", name="_profile.change_name", methods={"PATCH"})
+     * @param ChangeNamePayload $payload
+     * @return JsonResponse
+     */
+    public function changeName(
+        ChangeNamePayload $payload
+    ): JsonResponse
+    {
+        dd($payload);
     }
 }

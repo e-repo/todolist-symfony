@@ -8,6 +8,7 @@ class Command
 {
     /**
      * @Assert\NotBlank()
+     * @Assert\Uuid()
      * @var string
      */
     public string $id;
@@ -31,5 +32,23 @@ class Command
     public function __construct(string $id)
     {
         $this->id = $id;
+    }
+
+    public function setId(string $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    public function setFirst(string $first): self
+    {
+        $this->first = $first;
+        return $this;
+    }
+
+    public function setLast(string $last): self
+    {
+        $this->last = $last;
+        return $this;
     }
 }

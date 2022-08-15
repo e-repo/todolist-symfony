@@ -1,6 +1,7 @@
 <template>
   <main class="main pt-3 pb-3">
     <div class="container-fluid">
+
       <div class="row">
         <div class="col">
           <bootstrap-alert
@@ -33,7 +34,11 @@
                       {{ profile.name }}
                     </td>
                     <td class="text-center">
-                      <button type="button" class="btn btn-outline-primary">
+                      <button
+                        type="button"
+                        class="btn btn-outline-primary"
+                        @click="changeNameModalShow = ! changeNameModalShow"
+                      >
                         <font-awesome-icon icon="pen" />
                       </button>
                     </td>
@@ -47,7 +52,11 @@
                       {{ profile.email }}
                     </td>
                     <td class="text-center">
-                      <button type="button" class="btn btn-outline-primary" @click="changeEmailModalShow = ! changeEmailModalShow">
+                      <button
+                        type="button"
+                        class="btn btn-outline-primary"
+                        @click="changeEmailModalShow = ! changeEmailModalShow"
+                      >
                         <font-awesome-icon icon="pen" />
                       </button>
                     </td>
@@ -98,7 +107,7 @@
 
       <bootstrap-modal
           :is-modal-show="changeEmailModalShow"
-          @modalHide="modalHide"
+          @modalHide="modalsHide"
       >
         <template #title>Change email</template>
         <template #body>
@@ -113,7 +122,7 @@
           <button
               type="button"
               class="btn btn-outline-secondary"
-              @click="modalHide()"
+              @click="modalsHide()"
           >
             <slot name="close-btn-name">Close</slot>
           </button>
@@ -125,6 +134,11 @@
         </template>
       </bootstrap-modal>
 
+      <change-name-modal
+        :is-modal-show="changeNameModalShow"
+        @modalHide="modalsHide"
+      ></change-name-modal>
+
     </div>
   </main>
 </template>
@@ -132,6 +146,7 @@
 <script setup lang="ts">
   import BootstrapAlert from '@/components/ui-kit/alert/BootstrapAlert.vue'
   import BootstrapModal from '@/components/ui-kit/modal/BootstrapModal.vue'
+  import ChangeNameModal from '@/pages/userProfile/ChangeNameModal.vue'
   import moment from "moment";
   import { useAuthStore } from "@/store/auth"
   import { API_V1 } from "@/conf/api";
@@ -161,10 +176,15 @@
   const alertHide = () => isAlertShow.value = false
 
   const changeEmailModalShow = ref<boolean>(false)
+  const changeNameModalShow = ref<boolean>(false)
+  const modalsHide = () => {
+    changeEmailModalShow.value = false
+    changeNameModalShow.value = false
+  }
+
   const createdAt = computed(
       () => profile.createdAt ? moment.unix(profile.createdAt).format('DD.MM.YYYY') : ''
   )
-  const modalHide = () => changeEmailModalShow.value = false
 
   const changeEmail = () => {
     let resource: Promise<any> = usePatchResource(API_V1.PROFILE_CHANGE_EMAIL,
@@ -185,7 +205,7 @@
         .then(response => {
           const responseAttributes = response.data[0]?.attributes
 
-          modalHide()
+          modalsHide()
 
           alertMessage.value = responseAttributes.message
           isAlertShow.value = true
@@ -215,7 +235,7 @@
       })
   }
 
-  onMounted(() =>{
+  onMounted(() => {
     if (authStore.isAuth) {
       loadProfile()
     }
