@@ -105,34 +105,11 @@
         </div>
       </div>
 
-      <bootstrap-modal
+      <change-email-modal
           :is-modal-show="changeEmailModalShow"
           @modalHide="modalsHide"
-      >
-        <template #title>Change email</template>
-        <template #body>
-          <form>
-            <div class="mb-3">
-              <label for="new-email" class="form-label">Email address</label>
-              <input type="email" class="form-control" id="new-email" v-model="emailChangingForm.email">
-            </div>
-          </form>
-        </template>
-        <template #footer>
-          <button
-              type="button"
-              class="btn btn-outline-secondary"
-              @click="modalsHide()"
-          >
-            <slot name="close-btn-name">Close</slot>
-          </button>
-          <button
-              type="button"
-              class="btn btn-success"
-              @click="changeEmail()"
-          >Save</button>
-        </template>
-      </bootstrap-modal>
+          @emailChangeMessage="emailChangeMessage"
+      ></change-email-modal>
 
       <change-name-modal
         :is-modal-show="changeNameModalShow"
@@ -146,15 +123,15 @@
 
 <script setup lang="ts">
   import BootstrapAlert from '@/components/ui-kit/alert/BootstrapAlert.vue'
-  import BootstrapModal from '@/components/ui-kit/modal/BootstrapModal.vue'
   import ChangeNameModal from '@/pages/userProfile/ChangeNameModal.vue'
+  import ChangeEmailModal from '@/pages/userProfile/ChangeEmailModal.vue'
   import moment from "moment";
   import { useAuthStore } from "@/store/auth"
   import { API_V1 } from "@/conf/api";
   import { onMounted, reactive, ref, computed } from "vue";
-  import { ChangingEmailForm, UserProfile } from "@/pages/userProfile/types";
   import { useRouter, useRoute } from "vue-router";
-  import { useCreateAuthHeader, useGetResource, usePatchResource } from "@/components/composables";
+  import { useCreateAuthHeader, useGetResource } from "@/components/composables";
+  import { UserProfile } from "@/pages/userProfile/types";
 
   const authStore = useAuthStore()
   const router = useRouter()
@@ -166,10 +143,6 @@
     createdAt: null,
     role: '',
     status: '',
-  })
-
-  const emailChangingForm: ChangingEmailForm = reactive<ChangingEmailForm>({
-    email: ''
   })
 
   const alertMessage = ref<string>('')
@@ -187,38 +160,20 @@
       () => profile.createdAt ? moment.unix(profile.createdAt).format('DD.MM.YYYY') : ''
   )
 
+  function emailChangeMessage(message: string): void
+  {
+    if ('' !== message) {
+      alertMessage.value = message
+      isAlertShow.value = true
+    }
+  }
+
   function setProfileData(profileData: UserProfile): void {
     profile.name = profileData.name
     profile.email = profileData.email
     profile.createdAt = profileData.createdAt
     profile.role = profileData.role
     profile.status = profileData.status
-  }
-
-  const changeEmail = () => {
-    let resource: Promise<any> = usePatchResource(API_V1.PROFILE_CHANGE_EMAIL,
-      {
-        uuid: route.params.id,
-        email: emailChangingForm.email
-      },
-      {
-        headers: {
-          Authorization: useCreateAuthHeader(authStore.token)
-        },
-        refreshTokenAction: authStore.tryRefreshToken,
-        router,
-      }
-    )
-
-    resource
-        .then(response => {
-          const responseAttributes = response.data[0]?.attributes
-
-          modalsHide()
-
-          alertMessage.value = responseAttributes.message
-          isAlertShow.value = true
-        })
   }
 
   const loadProfile = (): void => {
