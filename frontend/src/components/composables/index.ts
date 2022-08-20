@@ -32,3 +32,27 @@ export function usePatchResource(
         .then(response => response.data)
         .catch(error => config.refreshTokenAction(error, config.router))
 }
+
+export function usePostResource(
+    url: string,
+    data: object = {},
+    config: GetResourceConfig,
+): Promise<any>
+{
+    return axios
+        .post(url, data, config)
+        .then(response => response.data)
+        .catch(error => config.refreshTokenAction(error, config.router))
+}
+
+export function usePutResource(
+    url: string,
+    data: object = {},
+    config: GetResourceConfig,
+): Promise<any>
+{
+    return axios
+        .put(url, data, config)
+        .then(response => response.data)
+        .catch(error => config.refreshTokenAction(error, config.router))
+}

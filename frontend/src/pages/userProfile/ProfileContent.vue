@@ -137,6 +137,7 @@
       <change-name-modal
         :is-modal-show="changeNameModalShow"
         @modalHide="modalsHide"
+        @profileData="setProfileData"
       ></change-name-modal>
 
     </div>
@@ -186,6 +187,14 @@
       () => profile.createdAt ? moment.unix(profile.createdAt).format('DD.MM.YYYY') : ''
   )
 
+  function setProfileData(profileData: UserProfile): void {
+    profile.name = profileData.name
+    profile.email = profileData.email
+    profile.createdAt = profileData.createdAt
+    profile.role = profileData.role
+    profile.status = profileData.status
+  }
+
   const changeEmail = () => {
     let resource: Promise<any> = usePatchResource(API_V1.PROFILE_CHANGE_EMAIL,
       {
@@ -227,11 +236,7 @@
       .then(response => {
         const profileData = response.data[0]?.attributes
 
-        profile.name = profileData.name
-        profile.email = profileData.email
-        profile.createdAt = profileData.createdAt
-        profile.role = profileData.role
-        profile.status = profileData.status
+        setProfileData(profileData)
       })
   }
 
