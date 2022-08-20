@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\Domain\Auth\UseCase\Name;
 
 /**
  * @Route("/api/v1/user", name="user")
@@ -268,14 +269,47 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/change-name", name="_profile.change_name", methods={"PATCH"})
+     * @Route("/change-name", name="_profile.change_name", methods={"PUT"})
      * @param ChangeNamePayload $payload
+     * @param Name\Handler $handler
      * @return JsonResponse
      */
     public function changeName(
-        ChangeNamePayload $payload
+        ChangeNamePayload $payload,
+        Name\Handler $handler
     ): JsonResponse
     {
-        dd($payload);
+        $user = $this->userRepository->findById($payload->uuid);
+
+        if (null === $user) {
+            $responseDataBuilder = ResponseDataBuilder::create()
+                ->setErrorsStatus(400)
+                ->setErrorsDetail('User not found.');
+
+            return $this->apiHelper->createJsonResponse($responseDataBuilder, Response::HTTP_NOT_FOUND);
+        }
+
+        $command = (new Name\Command($payload->uuid))
+            ->setFirst($payload->firstName)
+            ->setLast($payload->lastName);
+
+        $handler->handle($command);
+
+        $linkSelf = $this->urlGenerator->generate(
+            'user_profile.change_name',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        $responseDataBuilder = ResponseDataBuilder::create()
+            ->setLinksSelf($linkSelf)
+            ->setDataType('User profile')
+            ->setDataAttribute('name', $user->getName()->getFull())
+            ->setDataAttribute('email', $user->getEmail()->getValue())
+            ->setDataAttribute('createdAt', $user->getDate()->getTimestamp())
+            ->setDataAttribute('role', $user->getRole()->name())
+            ->setDataAttribute('status', $user->getStatus());
+
+        return $this->apiHelper->createJsonResponse($responseDataBuilder);
     }
 }

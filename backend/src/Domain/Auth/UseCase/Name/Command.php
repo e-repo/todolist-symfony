@@ -8,10 +8,11 @@ class Command
 {
     /**
      * @Assert\NotBlank()
+     * @Assert\NotNull()
      * @Assert\Uuid()
-     * @var string
+     * @var ?string
      */
-    public string $id;
+    public ?string $id;
     /**
      * @Assert\NotBlank()
      * @Assert\Length(min = 2, max = 50)
@@ -27,9 +28,9 @@ class Command
 
     /**
      * Command constructor.
-     * @param string $id
+     * @param string|null $id
      */
-    public function __construct(string $id)
+    public function __construct(?string $id = null)
     {
         $this->id = $id;
     }

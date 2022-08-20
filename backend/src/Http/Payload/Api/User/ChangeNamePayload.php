@@ -24,7 +24,7 @@ class ChangeNamePayload implements BasePayloadInterface
      *      )
      * @Assert\NotBlank(message="Пустое имя пользователя.")
      */
-    public string $firsName;
+    public string $firstName;
 
     /**
      * @Assert\Length(
