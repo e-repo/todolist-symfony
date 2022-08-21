@@ -18,5 +18,5 @@ export interface UserNameForm {
 }
 
 export interface ChangingEmailForm {
-    email: string
+    email: FormField
 }

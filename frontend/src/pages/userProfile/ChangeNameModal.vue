@@ -23,14 +23,16 @@
           </div>
           <div class="mb-3">
             <label for="new-email" class="form-label">Last Name</label>
-            <input
-              type="text"
-              class="form-control"
-              :class="{'is-invalid': ! userNameFrom.last.isValid}"
-              v-model="userNameFrom.last.fieldValue"
-            >
-            <div class="invalid-feedback">
-              {{ userNameFrom.last.errorMessage }}
+            <div class="input-group has-validation">
+              <input
+                type="text"
+                class="form-control"
+                :class="{'is-invalid': ! userNameFrom.last.isValid}"
+                v-model="userNameFrom.last.fieldValue"
+              >
+              <div class="invalid-feedback">
+                {{ userNameFrom.last.errorMessage }}
+              </div>
             </div>
           </div>
         </form>
@@ -61,7 +63,7 @@
   import { API_V1 } from "@/conf/api";
   import { useRoute, useRouter } from "vue-router";
   import { useAuthStore } from "@/store/auth";
-  import { useUserNameValidator } from "@/pages/userProfile/composables";
+  import { useNameFormValidator } from "@/pages/userProfile/composables";
 
   const authStore = useAuthStore()
   const router = useRouter()
@@ -85,7 +87,7 @@
     }
   })
 
-  useUserNameValidator(userNameFrom)
+  useNameFormValidator(userNameFrom)
 
   watch(props.modelValue, (profileData: UserProfile) => {
     userNameFrom.first.fieldValue = profileData.name.split(' ')[0].trim()
@@ -96,7 +98,7 @@
   const changeName = (): void => {
     for (let field in userNameFrom) {
       if (! userNameFrom[field as keyof UserNameForm].isValid) {
-        return;
+        return
       }
     }
 
@@ -116,12 +118,12 @@
     )
 
     resource
-        .then(response => {
-          const profile = response.data[0]?.attributes
+      .then(response => {
+        const profile = response.data[0]?.attributes
 
-          emit('update:modelValue', profile)
-          modalHide()
-        })
+        emit('update:modelValue', profile)
+        modalHide()
+      })
   }
 </script>
 

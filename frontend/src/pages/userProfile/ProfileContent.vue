@@ -107,6 +107,7 @@
 
       <change-email-modal
           :is-modal-show="changeEmailModalShow"
+          :userProfile="profile"
           @modalHide="modalsHide"
           @emailChangeMessage="emailChangeMessage"
       ></change-email-modal>

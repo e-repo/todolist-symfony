@@ -1,7 +1,34 @@
-import { UserNameForm } from "@/pages/userProfile/types";
+import {ChangingEmailForm, UserNameForm} from "@/pages/userProfile/types";
 import { isReactive, watchEffect } from "vue";
 
-export function useUserNameValidator(userNameForm: UserNameForm): void {
+export function useEmailFormValidator(emailForm: ChangingEmailForm): void {
+    if (! isReactive(emailForm)) {
+        throw Error('\'userName\' must be reactive.')
+    }
+
+    function checkEmail(): void {
+        emailForm.email.isValid = true
+        const emailTemplate: RegExp = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/
+
+        if (emailForm.email.fieldValue.length < 5) {
+            emailForm.email.isValid = false
+            emailForm.email.errorMessage = 'E-mail не может быть меньше 5-ти символов.'
+
+            return
+        }
+
+        if (! emailForm.email.fieldValue.match(emailTemplate)) {
+            emailForm.email.isValid = false
+            emailForm.email.errorMessage = 'Неверный формат электронной почты.'
+
+            return
+        }
+    }
+
+    watchEffect(checkEmail)
+}
+
+export function useNameFormValidator(userNameForm: UserNameForm): void {
     if (! isReactive(userNameForm)) {
         throw Error('\'userName\' must be reactive.')
     }
