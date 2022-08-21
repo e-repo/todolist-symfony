@@ -113,8 +113,8 @@
 
       <change-name-modal
         :is-modal-show="changeNameModalShow"
+        v-model="profile"
         @modalHide="modalsHide"
-        @profileData="setProfileData"
       ></change-name-modal>
 
     </div>

@@ -9,11 +9,29 @@
         <form>
           <div class="mb-3">
             <label for="new-email" class="form-label">First Name</label>
-            <input type="text" class="form-control" v-model="userName.first">
+            <div class="input-group has-validation">
+              <input
+                type="text"
+                class="form-control"
+                :class="{'is-invalid': ! userNameFrom.first.isValid}"
+                v-model="userNameFrom.first.fieldValue"
+              >
+              <div class="invalid-feedback">
+                {{ userNameFrom.first.errorMessage }}
+              </div>
+            </div>
           </div>
           <div class="mb-3">
             <label for="new-email" class="form-label">Last Name</label>
-            <input type="text" class="form-control" v-model="userName.last">
+            <input
+              type="text"
+              class="form-control"
+              :class="{'is-invalid': ! userNameFrom.last.isValid}"
+              v-model="userNameFrom.last.fieldValue"
+            >
+            <div class="invalid-feedback">
+              {{ userNameFrom.last.errorMessage }}
+            </div>
           </div>
         </form>
       </template>
@@ -37,35 +55,56 @@
 
 <script setup lang="ts">
   import BootstrapModal from "@/components/ui-kit/modal/BootstrapModal.vue";
-  import {defineEmits, defineProps, reactive} from "vue";
-  import { UserName } from "@/pages/userProfile/types";
-  import {useCreateAuthHeader, usePutResource} from "@/components/composables";
+  import {defineEmits, defineProps, PropType, reactive, watch} from "vue";
+  import { UserNameForm, UserProfile } from "@/pages/userProfile/types";
+  import { useCreateAuthHeader, usePutResource } from "@/components/composables";
   import { API_V1 } from "@/conf/api";
   import { useRoute, useRouter } from "vue-router";
   import { useAuthStore } from "@/store/auth";
+  import { useUserNameValidator } from "@/pages/userProfile/composables";
 
   const authStore = useAuthStore()
   const router = useRouter()
   const route = useRoute()
 
-  defineProps({
+  const props = defineProps({
     isModalShow: { type: Boolean, default: false },
+    modelValue: { type: Object as PropType<UserProfile>, required: true }
   })
 
-  const emit = defineEmits(['modalHide', 'profileData'])
+  const emit = defineEmits(['modalHide', 'update:modelValue'])
 
-  const userName: UserName = reactive<UserName>({
-    first: '',
-    last: ''
+  const userNameFrom: UserNameForm = reactive<UserNameForm>({
+    first: {
+      fieldValue: '',
+      isValid: true
+    },
+    last: {
+      fieldValue: '',
+      isValid: true
+    }
+  })
+
+  useUserNameValidator(userNameFrom)
+
+  watch(props.modelValue, (profileData: UserProfile) => {
+    userNameFrom.first.fieldValue = profileData.name.split(' ')[0].trim()
+    userNameFrom.last.fieldValue = profileData.name.split(' ')[1].trim()
   })
 
   const modalHide = () => emit('modalHide')
-  const changeName = () => {
+  const changeName = (): void => {
+    for (let field in userNameFrom) {
+      if (! userNameFrom[field as keyof UserNameForm].isValid) {
+        return;
+      }
+    }
+
     let resource: Promise<any> = usePutResource(API_V1.PROFILE_CHANGE_NAME,
       {
         uuid: route.params.id,
-        firstName: userName.first,
-        lastName: userName.last
+        firstName: userNameFrom.first.fieldValue,
+        lastName: userNameFrom.last.fieldValue
       },
       {
         headers: {
@@ -78,9 +117,9 @@
 
     resource
         .then(response => {
-          const profileData = response.data[0]?.attributes
+          const profile = response.data[0]?.attributes
 
-          emit('profileData', profileData)
+          emit('update:modelValue', profile)
           modalHide()
         })
   }
