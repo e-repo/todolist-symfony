@@ -12,7 +12,9 @@
         </div>
       </div>
 
-      <div class="row">
+      <profile-cropper></profile-cropper>
+
+      <div class="row mt-4">
         <div class="col-6">
 
           <div class="card" v-if="profile">
@@ -123,6 +125,7 @@
 </template>
 
 <script setup lang="ts">
+  import ProfileCropper from '@/pages/userProfile/ProfileCropper.vue'
   import BootstrapAlert from '@/components/ui-kit/alert/BootstrapAlert.vue'
   import ChangeNameModal from '@/pages/userProfile/ChangeNameModal.vue'
   import ChangeEmailModal from '@/pages/userProfile/ChangeEmailModal.vue'

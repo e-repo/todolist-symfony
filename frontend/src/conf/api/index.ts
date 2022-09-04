@@ -5,4 +5,5 @@ export const API_V1 = {
     USER_PROFILE: (id: string) => `/api/v1/user/${id}/profile`,
     PROFILE_CHANGE_EMAIL: '/api/v1/user/change-email',
     PROFILE_CHANGE_NAME: '/api/v1/user/change-name',
+    PROFILE_IMAGE_UPLOAD: '/api/v1/user/image-upload'
 };

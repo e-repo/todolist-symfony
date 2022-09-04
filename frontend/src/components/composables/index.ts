@@ -36,13 +36,19 @@ export function usePatchResource(
 export function usePostResource(
     url: string,
     data: object = {},
-    config: GetResourceConfig,
+    config: AxiosRequestConfig,
+    refreshTokenCallback?: (error: object, router: Router | null) => void,
+    router?: Router
 ): Promise<any>
 {
     return axios
         .post(url, data, config)
         .then(response => response.data)
-        .catch(error => config.refreshTokenAction(error, config.router))
+        .catch(error => {
+            if (! refreshTokenCallback || !router) return
+
+            refreshTokenCallback(error, router)
+        })
 }
 
 export function usePutResource(
