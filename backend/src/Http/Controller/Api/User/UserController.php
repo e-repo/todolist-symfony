@@ -4,25 +4,36 @@ declare(strict_types=1);
 
 namespace App\Http\Controller\Api\User;
 
+use App\Domain\Auth\Entity\User\Id;
+use App\Domain\Auth\Entity\User\ImageRepository;
 use App\Domain\Auth\Entity\User\User;
 use App\Domain\Auth\Entity\User\UserRepository;
 use App\Domain\Auth\Service\NewEmailConfirmTokenizer;
+use App\Domain\Auth\UseCase\Image;
 use App\Domain\Auth\UseCase\Email;
 use App\Domain\Auth\Read\Filter\Filter;
 use App\Domain\Auth\Read\UserFetcher;
 use App\Http\Payload\Api\User\ChangeEmailPayload;
 use App\Http\Payload\Api\User\ChangeNamePayload;
+use App\Http\Payload\Api\User\ImageUploadPayload;
 use App\Http\Payload\Api\User\UserListPayload;
 use App\Http\Service\JsonApi\JsonApiHelper;
 use App\Http\Service\JsonApi\ResponseBuilder\ResponseDataBuilder;
 use App\Infrastructure\Security\RolesHelper;
+use App\Infrastructure\Upload\UploadHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mime\MimeTypesInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use App\Domain\Auth\UseCase\Name;
+use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @Route("/api/v1/user", name="user")
@@ -35,6 +46,8 @@ class UserController extends AbstractController
     private UrlGeneratorInterface $urlGenerator;
     private RolesHelper $rolesHelper;
     private UserRepository $userRepository;
+    private ValidatorInterface $validator;
+    private MimeTypesInterface $mimeTypes;
 
     /**
      * @param UserFetcher $fetcher
@@ -42,13 +55,17 @@ class UserController extends AbstractController
      * @param JsonApiHelper $apiHelper
      * @param UrlGeneratorInterface $urlGenerator
      * @param RolesHelper $rolesHelper
+     * @param ValidatorInterface $validator
+     * @param MimeTypesInterface $mimeTypes
      */
     public function __construct(
         UserFetcher $fetcher,
         UserRepository $userRepository,
         JsonApiHelper $apiHelper,
         UrlGeneratorInterface $urlGenerator,
-        RolesHelper $rolesHelper
+        RolesHelper $rolesHelper,
+        ValidatorInterface $validator,
+        MimeTypesInterface $mimeTypes
     )
     {
         $this->fetcher = $fetcher;
@@ -56,6 +73,8 @@ class UserController extends AbstractController
         $this->urlGenerator = $urlGenerator;
         $this->rolesHelper = $rolesHelper;
         $this->userRepository = $userRepository;
+        $this->validator = $validator;
+        $this->mimeTypes = $mimeTypes;
     }
 
     /**
@@ -309,6 +328,73 @@ class UserController extends AbstractController
             ->setDataAttribute('createdAt', $user->getDate()->getTimestamp())
             ->setDataAttribute('role', $user->getRole()->name())
             ->setDataAttribute('status', $user->getStatus());
+
+        return $this->apiHelper->createJsonResponse($responseDataBuilder);
+    }
+
+    /**
+     * @Route("/image-upload", name="_profile.image-upload", methods={"POST"})
+     * @param Request $request
+     * @param Image\Attach\Handler $handler
+     * @param ImageRepository $imageRepository
+     * @param UploadHelper $uploadHelper
+     * @return JsonResponse
+     */
+    public function uploadProfileImage(
+        Request $request,
+        Image\Attach\Handler $handler,
+        ImageRepository $imageRepository,
+        UploadHelper $uploadHelper
+    ): JsonResponse
+    {
+        /** @var UploadedFile $uploadedFile */
+        $uploadedFile = $request->files->get('image');
+
+        $violations = $this->validator->validate($uploadedFile, [
+            new NotBlank(),
+            new File([
+                'maxSize' => '2M',
+                'mimeTypes' => \array_merge($this->mimeTypes->getMimeTypes('jpeg'), $this->mimeTypes->getMimeTypes('png'))
+            ])
+        ]);
+
+        if ($violations->count() > 0) {
+            $responseDataBuilder = ResponseDataBuilder::create();
+
+            /** @var ConstraintViolation $violation */
+            foreach ($violations as $violation) {
+                $responseDataBuilder
+                    ->setErrorsTitle('Image validation error.')
+                    ->setErrorsDetail($violation->getMessage());
+            }
+
+            return $this->apiHelper->createJsonResponse($responseDataBuilder, Response::HTTP_BAD_REQUEST);
+        }
+
+        $command = new Image\Attach\Command($uploadedFile, $request->get('uuid'));
+
+        try {
+            $handler->handle($command);
+        } catch (\Exception $e) {
+            $responseDataBuilder = ResponseDataBuilder::create()
+                ->setErrorsTitle('Image save error.')
+                ->setErrorsDetail($e->getMessage());
+
+            return $this->apiHelper->createJsonResponse($responseDataBuilder, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $linkSelf = $this->urlGenerator->generate(
+            'user_profile.change_name',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        $activeImage = $imageRepository->findActiveImageByUserId(new Id($request->get('uuid')));
+
+        $responseDataBuilder = ResponseDataBuilder::create()
+            ->setLinksSelf($linkSelf)
+            ->setDataType('Image save successfully.')
+            ->setDataAttribute('imagePath', $uploadHelper->getPublicPath($activeImage->getFilePath()));
 
         return $this->apiHelper->createJsonResponse($responseDataBuilder);
     }

@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Class Image
- * @package App\Domain\User\Entity\User
  * @ORM\Entity()
  * @ORM\Table(
  *     name="user_user_images",

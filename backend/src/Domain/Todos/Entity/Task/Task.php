@@ -8,6 +8,7 @@ use App\Domain\Auth\Entity\User\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Webmozart\Assert\Assert;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Class Task
@@ -26,7 +27,7 @@ class Task
      */
     private Id $id;
     /**
-     * @ORM\ManyToOne(targetEntity="App\Domain\User\Entity\User\User")
+     * @ORM\ManyToOne(targetEntity="App\Domain\Auth\Entity\User\User")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
      */
     private User $user;
