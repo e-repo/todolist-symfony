@@ -12,7 +12,7 @@
         </div>
       </div>
 
-      <profile-cropper></profile-cropper>
+      <profile-cropper :image-path="profileImagePath"></profile-cropper>
 
       <div class="row mt-4">
         <div class="col-6">
@@ -148,6 +148,7 @@
     role: '',
     status: '',
   })
+  const profileImagePath = ref(require('@/assets/img/profile/user_default_img.png'))
 
   const alertMessage = ref<string>('')
   const isAlertShow = ref<boolean>(false)
@@ -193,9 +194,12 @@
 
     resource
       .then(response => {
-        const profileData = response.data[0]?.attributes
+        const responseData = response.data[0];
+        const profileData = responseData?.attributes
+        const profileImage = responseData?.relationships?.image
 
         setProfileData(profileData)
+        profileImagePath.value = profileImage.path
       })
   }
 

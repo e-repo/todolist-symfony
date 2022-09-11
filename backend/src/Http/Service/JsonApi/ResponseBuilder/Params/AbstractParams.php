@@ -34,7 +34,7 @@ abstract class AbstractParams
                 throw new GetterNotFoundException($getterName);
             }
 
-            if ((self::ALL_PARAMS_PROPERTY === $property) && null !== $this->$getterName()) {
+            if ((self::ALL_PARAMS_PROPERTY === $property) && [] !== $this->$getterName()) {
                 return $this->$getterName();
             }
 

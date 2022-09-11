@@ -1,16 +1,19 @@
 <template>
   <div class="row mb-2">
-    <div class="col">
+    <div class="col-md-auto">
 
       <div class="cropper-wrap">
         <img
           class="profile-image"
           ref="profileImage"
-          src="@/assets/img/profile/user_default_img.png"
-          alt="Job"
+          :src="profileImagePath"
+          :alt="profileImageName"
         >
       </div>
 
+    </div>
+    <div class="col text-center">
+      Список изображений профиля пользователя.
     </div>
   </div>
   <div class="row mb-4">
@@ -51,11 +54,15 @@
   import 'cropperjs/dist/cropper.css';
   import Cropper from 'cropperjs';
 
-  import { onMounted, ref } from 'vue'
+  import { onMounted, ref, defineProps, watch } from 'vue'
   import { useCreateAuthHeader, usePostResource } from "@/components/composables";
   import { API_V1 } from "@/conf/api";
   import { useRoute, useRouter } from "vue-router";
   import { useAuthStore } from "@/store/auth";
+
+  const props = defineProps({
+    imagePath: { type: String, required: true }
+  })
 
   let cropper: Cropper|null = null
 
@@ -63,14 +70,26 @@
   const router = useRouter()
   const route = useRoute()
 
+  const profileImageName = ref('Profile.png')
+  const profileImagePath = ref(props.imagePath)
   const profileImage = ref()
-  const profileImageName = ref<string>('')
   const cropperInput = ref()
+
+  watch(() => props.imagePath, (path) => {
+    if (path) {
+      const url = new URL(path)
+
+      profileImagePath.value = url.pathname
+      profileImage.value.src = url.pathname
+
+      initCropper()
+    }
+  })
 
   const changeCropperImage = () => {
     const inputImage = cropperInput.value.files[0]
 
-    if (! inputImage) return
+    if (! (inputImage instanceof File)) return
 
     profileImage.value.src = URL.createObjectURL(inputImage)
     profileImageName.value = inputImage.name
