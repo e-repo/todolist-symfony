@@ -8,16 +8,18 @@ class DataParams extends AbstractParams
 {
     private ?int $dataId = null;
     private ?string $dataUuid = null;
-    private array $dataAttributes = [];
-    private ?iterable $dataParams = null;
     private ?string $dataType = null;
+    private iterable $dataParams = [];
+    private array $dataAttributes = [];
+    private iterable $dataRelationships = [];
 
     private array $dataProperties = [
         'allParams',
         'type',
         'id',
         'uuid',
-        'attributes'
+        'attributes',
+        'relationships'
     ];
 
     public function setDataType(string $dataType): self
@@ -61,7 +63,7 @@ class DataParams extends AbstractParams
         return $this;
     }
 
-    public function getDataAllParams(): ?iterable
+    public function getDataAllParams(): iterable
     {
         return $this->dataParams;
     }
@@ -71,7 +73,7 @@ class DataParams extends AbstractParams
         return $this->dataId;
     }
 
-    public function setDataId(?int $dataId): self
+    public function setDataId(int $dataId): self
     {
         $this->dataId = $dataId;
         return $this;
@@ -82,7 +84,7 @@ class DataParams extends AbstractParams
         return $this->dataUuid;
     }
 
-    public function setDataUuid(?string $dataUuid): self
+    public function setDataUuid(string $dataUuid): self
     {
         $this->dataUuid = $dataUuid;
         return $this;
@@ -91,5 +93,16 @@ class DataParams extends AbstractParams
     protected function getProperties(): array
     {
         return $this->dataProperties;
+    }
+
+    public function setDataRelationships(iterable $params): self
+    {
+        $this->dataRelationships = $params;
+        return $this;
+    }
+
+    public function getDataRelationships(): iterable
+    {
+        return $this->dataRelationships;
     }
 }

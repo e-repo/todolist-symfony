@@ -49,7 +49,7 @@ class UploadHelper
     public function uploadFile(File $file, string $entityName = '', ?string $entityId = '', $newName = null): string
     {
         $newFilename = $newName ?? $this->getNewFileName($file);
-        $entityPath = $this->defineEntityPath($entityName, $entityId);
+        $entityPath = $this->getEntityPath($entityName, $entityId);
 
         $stream = \fopen($file->getPathname(), 'r');
         $result = $this->filesystem->writeStream(
@@ -121,7 +121,7 @@ class UploadHelper
         return $file->getFilename();
     }
 
-    private function defineEntityPath(string $entityName, string $entityId): ?string
+    private function getEntityPath(string $entityName, string $entityId): ?string
     {
         if (\trim($entityName) !== '' && \trim($entityId) !== '') {
             return $entityName . DIRECTORY_SEPARATOR . $entityId;

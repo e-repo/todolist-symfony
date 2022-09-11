@@ -201,9 +201,10 @@ class UserController extends AbstractController
     /**
      * @Route("/{id}/profile", name="_profile", methods={"GET"})
      * @param string $id
+     * @param UploadHelper $uploadHelper
      * @return JsonResponse
      */
-    public function getUserProfile(string $id): JsonResponse
+    public function getUserProfile(string $id, UploadHelper $uploadHelper): JsonResponse
     {
         $user = $this->userRepository->findById($id);
 
@@ -224,11 +225,27 @@ class UserController extends AbstractController
         $responseDataBuilder = ResponseDataBuilder::create()
             ->setLinksSelf($linkSelf)
             ->setDataType('User profile')
+            ->setDataUuid($user->getId()->getValue())
             ->setDataAttribute('name', $user->getName()->getFull())
             ->setDataAttribute('email', $user->getEmail()->getValue())
             ->setDataAttribute('createdAt', $user->getDate()->getTimestamp())
             ->setDataAttribute('role', $user->getRole()->name())
             ->setDataAttribute('status', $user->getStatus());
+
+        if ($userActiveImage = $user->getActiveImage()) {
+            $responseDataBuilder
+                ->setDataRelationships([
+                    'image' => [
+                        'path' => $uploadHelper->getPublicPath($userActiveImage->getFilePath()),
+                        'data' => [
+                            'uuid' => $userActiveImage->getId(),
+                            'fileName' => $userActiveImage->getFilename(),
+                            'mimeType' => $userActiveImage->getMimeType(),
+                            'createdAt' => $userActiveImage->getCreatedAt()->getTimestamp()
+                        ]
+                    ]
+                ]);
+        }
 
         return $this->apiHelper->createJsonResponse($responseDataBuilder);
     }

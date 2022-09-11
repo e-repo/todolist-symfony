@@ -130,7 +130,7 @@ class ResponseDataBuilder
         return $this->dataParams->getDataId();
     }
 
-    public function setDataId(?int $dataId): self
+    public function setDataId(int $dataId): self
     {
         $this->dataParams->setDataId($dataId);
         return $this;
@@ -141,9 +141,20 @@ class ResponseDataBuilder
         return $this->dataParams->getDataUuid();
     }
 
-    public function setDataUuid(?string $dataUuid): self
+    public function setDataUuid(string $dataUuid): self
     {
         $this->dataParams->setDataUuid($dataUuid);
+        return $this;
+    }
+
+    public function getDataRelationships(): iterable
+    {
+        return $this->dataParams->getDataRelationships();
+    }
+
+    public function setDataRelationships(iterable $params): self
+    {
+        $this->dataParams->setDataRelationships($params);
         return $this;
     }
 

@@ -487,9 +487,20 @@ class User
     /**
      * @return Image[]|ArrayCollection|null
      */
-    public function getImages()
+    public function getImages(): ?Collection
     {
         return $this->images;
+    }
+
+    public function getActiveImage(): ?Image
+    {
+        foreach ($this->getImages() as $image) {
+            if ($image->isActive()) {
+                return $image;
+            }
+        }
+
+        return null;
     }
 
     public function attachImage(Image $image): void
