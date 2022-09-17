@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controller\Auth;
 
-use App\Domain\Auth\Read\UserFetcher;
-use App\Domain\Auth\UseCase\Reset;
+use App\Domain\Auth\User\UseCase;
+use App\Domain\Auth\User\Read\UserFetcher;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,14 +31,14 @@ class ResetController extends AbstractController
     /**
      * @Route("/reset", name="auth.reset")
      * @param Request $request
-     * @param Reset\Request\Handler $handler
+     * @param UseCase\Reset\Request\Handler $handler
      * @return Response
      */
-    public function request(Request $request, Reset\Request\Handler $handler): Response
+    public function request(Request $request, UseCase\Reset\Request\Handler $handler): Response
     {
-        $command = new Reset\Request\Command();
+        $command = new UseCase\Reset\Request\Command();
 
-        $form = $this->createForm(Reset\Request\Form::class, $command);
+        $form = $this->createForm(UseCase\Reset\Request\Form::class, $command);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -61,15 +61,15 @@ class ResetController extends AbstractController
      * @Route("/reset/{token}", name="auth.reset_reset")
      * @param string $token
      * @param Request $request
-     * @param Reset\Reset\Handler $handler
+     * @param UseCase\Reset\Reset\Handler $handler
      * @param UserFetcher $users
      * @return Response
      */
     public function reset(
-        string                                       $token,
-        Request                                      $request,
-        Reset\Reset\Handler $handler,
-        UserFetcher                                  $users
+        string                                            $token,
+        Request                                           $request,
+        UseCase\Reset\Reset\Handler $handler,
+        UserFetcher                                       $users
     ): Response
     {
         if (! $users->existByResetToken($token)) {
@@ -77,9 +77,9 @@ class ResetController extends AbstractController
             return $this->redirectToRoute('home');
         }
 
-        $command = new Reset\Reset\Command($token);
+        $command = new UseCase\Reset\Reset\Command($token);
 
-        $form = $this->createForm(Reset\Reset\Form::class, $command);
+        $form = $this->createForm(UseCase\Reset\Reset\Form::class, $command);
 
         $form->handleRequest($request);
 

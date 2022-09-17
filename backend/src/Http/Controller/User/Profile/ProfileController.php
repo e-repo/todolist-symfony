@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controller\User\Profile;
 
-use App\Domain\Auth\Entity\User\Id;
-use App\Domain\Auth\Entity\User\ImageRepository;
-use App\Domain\Auth\Entity\User\UserRepository;
-use App\Domain\Auth\UseCase\Image;
+use App\Domain\Auth\User\UseCase;
+use App\Domain\Auth\User\Entity\User\Id;
+use App\Domain\Auth\User\Repository\ImageRepository;
+use App\Domain\Auth\User\Repository\UserRepository;
 use App\Infrastructure\Upload\UploadHelper;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -73,10 +73,10 @@ class ProfileController extends AbstractController
     /**
      * @Route("/profile/image-upload", name="profile.image_upload")
      * @param Request $request
-     * @param Image\Attach\Handler $handler
+     * @param UseCase\Image\Attach\Handler $handler
      * @return Response
      */
-    public function uploadProfileImage(Request $request, Image\Attach\Handler $handler): Response
+    public function uploadProfileImage(Request $request, UseCase\Image\Attach\Handler $handler): Response
     {
         /** @var UploadedFile $uploadedFile */
         $uploadedFile = $request->files->get('cropped-image');
@@ -100,7 +100,7 @@ class ProfileController extends AbstractController
             return $this->json($responseData, 422);
         }
 
-        $command = new Image\Attach\Command($uploadedFile, $request->get('user-id'));
+        $command = new UseCase\Image\Attach\Command($uploadedFile, $request->get('user-id'));
 
         try {
             $handler->handle($command);

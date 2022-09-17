@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Model\User\Entity\User\Network;
 
-use App\Domain\Auth\Entity\User\Network;
+use App\Domain\Auth\User\Entity\Network\Network;
 use App\Tests\Builder\User\UserBuilder;
 use PHPUnit\Framework\TestCase;
 

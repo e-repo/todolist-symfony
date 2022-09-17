@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Security;
 
-use App\Domain\Auth\Entity\User\Name;
-use App\Domain\Auth\Entity\User\User;
+use App\Domain\Auth\User\Entity\User\Name;
+use App\Domain\Auth\User\Entity\User\User;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 

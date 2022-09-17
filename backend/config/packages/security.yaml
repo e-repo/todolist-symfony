@@ -1,7 +1,7 @@
 security:
 
     encoders:
-        App\Domain\Auth\Entity\User:
+        App\Domain\Auth\User\Entity\User:
             algorithm: auto
         App\Infrastructure\Security\UserIdentity:
             algorithm: auto

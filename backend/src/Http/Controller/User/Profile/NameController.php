@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controller\User\Profile;
 
-use App\Domain\Auth\UseCase\Name;
+use App\Domain\Auth\User\UseCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -42,14 +42,14 @@ class NameController extends AbstractController
      * @Route("/{id}", name="profile.change_name")
      * @param string $id
      * @param Request $request
-     * @param Name\Handler $handler
+     * @param UseCase\Name\Handler $handler
      * @return Response
      */
-    public function changeUserName(string $id, Request $request, Name\Handler $handler): Response
+    public function changeUserName(string $id, Request $request, UseCase\Name\Handler $handler): Response
     {
-        $command = new Name\Command($id);
+        $command = new UseCase\Name\Command($id);
 
-        $form = $this->createForm(Name\Form::class, $command);
+        $form = $this->createForm(UseCase\Name\Form::class, $command);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

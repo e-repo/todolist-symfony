@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Container\Domain\Auth;
 
-use App\Domain\Auth\Service\ResetTokenizer;
+use App\Domain\Auth\User\Service\ResetTokenizer;
 
 class ResetTokenizerFactory
 {

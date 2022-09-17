@@ -4,18 +4,16 @@ declare(strict_types=1);
 
 namespace App\Http\Controller\Api\User;
 
-use App\Domain\Auth\Entity\User\Id;
-use App\Domain\Auth\Entity\User\ImageRepository;
-use App\Domain\Auth\Entity\User\User;
-use App\Domain\Auth\Entity\User\UserRepository;
-use App\Domain\Auth\Service\NewEmailConfirmTokenizer;
-use App\Domain\Auth\UseCase\Image;
-use App\Domain\Auth\UseCase\Email;
-use App\Domain\Auth\Read\Filter\Filter;
-use App\Domain\Auth\Read\UserFetcher;
+use App\Domain\Auth\User\UseCase;
+use App\Domain\Auth\User\Entity\User\Id;
+use App\Domain\Auth\User\Entity\User\User;
+use App\Domain\Auth\User\Read\Filter\Filter;
+use App\Domain\Auth\User\Read\UserFetcher;
+use App\Domain\Auth\User\Repository\ImageRepository;
+use App\Domain\Auth\User\Repository\UserRepository;
+use App\Domain\Auth\User\Service\NewEmailConfirmTokenizer;
 use App\Http\Payload\Api\User\ChangeEmailPayload;
 use App\Http\Payload\Api\User\ChangeNamePayload;
-use App\Http\Payload\Api\User\ImageUploadPayload;
 use App\Http\Payload\Api\User\UserListPayload;
 use App\Http\Service\JsonApi\JsonApiHelper;
 use App\Http\Service\JsonApi\ResponseBuilder\ResponseDataBuilder;
@@ -29,7 +27,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\MimeTypesInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use App\Domain\Auth\UseCase\Name;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\ConstraintViolation;
@@ -253,13 +250,13 @@ class UserController extends AbstractController
     /**
      * @Route("/change-email", name="_profile.change_email", methods={"PATCH"})
      * @param ChangeEmailPayload $payload
-     * @param Email\Request\Handler $handler
+     * @param UseCase\Email\Request\Handler $handler
      * @param NewEmailConfirmTokenizer $tokenizer
      * @return JsonResponse
      */
     public function changeEmail(
         ChangeEmailPayload $payload,
-        Email\Request\Handler $handler,
+        UseCase\Email\Request\Handler $handler,
         NewEmailConfirmTokenizer $tokenizer
     ): JsonResponse
     {
@@ -282,7 +279,7 @@ class UserController extends AbstractController
             ]
         );
 
-        $command = (new Email\Request\Command())
+        $command = (new UseCase\Email\Request\Command())
             ->setId($user->getId()->getValue())
             ->setNewEmail($payload->email)
             ->setToken($token)
@@ -307,12 +304,12 @@ class UserController extends AbstractController
     /**
      * @Route("/change-name", name="_profile.change_name", methods={"PUT"})
      * @param ChangeNamePayload $payload
-     * @param Name\Handler $handler
+     * @param UseCase\Name\Handler $handler
      * @return JsonResponse
      */
     public function changeName(
         ChangeNamePayload $payload,
-        Name\Handler $handler
+        UseCase\Name\Handler $handler
     ): JsonResponse
     {
         $user = $this->userRepository->findById($payload->uuid);
@@ -325,7 +322,7 @@ class UserController extends AbstractController
             return $this->apiHelper->createJsonResponse($responseDataBuilder, Response::HTTP_NOT_FOUND);
         }
 
-        $command = (new Name\Command($payload->uuid))
+        $command = (new UseCase\Name\Command($payload->uuid))
             ->setFirst($payload->firstName)
             ->setLast($payload->lastName);
 
@@ -352,16 +349,16 @@ class UserController extends AbstractController
     /**
      * @Route("/image-upload", name="_profile.image-upload", methods={"POST"})
      * @param Request $request
-     * @param Image\Attach\Handler $handler
+     * @param UseCase\Image\Attach\Handler $handler
      * @param ImageRepository $imageRepository
      * @param UploadHelper $uploadHelper
      * @return JsonResponse
      */
     public function uploadProfileImage(
-        Request $request,
-        Image\Attach\Handler $handler,
-        ImageRepository $imageRepository,
-        UploadHelper $uploadHelper
+        Request                                            $request,
+        UseCase\Image\Attach\Handler $handler,
+        ImageRepository                                    $imageRepository,
+        UploadHelper                                       $uploadHelper
     ): JsonResponse
     {
         /** @var UploadedFile $uploadedFile */
@@ -388,7 +385,7 @@ class UserController extends AbstractController
             return $this->apiHelper->createJsonResponse($responseDataBuilder, Response::HTTP_BAD_REQUEST);
         }
 
-        $command = new Image\Attach\Command($uploadedFile, $request->get('uuid'));
+        $command = new UseCase\Image\Attach\Command($uploadedFile, $request->get('uuid'));
 
         try {
             $handler->handle($command);

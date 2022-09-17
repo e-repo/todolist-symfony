@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controller\User\Profile;
 
-use App\Domain\Auth\UseCase\Network;
+use App\Domain\Auth\User\UseCase;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -46,20 +46,20 @@ class VkontakteController extends AbstractController
     /**
      * @Route("oath/attach/check", name="oauth.attach.vkontakte_check")
      * @param ClientRegistry $clientRegistry
-     * @param Network\Attach\Handler $handler
+     * @param UseCase\Network\Attach\Handler $handler
      * @return Response
      * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      */
     public function check(
         ClientRegistry $clientRegistry,
-        Network\Attach\Handler $handler
+        UseCase\Network\Attach\Handler $handler
     ): Response
     {
         $vkontakteUser = $clientRegistry
             ->getClient('vkontakte_attach')
             ->fetchUser();
 
-        $command = new Network\Attach\Command(
+        $command = new UseCase\Network\Attach\Command(
             $this->getUser()->getId(),
             'vkontakte',
             (string) $vkontakteUser->getId()

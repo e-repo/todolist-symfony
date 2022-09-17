@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Todos\UseCase\Create;
 
-use App\Domain\Auth\Entity\User\Id as UserId;
-use App\Domain\Auth\Entity\User\UserRepository;
+use App\Domain\Auth\User\Entity\User\Id as UserId;
+use App\Domain\Auth\User\Repository\UserRepository;
 use App\Domain\Service\Flusher;
 use App\Domain\Todos\Entity\Task\Content;
 use App\Domain\Todos\Entity\Task\Id;

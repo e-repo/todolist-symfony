@@ -2,10 +2,10 @@
 
 namespace App\Http\Controller\User;
 
-use App\Domain\Auth\Entity\User\User;
-use App\Domain\Auth\Read\UserFetcher;
+use App\Domain\Auth\User\UseCase;
+use App\Domain\Auth\User\Entity\User\User;
+use App\Domain\Auth\User\Read\UserFetcher;
 use App\Domain\Todos\Read\Task\TaskFetcher;
-use App\Domain\Auth\UseCase;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,7 +18,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * @IsGranted("ROLE_ADMIN")
  * @Route("/users", name="users")
  * Class UserController
- * @package App\Controller
  */
 class UserController extends AbstractController
 {
@@ -45,9 +44,9 @@ class UserController extends AbstractController
      */
     public function index(Request $request, UserFetcher $fetcher): Response
     {
-        $filter = new \App\Domain\Auth\Read\Filter\Filter();
+        $filter = new \App\Domain\Auth\User\Read\Filter\Filter();
 
-        $form = $this->createForm(\App\Domain\Auth\Read\Filter\Form::class, $filter);
+        $form = $this->createForm(\App\Domain\Auth\User\Read\Filter\Form::class, $filter);
         $form->handleRequest($request);
 
         $pagination = $fetcher->all(
@@ -94,41 +93,6 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/edit/{id}", name=".edit")
-     * @param User $user
-     * @param Request $request
-     * @param UseCase\Edit\Handler $handler
-     * @return Response
-     */
-    public function edit(User $user, Request $request, UseCase\Edit\Handler $handler): Response
-    {
-        if ($user->getId()->getValue() === $this->getUser()->getId()) {
-            $this->addFlash('error', $this->translator->trans('Unable to edit yourself.'));
-            return $this->redirectToRoute('users.show', ['id' => $user->getId()->getValue()]);
-        }
-
-        $command = UseCase\Edit\Command::createFromUser($user);
-        $form = $this->createForm(UseCase\Edit\Form::class, $command);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            try {
-                $handler->handle($command);
-                $this->addFlash('success', $this->translator->trans('User is success edit.'));
-            } catch (\Exception $e) {
-                $this->logger->error($e->getMessage(), ['exception' => $e]);
-                $this->addFlash('error', $e->getMessage());
-            }
-
-            return $this->redirectToRoute('users.show', ['id' => $user->getId()->getValue()]);
-        }
-
-        return $this->render('app/user/edit.html.twig', [
-            'form' =>  $form->createView(),
-        ]);
-    }
-
-    /**
      * @Route("/role/{id}", name=".role")
      * @param User $user
      * @param Request $request
@@ -160,6 +124,41 @@ class UserController extends AbstractController
 
         return $this->render('app/user/change-role.html.twig', [
             'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("/edit/{id}", name=".edit")
+     * @param User $user
+     * @param Request $request
+     * @param UseCase\Edit\Handler $handler
+     * @return Response
+     */
+    public function edit(User $user, Request $request, UseCase\Edit\Handler $handler): Response
+    {
+        if ($user->getId()->getValue() === $this->getUser()->getId()) {
+            $this->addFlash('error', $this->translator->trans('Unable to edit yourself.'));
+            return $this->redirectToRoute('users.show', ['id' => $user->getId()->getValue()]);
+        }
+
+        $command = UseCase\Edit\Command::createFromUser($user);
+        $form = $this->createForm(UseCase\Edit\Form::class, $command);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $handler->handle($command);
+                $this->addFlash('success', $this->translator->trans('User is success edit.'));
+            } catch (\Exception $e) {
+                $this->logger->error($e->getMessage(), ['exception' => $e]);
+                $this->addFlash('error', $e->getMessage());
+            }
+
+            return $this->redirectToRoute('users.show', ['id' => $user->getId()->getValue()]);
+        }
+
+        return $this->render('app/user/edit.html.twig', [
+            'form' =>  $form->createView(),
         ]);
     }
 

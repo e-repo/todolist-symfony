@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controller\Auth;
 
-use App\Domain\Auth\UseCase\SignUp;
+use App\Domain\Auth\User\UseCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,18 +37,18 @@ class SignUpController extends AbstractController
     /**
      * @Route("/signup", name="auth.signup")
      * @param Request $request
-     * @param SignUp\Request\Handler $handler
+     * @param UseCase\SignUp\Request\Handler $handler
      * @return Response
      * @throws \Symfony\Component\Mailer\Exception\TransportExceptionInterface
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
      */
-    public function request(Request $request, SignUp\Request\Handler $handler): Response
+    public function request(Request $request, UseCase\SignUp\Request\Handler $handler): Response
     {
-        $command = new SignUp\Request\Command();
+        $command = new UseCase\SignUp\Request\Command();
 
-        $form = $this->createForm(SignUp\Request\Form::class, $command);
+        $form = $this->createForm(UseCase\SignUp\Request\Form::class, $command);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -70,12 +70,12 @@ class SignUpController extends AbstractController
     /**
      * @Route("/signup/{token}", name="auth.signup_confirm")
      * @param string $token
-     * @param SignUp\Confirm\ByToken\Handler $handler
+     * @param UseCase\SignUp\Confirm\ByToken\Handler $handler
      * @return Response
      */
-    public function confirm(string $token, SignUp\Confirm\ByToken\Handler $handler): Response
+    public function confirm(string $token, UseCase\SignUp\Confirm\ByToken\Handler $handler): Response
     {
-        $command = new SignUp\Confirm\ByToken\Command($token);
+        $command = new UseCase\SignUp\Confirm\ByToken\Command($token);
 
         try {
             $handler->handle($command);

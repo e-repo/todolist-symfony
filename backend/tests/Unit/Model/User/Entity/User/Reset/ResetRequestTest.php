@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Test\Unit\Model\User\Entity\User\Reset;
 
-use App\Domain\Auth\Entity\User\ResetToken;
+use App\Domain\Auth\User\Entity\User\ResetToken;
 use App\Tests\Builder\User\UserBuilder;
 use PHPUnit\Framework\TestCase;
 

@@ -2,12 +2,12 @@
 
 namespace App\Infrastructure\DataFixtures;
 
-use App\Domain\Auth\Entity\User\Email;
-use App\Domain\Auth\Entity\User\Id;
-use App\Domain\Auth\Entity\User\Name;
-use App\Domain\Auth\Entity\User\Role;
-use App\Domain\Auth\Entity\User\User;
-use App\Domain\Auth\Service\PasswordHasher;
+use App\Domain\Auth\User\Entity\User\Email;
+use App\Domain\Auth\User\Entity\User\Id;
+use App\Domain\Auth\User\Entity\User\Name;
+use App\Domain\Auth\User\Entity\User\Role;
+use App\Domain\Auth\User\Entity\User\User;
+use App\Domain\Auth\User\Service\PasswordHasher;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;

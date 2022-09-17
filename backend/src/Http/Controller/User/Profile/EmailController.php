@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controller\User\Profile;
 
-use App\Domain\Auth\Entity\User\Id;
-use App\Domain\Auth\Entity\User\UserRepository;
-use App\Domain\Auth\Service\NewEmailConfirmTokenizer;
-use App\Domain\Auth\UseCase\Email;
+use App\Domain\Auth\User\UseCase;
+use App\Domain\Auth\User\Entity\User\Id;
+use App\Domain\Auth\User\Repository\UserRepository;
+use App\Domain\Auth\User\Service\NewEmailConfirmTokenizer;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -45,14 +45,14 @@ class EmailController extends AbstractController
      * @IsGranted("ROLE_USER")
      * @Route("", name="profile.email")
      * @param Request $request
-     * @param Email\Request\Handler $handler
+     * @param UseCase\Email\Request\Handler $handler
      * @param NewEmailConfirmTokenizer $tokenizer
      * @return Response
      */
     public function request(
-        Request $request,
-        Email\Request\Handler $handler,
-        NewEmailConfirmTokenizer $tokenizer
+        Request                                             $request,
+        UseCase\Email\Request\Handler $handler,
+        NewEmailConfirmTokenizer                            $tokenizer
     ): Response
     {
         $token = $tokenizer->generate();
@@ -62,12 +62,12 @@ class EmailController extends AbstractController
             UrlGeneratorInterface::ABSOLUTE_URL
         );
 
-        $command = (new Email\Request\Command())
+        $command = (new UseCase\Email\Request\Command())
             ->setId($this->getUser()->getId())
             ->setToken($token)
             ->setConfirmUrl($confirmUrl);
 
-        $form = $this->createForm(Email\Request\Form::class, $command);
+        $form = $this->createForm(UseCase\Email\Request\Form::class, $command);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -90,12 +90,12 @@ class EmailController extends AbstractController
      * @IsGranted("ROLE_USER")
      * @Route("/confirm/{token}", name="profile.email_confirm")
      * @param $token
-     * @param Email\Confirm\Handler $handler
+     * @param UseCase\Email\Confirm\Handler $handler
      * @return Response
      */
-    public function confirm($token, Email\Confirm\Handler $handler): Response
+    public function confirm($token, UseCase\Email\Confirm\Handler $handler): Response
     {
-        $command = new Email\Confirm\Command($this->getUser()->getId(), $token);
+        $command = new UseCase\Email\Confirm\Command($this->getUser()->getId(), $token);
 
         try {
             $handler->handle($command);
@@ -111,11 +111,11 @@ class EmailController extends AbstractController
     /**
      * @Route("/confirm-page/{token}", name="profile.email_confirm_page")
      * @param $token
-     * @param Email\Confirm\Handler $handler
+     * @param UseCase\Email\Confirm\Handler $handler
      * @param Request $request
      * @return Response
      */
-    public function confirmWithRedirectToPage($token, Email\Confirm\Handler $handler, Request $request): Response
+    public function confirmWithRedirectToPage($token, UseCase\Email\Confirm\Handler $handler, Request $request): Response
     {
         try {
             $user = $this->userRepository->get(
@@ -125,7 +125,7 @@ class EmailController extends AbstractController
             throw new NotFoundHttpException('User not found.');
         }
 
-        $command = new Email\Confirm\Command($user->getId()->getValue(), $token);
+        $command = new UseCase\Email\Confirm\Command($user->getId()->getValue(), $token);
         $pathToUi = $this->getParameter('ui_host');
 
         try {

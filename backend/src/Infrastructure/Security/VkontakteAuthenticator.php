@@ -2,8 +2,8 @@
 
 namespace App\Infrastructure\Security;
 
-use App\Domain\Auth\UseCase\Network\Auth\Command;
-use App\Domain\Auth\UseCase\Network\Auth\Handler;
+use App\Domain\Auth\User\UseCase\Network\Auth\Command;
+use App\Domain\Auth\User\UseCase\Network\Auth\Handler;
 use J4k\OAuth2\Client\Provider\User;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Client\OAuth2ClientInterface;
