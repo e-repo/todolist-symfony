@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Auth\User\UseCase\Role\Change;
 
 use App\Domain\Auth\User\Entity\User\User;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class Command
 {

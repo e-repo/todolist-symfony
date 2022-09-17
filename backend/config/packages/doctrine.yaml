@@ -14,7 +14,7 @@ doctrine:
             user_user_id: 'App\Domain\Auth\User\Entity\User\Type\IdType'
             user_user_role: 'App\Domain\Auth\User\Entity\User\Type\RoleType'
             user_user_email: 'App\Domain\Auth\User\Entity\User\Type\EmailType'
-            todos_task_id: 'App\Domain\Todos\Entity\Task\IdType'
+            todos_task_id: 'App\Domain\Todos\Task\Entity\Task\Type\IdType'
 
     orm:
         auto_generate_proxy_classes: true
@@ -30,6 +30,6 @@ doctrine:
             Task:
                 is_bundle: false
                 type: annotation
-                dir: '%kernel.project_dir%/src/Domain/Todos/Entity'
-                prefix: 'App\Domain\Todos\Entity'
+                dir: '%kernel.project_dir%/src/Domain/Todos/Task/Entity'
+                prefix: 'App\Domain\Todos\Task\Entity'
                 alias: Task

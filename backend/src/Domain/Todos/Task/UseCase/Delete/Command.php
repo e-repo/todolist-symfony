@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Auth\User\UseCase\Activate;
+namespace App\Domain\Todos\Task\UseCase\Delete;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -11,10 +11,10 @@ class Command
     /**
      * @Assert\NotBlank
      */
-    public string $uuid;
+    public string $taskId;
 
-    public function __construct(string $uuid)
+    public function __construct(string $taskId)
     {
-        $this->uuid = $uuid;
+        $this->taskId = $taskId;
     }
 }

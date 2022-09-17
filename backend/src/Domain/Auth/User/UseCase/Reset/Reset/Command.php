@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Auth\User\UseCase\Reset\Reset;
 
+use Symfony\Component\Validator\Constraints as Assert;
+
 class Command
 {
     /**

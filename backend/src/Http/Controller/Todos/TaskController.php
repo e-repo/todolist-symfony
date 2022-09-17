@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controller\Todos;
 
 use App\Domain\Auth\User\Entity\User\User;
-use App\Domain\Todos\Entity\Task\Task;
-use App\Domain\Todos\Read\Task\TaskFetcher;
-use App\Domain\Todos\UseCase;
+use App\Domain\Todos\Task\Entity\Task\Task;
+use App\Domain\Todos\Task\Read\TaskFetcher;
+use App\Domain\Todos\Task\UseCase;
 use App\Infrastructure\Security\Voter\Task\TaskAccess;
 use App\Infrastructure\Upload\UploadHelper;
 use Psr\Log\LoggerInterface;
@@ -70,9 +70,9 @@ class TaskController extends AbstractController
      */
     public function index(User $user, Request $request, TaskFetcher $fetcher): Response
     {
-        $filter = new \App\Domain\Todos\Read\Task\Filter\Filter($user->getId()->getValue(), Task::STATUS_PUBLISHED);
+        $filter = new \App\Domain\Todos\Task\Read\Filter\Filter($user->getId()->getValue(), Task::STATUS_PUBLISHED);
 
-        $form = $this->createForm(\App\Domain\Todos\Read\Task\Filter\Form::class, $filter);
+        $form = $this->createForm(\App\Domain\Todos\Task\Read\Filter\Form::class, $filter);
         $form->handleRequest($request);
 
         $pagination = $fetcher->all(
@@ -99,7 +99,7 @@ class TaskController extends AbstractController
     public function barPublished(Request $request, TaskFetcher $fetcher): Response
     {
         $currentUser = $this->getUser();
-        $filter = new \App\Domain\Todos\Read\Task\FilterBar\Filter($currentUser->getId(), Task::STATUS_PUBLISHED);
+        $filter = new \App\Domain\Todos\Task\Read\FilterBar\Filter($currentUser->getId(), Task::STATUS_PUBLISHED);
 
         $pagination = $fetcher->allForBar(
             $filter,
@@ -122,7 +122,7 @@ class TaskController extends AbstractController
     public function barFulfilled(Request $request, TaskFetcher $fetcher): Response
     {
         $currentUser = $this->getUser();
-        $filter = new \App\Domain\Todos\Read\Task\FilterBar\Filter($currentUser->getId(), Task::STATUS_FULFILLED);
+        $filter = new \App\Domain\Todos\Task\Read\FilterBar\Filter($currentUser->getId(), Task::STATUS_FULFILLED);
 
         $pagination = $fetcher->allForBar(
             $filter,
@@ -465,13 +465,13 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/file-delete/{id}", name=".file-delete", methods={"DELETE"})
-     * @param \App\Domain\Todos\Entity\Task\File $file
+     * @param \App\Domain\Todos\Task\Entity\File $file
      * @param UseCase\File\Delete\Handler $handler
      * @return Request
      */
     public function taskFileDelete(
-        \App\Domain\Todos\Entity\Task\File $file,
-        UseCase\File\Delete\Handler        $handler
+        \App\Domain\Todos\Task\Entity\File                 $file,
+        UseCase\File\Delete\Handler $handler
     ): Response
     {
         $command = new UseCase\File\Delete\Command($file->getId());
@@ -486,12 +486,12 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/file-download/{id}", name=".file-download", methods={"GET"})
-     * @param \App\Domain\Todos\Entity\Task\File $file
+     * @param \App\Domain\Todos\Task\Entity\File $file
      * @param UploadHelper $uploadHelper
      * @return Response
      */
     public function taskFileDownload(
-        \App\Domain\Todos\Entity\Task\File $file,
+        \App\Domain\Todos\Task\Entity\File $file,
         UploadHelper                       $uploadHelper
     ): Response
     {

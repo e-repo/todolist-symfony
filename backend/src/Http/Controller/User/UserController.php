@@ -2,10 +2,10 @@
 
 namespace App\Http\Controller\User;
 
-use App\Domain\Auth\User\UseCase;
 use App\Domain\Auth\User\Entity\User\User;
 use App\Domain\Auth\User\Read\UserFetcher;
-use App\Domain\Todos\Read\Task\TaskFetcher;
+use App\Domain\Auth\User\UseCase;
+use App\Domain\Todos\Task\Read\TaskFetcher;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
