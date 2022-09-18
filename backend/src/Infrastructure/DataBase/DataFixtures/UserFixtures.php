@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Infrastructure\DataFixtures;
+namespace App\Infrastructure\DataBase\DataFixtures;
 
 use App\Domain\Auth\User\Entity\User\Email;
 use App\Domain\Auth\User\Entity\User\Id;

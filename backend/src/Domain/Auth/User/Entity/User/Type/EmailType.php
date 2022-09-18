@@ -17,13 +17,18 @@ class EmailType extends StringType
         return $value instanceof Email ? $value->getValue() : $value;
     }
 
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?Email
     {
         return ! empty($value) ? new Email($value) : null;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return self::NAME;
+    }
+
+    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
+    {
+        return true;
     }
 }

@@ -29,7 +29,10 @@ class User
     public const STATUS_BLOCKED = 'blocked';
 
     /**
-     * @ORM\Column(type="user_user_id")
+     * @ORM\Column(
+     *     type="user_user_id",
+     *     options={"comment":"UUID type"}
+     * )
      * @ORM\Id()
      */
     private Id $id;
@@ -40,7 +43,10 @@ class User
     private \DateTimeImmutable $date;
 
     /**
-     * @ORM\Column(type="user_user_role")
+     * @ORM\Column(
+     *     type="user_user_role",
+     *     options={"comment":"Role type (e.g. ROLE_USER, ROLE_ADMIN)"}
+     * )
      */
     private Role $role;
 
@@ -65,7 +71,11 @@ class User
     private $images = null;
 
     /**
-     * @ORM\Column(type="user_user_email", nullable=true)
+     * @ORM\Column(
+     *     type="user_user_email",
+     *     nullable=true,
+     *     options={"comment":"Email type"}
+     * )
      */
     private ?Email $email = null;
 
@@ -89,7 +99,12 @@ class User
 
     /**
      * @var Email|null
-     * @ORM\Column(type="user_user_email", name="new_email", nullable=true)
+     * @ORM\Column(
+     *     type="user_user_email",
+     *     name="new_email",
+     *     nullable=true,
+     *     options={"comment":"Email type"}
+     * )
      */
     private ?Email $newEmail = null;
 

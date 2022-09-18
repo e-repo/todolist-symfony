@@ -17,13 +17,18 @@ class RoleType extends StringType
         return $value instanceof Role ? $value->name() : $value;
     }
 
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?Role
     {
         return ! empty($value) ? new Role($value) : null;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return self::NAME;
+    }
+
+    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
+    {
+        return true;
     }
 }

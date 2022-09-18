@@ -22,7 +22,10 @@ class Task
     public const STATUS_FULFILLED = 'fulfilled';
 
     /**
-     * @ORM\Column(type="todos_task_id")
+     * @ORM\Column(
+     *     type="todos_task_id",
+     *     options={"comment":"UUID type"}
+     * )
      * @ORM\Id()
      */
     private Id $id;
