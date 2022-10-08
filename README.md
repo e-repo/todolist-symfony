@@ -1,0 +1,1 @@
+This is my study project. The target is to learn new technologies in the world of javascript and php, improve the skills of using the symfony frameworks and vue3. Gaining best practice experience, such as using CQRS and modular architecture for a monolith
