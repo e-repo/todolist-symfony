@@ -118,7 +118,7 @@ class EmailController extends AbstractController
     public function confirmWithRedirectToPage($token, UseCase\Email\Confirm\Handler $handler, Request $request): Response
     {
         try {
-            $user = $this->userRepository->get(
+            $user = $this->userRepository->getById(
                 new Id($request->query->get('user_id'))
             );
         } catch (\Exception $e) {

@@ -30,7 +30,7 @@ class Handler
 
     public function handle(Command $command): void
     {
-        $user = $this->users->get(new Id($command->uuid));
+        $user = $this->users->getById(new Id($command->uuid));
         $user->block();
 
         $this->em->persist($user);

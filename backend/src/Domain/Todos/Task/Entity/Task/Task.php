@@ -14,7 +14,6 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Class Task
  * @ORM\Entity()
- * @ORM\Table(name="todos_tasks")
  */
 class Task
 {
@@ -30,10 +29,9 @@ class Task
      */
     private Id $id;
     /**
-     * @ORM\ManyToOne(targetEntity="App\Domain\Auth\User\Entity\User\User")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
+     * @ORM\Column(type="guid")
      */
-    private User $user;
+    private string $user;
     /**
      * @ORM\Column(type="string", length=255, nullable=false)
      */
@@ -64,10 +62,10 @@ class Task
      */
     private \DateTimeImmutable $date;
 
-    public function __construct(Id $id, User $user, Content $content, \DateTimeImmutable $date)
+    public function __construct(Id $id, string $userUuid, Content $content, \DateTimeImmutable $date)
     {
         $this->id = $id;
-        $this->user = $user;
+        $this->user = $userUuid;
         $this->setName($content->getName());
         $this->setDescription($content->getDescription());
         $this->status = self::STATUS_PUBLISHED;
@@ -79,7 +77,7 @@ class Task
         return $this->id;
     }
 
-    public function getUser(): User
+    public function getUserUuid(): string
     {
         return $this->user;
     }

@@ -34,18 +34,7 @@ class PayloadArgumentResolver implements ArgumentValueResolverInterface
 
     public function supports(Request $request, ArgumentMetadata $argument): bool
     {
-        $className = $argument->getType();
-        $instance = null;
-
-        if (\class_exists($className)) {
-            try {
-                $instance = new $className();
-            } catch (\Throwable $exception) {
-                return false;
-            }
-        }
-
-        return $instance instanceof BasePayloadInterface;
+        return is_subclass_of($argument->getType(), BasePayloadInterface::class);
     }
 
     /**

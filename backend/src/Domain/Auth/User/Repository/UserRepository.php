@@ -69,11 +69,16 @@ class UserRepository
      * @param Id $id
      * @return User|object
      */
-    public function get(Id $id): User
+    public function getById(Id $id): User
     {
         if (! $user = $this->repository->find($id)) {
             throw new EntityNotFoundException('User is not found.');
         }
         return $user;
+    }
+
+    public function getByUuid(string $uuid): User
+    {
+        return $this->getById(new Id($uuid));
     }
 }

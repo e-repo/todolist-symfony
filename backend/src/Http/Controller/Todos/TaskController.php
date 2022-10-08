@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controller\Todos;
 
 use App\Domain\Auth\User\Entity\User\User;
+use App\Domain\Auth\User\Repository\UserRepository;
 use App\Domain\Todos\Task\Entity\Task\Task;
 use App\Domain\Todos\Task\Read\TaskFetcher;
 use App\Domain\Todos\Task\UseCase;
@@ -96,7 +97,10 @@ class TaskController extends AbstractController
      * @param TaskFetcher $fetcher
      * @return Response
      */
-    public function barPublished(Request $request, TaskFetcher $fetcher): Response
+    public function barPublished(
+        Request $request,
+        TaskFetcher $fetcher
+    ): Response
     {
         $currentUser = $this->getUser();
         $filter = new \App\Domain\Todos\Task\Read\FilterBar\Filter($currentUser->getId(), Task::STATUS_PUBLISHED);
@@ -156,11 +160,11 @@ class TaskController extends AbstractController
             try {
                 $handler->handle($command);
                 $this->addFlash('success', $this->translator->trans('Task edited successfully.', [], 'task'));
-                return $this->redirectToRoute('tasks.user', ['id' => $task->getUser()->getId()->getValue()]);
+                return $this->redirectToRoute('tasks.user', ['id' => $task->getUserUuid()]);
             } catch (\Exception $e) {
                 $this->logger->warning($e->getMessage(), ['exception' => $e]);
                 $this->addFlash('warning', $e->getMessage());
-                return $this->redirectToRoute('tasks.user', ['id' => $task->getUser()->getId()->getValue()]);
+                return $this->redirectToRoute('tasks.user', ['id' => $task->getUserUuid()]);
             }
         };
 
@@ -178,7 +182,7 @@ class TaskController extends AbstractController
      */
     public function editByModal(Task $task, Request $request, UseCase\Update\Handler $handler): Response
     {
-        $this->denyAccessUnlessGranted(TaskAccess::EDIT, $task->getUser());
+        $this->denyAccessUnlessGranted(TaskAccess::EDIT, $task->getUserUuid());
 
         $command = new UseCase\Update\Command();
         $command->createFromTask($task);
@@ -234,7 +238,7 @@ class TaskController extends AbstractController
                 $this->addFlash('warning', $e->getMessage());
                 return new JsonResponse(['error', $e->getMessage()]);
             }
-        };
+        }
 
         return new JsonResponse([
             'formTitle' => $this->translator->trans('Add task', [], 'task'),
@@ -295,7 +299,7 @@ class TaskController extends AbstractController
             $this->addFlash('warning', $e->getMessage());
         }
 
-        return $this->redirectToRoute('tasks.user', ['id' => $task->getUser()->getId()->getValue()]);
+        return $this->redirectToRoute('tasks.user', ['id' => $task->getUserUuid()]);
     }
 
     /**
@@ -303,11 +307,19 @@ class TaskController extends AbstractController
      *
      * @param Task $task
      * @param UseCase\Delete\Handler $handler
+     * @param UserRepository $userRepository
      * @return Response
      */
-    public function deleteByModal(Task $task, UseCase\Delete\Handler $handler): Response
+    public function deleteByModal(
+        Task $task,
+        UseCase\Delete\Handler $handler,
+        UserRepository $userRepository
+    ): Response
     {
-        $this->denyAccessUnlessGranted(TaskAccess::DELETE, $task->getUser());
+        $this->denyAccessUnlessGranted(
+            TaskAccess::DELETE,
+            $userRepository->getByUuid($task->getUserUuid())
+        );
         $command = new UseCase\Delete\Command($task->getId()->getValue());
 
         try {
@@ -343,7 +355,7 @@ class TaskController extends AbstractController
             $this->addFlash('warning', $e->getMessage());
         }
 
-        return $this->redirectToRoute('tasks.user', ['id' => $task->getUser()->getId()->getValue()]);
+        return $this->redirectToRoute('tasks.user', ['id' => $task->getUserUuid()]);
     }
 
     /**
@@ -354,7 +366,7 @@ class TaskController extends AbstractController
      */
     public function fulfilledByModal(Task $task, UseCase\Fulfilled\Handler $handler): Response
     {
-        $this->denyAccessUnlessGranted(TaskAccess::FULFILLED, $task->getUser());
+        $this->denyAccessUnlessGranted(TaskAccess::FULFILLED, $task->getUserUuid());
         $command = new UseCase\Fulfilled\Command($task->getId()->getValue());
 
         try {
@@ -389,18 +401,26 @@ class TaskController extends AbstractController
             $this->addFlash('warning', $e->getMessage());
         }
 
-        return $this->redirectToRoute('tasks.user', ['id' => $task->getUser()->getId()->getValue()]);
+        return $this->redirectToRoute('tasks.user', ['id' => $task->getUserUuid()]);
     }
 
     /**
      * @Route("/ajax-published/{id}", name=".published_by_modal", methods={"POST"})
      * @param Task $task
      * @param UseCase\Published\Handler $handler
+     * @param UserRepository $userRepository
      * @return Response
      */
-    public function publishedByModal(Task $task, UseCase\Published\Handler $handler): Response
+    public function publishedByModal(
+        Task $task,
+        UseCase\Published\Handler $handler,
+        UserRepository $userRepository
+    ): Response
     {
-        $this->denyAccessUnlessGranted(TaskAccess::REVOKE, $task->getUser());
+        $this->denyAccessUnlessGranted(
+            TaskAccess::REVOKE,
+            $userRepository->getByUuid($task->getUserUuid())
+        );
         $command = new UseCase\Published\Command($task->getId()->getValue());
 
         try {

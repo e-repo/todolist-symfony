@@ -32,7 +32,7 @@ class Handler
 
     public function handle(Command $command): void
     {
-        $user = $this->users->get(new Id($command->id));
+        $user = $this->users->getById(new Id($command->id));
         $user->confirmEmailChanging($command->token);
         $this->flusher->flush();
     }

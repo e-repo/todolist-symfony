@@ -36,7 +36,7 @@ class Handler
 
     public function handle(Command $command)
     {
-        $user = $this->users->get(new Id($command->uuid));
+        $user = $this->users->getById(new Id($command->uuid));
 
         $user->edit(
             new Email($command->email),

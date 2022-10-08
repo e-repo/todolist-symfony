@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Todos\Task\UseCase\Create;
 
-use App\Domain\Auth\User\Entity\User\Id as UserId;
 use App\Domain\Auth\User\Repository\UserRepository;
 use App\Domain\Service\Flusher;
 use App\Domain\Todos\Task\Entity\Task\Content;
@@ -33,12 +32,12 @@ class Handler
 
     public function handle(Command $command): void
     {
-        $user = $this->users->get(new UserId($command->userId));
+        $user = $this->users->getByUuid($command->userId);
         $content = new Content($command->name, $command->description);
 
         $task = new Task(
             Id::next(),
-            $user,
+            $user->getId()->getValue(),
             $content,
             new \DateTimeImmutable()
         );

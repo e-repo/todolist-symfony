@@ -58,7 +58,7 @@ class Handler
             throw  new \DomainException($this->translator->trans('Profile is already in use.', [], 'profile'));
         }
 
-        $user = $this->users->get(new Id($command->uuid));
+        $user = $this->users->getById(new Id($command->uuid));
         $userHasNoEmail = $userByNetwork && $userByNetwork->getEmail() === null;
         if ($userHasNoEmail) {
             $this->overrideUserNetworks($userByNetwork->getId(), $user);

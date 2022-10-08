@@ -65,7 +65,7 @@ class ProfileController extends AbstractController
      */
     public function index(): Response
     {
-        $user = $this->users->get(new Id($this->getUser()->getId()));
+        $user = $this->users->getById(new Id($this->getUser()->getId()));
         $activeImage = $this->images->findActiveImageByUserId($user->getId());
         return $this->render('app/profile/show.html.twig', compact('user', 'activeImage'));
     }

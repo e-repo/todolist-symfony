@@ -39,7 +39,7 @@ class Handler
      */
     public function handle(Command $command): void
     {
-        $user = $this->userRepository->get(new Id($command->userId));
+        $user = $this->userRepository->getById(new Id($command->userId));
 
         $this->entityManager->getConnection()->beginTransaction();
 
