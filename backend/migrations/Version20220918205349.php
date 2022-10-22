@@ -25,7 +25,7 @@ final class Version20220918205349 extends AbstractMigration
         $this->addSql('
             CREATE TABLE task (
                 id UUID NOT NULL, 
-                "user" UUID NOT NULL, 
+                user_id UUID NOT NULL, 
                 name VARCHAR(255) NOT NULL, 
                 description TEXT DEFAULT NULL, 
                 status VARCHAR(50) NOT NULL, 
@@ -66,7 +66,7 @@ final class Version20220918205349 extends AbstractMigration
         $this->addSql('COMMENT ON COLUMN todos_tasks.date IS \'(DC2Type:datetime_immutable)\'');
         $this->addSql('COMMENT ON COLUMN todos_tasks.deleted_at IS \'(DC2Type:datetime_immutable)\'');
         $this->addSql('ALTER TABLE todos_tasks ADD CONSTRAINT fk_bbf64fc1a76ed395 FOREIGN KEY (user_id) REFERENCES user_users (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('DROP TABLE tasks');
+        $this->addSql('DROP TABLE task');
         $this->addSql('ALTER TABLE todos_task_file ADD CONSTRAINT fk_23cc9bb48db60186 FOREIGN KEY (task_id) REFERENCES todos_tasks (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
     }
 }

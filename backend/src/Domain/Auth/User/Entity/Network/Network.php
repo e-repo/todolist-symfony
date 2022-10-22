@@ -19,9 +19,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Network
 {
     /**
-     * Сущность простая, не будем создавать
-     * отдельный объект Id
-     *
      * @var string
      * @ORM\Column(type="guid")
      * @ORM\Id()

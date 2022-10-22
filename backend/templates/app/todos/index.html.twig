@@ -27,7 +27,7 @@
                 <div class="col-md-2">{{ form_widget(form.date) }}</div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-success">{% trans %}Filter{% endtrans %}</button>
-                    <a href="{{ path('tasks.user', {id: user.id.value}) }}" class="btn btn-info">{% trans %}Reset{% endtrans %}</a>
+                    <a href="{{ path('tasks.user', {uuid: user.id}) }}" class="btn btn-info">{% trans %}Reset{% endtrans %}</a>
                 </div>
             </div>
             {{ form_end(form) }}

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Security\Voter\Task;
 
-use App\Domain\Auth\User\Entity\User\User;
+use App\Domain\Todos\AuthAdapter\Dto\UserDto;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Exception\RuntimeException;
@@ -19,7 +19,7 @@ class TaskAccess extends Voter
 
     protected function supports($attribute, $subject): bool
     {
-        return \in_array($attribute, $this->actionList()) && $subject instanceof User;
+        return \in_array($attribute, $this->actionList()) && $subject instanceof UserDto;
     }
 
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
@@ -70,8 +70,8 @@ class TaskAccess extends Voter
         return $this->checkUser($subject, $token);
     }
 
-    private function checkUser(User $user, TokenInterface $token): bool
+    private function checkUser(UserDto $userDto, TokenInterface $token): bool
     {
-        return $user->getId()->getValue() === $token->getUser()->getId();
+        return $userDto->getId() === $token->getUser()->getId();
     }
 }

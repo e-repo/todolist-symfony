@@ -45,12 +45,12 @@ class UserRepository
     }
 
     /**
-     * @param string $id
+     * @param string $uuid
      * @return User|null
      */
-    public function findById(string $id): ?User
+    public function findById(string $uuid): ?User
     {
-        return $this->repository->find(new Id($id));
+        return $this->repository->find(new Id($uuid));
     }
 
     /**

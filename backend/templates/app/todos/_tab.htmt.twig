@@ -1,6 +1,6 @@
 <ul class="nav nav-tabs mb-4">
     <li class="nav-item">
-        <a href="{{ path('users.show', {id: user.id.value}) }}" class="nav-link">{{ user.name.full }}</a>
+        <a href="{{ path('users.show', {id: user.id}) }}" class="nav-link">{{ user.firstname ~ ' ' ~ user.lastname }}</a>
     </li>
     <li class="nav-item">
         <a href="" class="nav-link active">{% trans from 'task' %}Tasks{% endtrans %}</a>

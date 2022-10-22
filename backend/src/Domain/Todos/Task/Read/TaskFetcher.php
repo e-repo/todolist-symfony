@@ -64,10 +64,10 @@ class TaskFetcher extends ServiceEntityRepository
                 'status',
                 'date'
             )
-            ->where('user = :userId')
+            ->where('user_id = :userId')
             ->andWhere('deleted_at IS NULL')
             ->setParameter(':userId', $filter->userId)
-            ->from('tasks');
+            ->from('task');
 
         if ($status = $filter->status) {
             $qb->andWhere('status = :status');
@@ -102,7 +102,7 @@ class TaskFetcher extends ServiceEntityRepository
             ->where('user_id = :userId')
             ->andWhere('deleted_at IS NULL')
             ->setParameter(':userId', $filter->userId)
-            ->from('tasks');
+            ->from('task');
 
         if ($name = $filter->name) {
             $qb->andWhere($qb->expr()->like('LOWER(name)', ':name'));

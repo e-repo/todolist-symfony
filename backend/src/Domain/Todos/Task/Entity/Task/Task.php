@@ -31,7 +31,7 @@ class Task
     /**
      * @ORM\Column(type="guid")
      */
-    private string $user;
+    private string $userId;
     /**
      * @ORM\Column(type="string", length=255, nullable=false)
      */
@@ -65,7 +65,7 @@ class Task
     public function __construct(Id $id, string $userUuid, Content $content, \DateTimeImmutable $date)
     {
         $this->id = $id;
-        $this->user = $userUuid;
+        $this->userId = $userUuid;
         $this->setName($content->getName());
         $this->setDescription($content->getDescription());
         $this->status = self::STATUS_PUBLISHED;
@@ -79,7 +79,7 @@ class Task
 
     public function getUserUuid(): string
     {
-        return $this->user;
+        return $this->userId;
     }
 
     public function getName(): string

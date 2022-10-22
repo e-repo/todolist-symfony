@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controller\Todos;
 
-use App\Domain\Auth\User\Entity\User\User;
-use App\Domain\Auth\User\Repository\UserRepository;
+use App\Domain\Todos\AuthAdapter\AuthAdapter;
 use App\Domain\Todos\Task\Entity\Task\Task;
 use App\Domain\Todos\Task\Read\TaskFetcher;
 use App\Domain\Todos\Task\UseCase;
@@ -40,15 +39,18 @@ class TaskController extends AbstractController
     private TranslatorInterface $translator;
     private ValidatorInterface $validator;
     private MimeTypesInterface $mimeTypes;
+    private AuthAdapter $authAdapter;
 
     /**
      * TaskController constructor.
+     * @param AuthAdapter $authAdapter
      * @param ValidatorInterface $validator
      * @param MimeTypesInterface $mimeTypes
      * @param LoggerInterface $logger
      * @param TranslatorInterface $translator
      */
     public function __construct(
+        AuthAdapter $authAdapter,
         ValidatorInterface $validator,
         MimeTypesInterface $mimeTypes,
         LoggerInterface $logger,
@@ -59,19 +61,21 @@ class TaskController extends AbstractController
         $this->translator = $translator;
         $this->validator = $validator;
         $this->mimeTypes = $mimeTypes;
+        $this->authAdapter = $authAdapter;
     }
 
     /**
      * @IsGranted("ROLE_ADMIN")
-     * @Route("/user/{id}", name=".user")
-     * @param User $user
+     * @Route("/user/{uuid}", name=".user")
+     * @param string $uuid
      * @param Request $request
      * @param TaskFetcher $fetcher
      * @return Response
      */
-    public function index(User $user, Request $request, TaskFetcher $fetcher): Response
+    public function index(string $uuid, Request $request, TaskFetcher $fetcher): Response
     {
-        $filter = new \App\Domain\Todos\Task\Read\Filter\Filter($user->getId()->getValue(), Task::STATUS_PUBLISHED);
+        $user = $this->authAdapter->getUserByUuid($uuid);
+        $filter = new \App\Domain\Todos\Task\Read\Filter\Filter($user->getId(), Task::STATUS_PUBLISHED);
 
         $form = $this->createForm(\App\Domain\Todos\Task\Read\Filter\Form::class, $filter);
         $form->handleRequest($request);
@@ -182,7 +186,8 @@ class TaskController extends AbstractController
      */
     public function editByModal(Task $task, Request $request, UseCase\Update\Handler $handler): Response
     {
-        $this->denyAccessUnlessGranted(TaskAccess::EDIT, $task->getUserUuid());
+        $user = $this->authAdapter->getUserByUuid($task->getUserUuid());
+        $this->denyAccessUnlessGranted(TaskAccess::EDIT, $user);
 
         $command = new UseCase\Update\Command();
         $command->createFromTask($task);
@@ -212,18 +217,19 @@ class TaskController extends AbstractController
     }
 
     /**
-     * @Route("/user/{id}/add-by-modal", name=".user.add_by_modal", methods={"POST"})
-     * @param User $user
+     * @Route("/user/{uuid}/add-by-modal", name=".user.add_by_modal", methods={"POST"})
+     * @param string $uuid
      * @param Request $request
      * @param UseCase\Create\Handler $handler
      * @return Response
      */
-    public function addByModal(User $user, Request $request, UseCase\Create\Handler $handler): Response
+    public function addByModal(string $uuid, Request $request, UseCase\Create\Handler $handler): Response
     {
+        $user = $this->authAdapter->getUserByUuid($uuid);
         $this->denyAccessUnlessGranted(TaskAccess::ADD, $user);
 
         $command = new UseCase\Create\Command();
-        $command->userId = $user->getId()->getValue();
+        $command->userId = $user->getId();
 
         $form = $this->createForm(UseCase\Create\Form::class, $command);
         $form->handleRequest($request);
@@ -251,24 +257,25 @@ class TaskController extends AbstractController
 
     /**
      * @IsGranted("ROLE_ADMIN")
-     * @Route("/user/{id}/create", name=".create")
-     * @param User $user
+     * @Route("/user/{uuid}/create", name=".create")
+     * @param string $uuid
      * @param Request $request
      * @param UseCase\Create\Handler $handler
      * @return Response
      */
-    public function create(User $user, Request $request, UseCase\Create\Handler $handler): Response
+    public function create(string $uuid, Request $request, UseCase\Create\Handler $handler): Response
     {
         $command = new UseCase\Create\Command();
+        $user = $this->authAdapter->getUserByUuid($uuid);
 
-        $form = $this->createForm(UseCase\Create\Form::class, $command, ['userId' => $user->getId()->getValue()]);
+        $form = $this->createForm(UseCase\Create\Form::class, $command, ['userId' => $user->getId()]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
                 $handler->handle($command);
                 $this->addFlash('success', $this->translator->trans('User task added.', [], 'task'));
-                return $this->redirectToRoute('users.show', ['id' => $user->getId()->getValue()]);
+                return $this->redirectToRoute('users.show', ['id' => $user->getId()]);
             } catch (\Exception $e) {
                 $this->logger->warning($e->getMessage(), ['exception' => $e]);
                 $this->addFlash('warning', $e->getMessage());
@@ -307,19 +314,15 @@ class TaskController extends AbstractController
      *
      * @param Task $task
      * @param UseCase\Delete\Handler $handler
-     * @param UserRepository $userRepository
      * @return Response
      */
     public function deleteByModal(
         Task $task,
-        UseCase\Delete\Handler $handler,
-        UserRepository $userRepository
+        UseCase\Delete\Handler $handler
     ): Response
     {
-        $this->denyAccessUnlessGranted(
-            TaskAccess::DELETE,
-            $userRepository->getByUuid($task->getUserUuid())
-        );
+        $user = $this->authAdapter->getUserByUuid($task->getUserUuid());
+        $this->denyAccessUnlessGranted(TaskAccess::DELETE, $user);
         $command = new UseCase\Delete\Command($task->getId()->getValue());
 
         try {
@@ -366,7 +369,8 @@ class TaskController extends AbstractController
      */
     public function fulfilledByModal(Task $task, UseCase\Fulfilled\Handler $handler): Response
     {
-        $this->denyAccessUnlessGranted(TaskAccess::FULFILLED, $task->getUserUuid());
+        $user = $this->authAdapter->getUserByUuid($task->getUserUuid());
+        $this->denyAccessUnlessGranted(TaskAccess::FULFILLED, $user);
         $command = new UseCase\Fulfilled\Command($task->getId()->getValue());
 
         try {
@@ -408,19 +412,15 @@ class TaskController extends AbstractController
      * @Route("/ajax-published/{id}", name=".published_by_modal", methods={"POST"})
      * @param Task $task
      * @param UseCase\Published\Handler $handler
-     * @param UserRepository $userRepository
      * @return Response
      */
     public function publishedByModal(
         Task $task,
-        UseCase\Published\Handler $handler,
-        UserRepository $userRepository
+        UseCase\Published\Handler $handler
     ): Response
     {
-        $this->denyAccessUnlessGranted(
-            TaskAccess::REVOKE,
-            $userRepository->getByUuid($task->getUserUuid())
-        );
+        $user = $this->authAdapter->getUserByUuid($task->getUserUuid());
+        $this->denyAccessUnlessGranted(TaskAccess::REVOKE, $user);
         $command = new UseCase\Published\Command($task->getId()->getValue());
 
         try {

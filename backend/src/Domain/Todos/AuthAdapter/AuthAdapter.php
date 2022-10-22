@@ -23,7 +23,18 @@ class AuthAdapter
 
     public function getUserByUuid(string $uuid): UserDto
     {
-        $user = $this->authApi->getByUuid($uuid);
-        // Todo
+        $user = $this->authApi->findByUuid($uuid);
+
+        return new UserDto(
+            $user->getId(),
+            $user->getDate(),
+            $user->getRole(),
+            $user->getStatus(),
+            $user->getNetworks(),
+            $user->getName()->getFirst(),
+            $user->getName()->getLast(),
+            $user->getActiveImageUuid(),
+            $user->getEmail()
+        );
     }
 }
