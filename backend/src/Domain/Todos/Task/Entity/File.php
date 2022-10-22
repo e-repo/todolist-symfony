@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Class Image
  * @ORM\Entity()
  * @ORM\Table(
- *     name="todos_task_file",
+ *     name="task_file",
  *     uniqueConstraints={@ORM\UniqueConstraint(columns={"filename"})}
  * )
  */
