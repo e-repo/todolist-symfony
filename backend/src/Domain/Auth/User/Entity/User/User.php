@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity()
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(
- *     name="user_users",
+ *     name="`user`",
  *     uniqueConstraints={
  *          @ORM\UniqueConstraint(columns={"email"}),
  *          @ORM\UniqueConstraint(columns={"reset_token"})
@@ -30,7 +30,7 @@ class User
 
     /**
      * @ORM\Column(
-     *     type="user_user_id",
+     *     type="user_id",
      *     options={"comment":"UUID type"}
      * )
      * @ORM\Id()
@@ -44,7 +44,7 @@ class User
 
     /**
      * @ORM\Column(
-     *     type="user_user_role",
+     *     type="user_role",
      *     options={"comment":"Role type (e.g. ROLE_USER, ROLE_ADMIN)"}
      * )
      */
@@ -72,7 +72,7 @@ class User
 
     /**
      * @ORM\Column(
-     *     type="user_user_email",
+     *     type="user_email",
      *     nullable=true,
      *     options={"comment":"Email type"}
      * )
@@ -100,7 +100,7 @@ class User
     /**
      * @var Email|null
      * @ORM\Column(
-     *     type="user_user_email",
+     *     type="user_email",
      *     name="new_email",
      *     nullable=true,
      *     options={"comment":"Email type"}

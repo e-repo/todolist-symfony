@@ -11,9 +11,9 @@ doctrine:
         url: '%env(resolve:DATABASE_URL)%'
 
         types:
-            user_user_id: 'App\Domain\Auth\User\Entity\User\Type\IdType'
-            user_user_role: 'App\Domain\Auth\User\Entity\User\Type\RoleType'
-            user_user_email: 'App\Domain\Auth\User\Entity\User\Type\EmailType'
+            user_id: 'App\Domain\Auth\User\Entity\User\Type\IdType'
+            user_role: 'App\Domain\Auth\User\Entity\User\Type\RoleType'
+            user_email: 'App\Domain\Auth\User\Entity\User\Type\EmailType'
             todos_task_id: 'App\Domain\Todos\Task\Entity\Task\Type\IdType'
 
     orm:

@@ -10,7 +10,7 @@ use Doctrine\DBAL\Types\StringType;
 
 class EmailType extends StringType
 {
-    public const NAME = 'user_user_email';
+    public const NAME = 'user_email';
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {

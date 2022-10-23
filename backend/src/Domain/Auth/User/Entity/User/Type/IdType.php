@@ -11,7 +11,7 @@ use Doctrine\DBAL\Types\GuidType;
 
 class IdType extends GuidType
 {
-    public const NAME = 'user_user_id';
+    public const NAME = 'user_id';
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
