@@ -46,36 +46,37 @@
 </template>
 
 <script setup lang="ts">
-import {reactive, watch} from "vue"
- import { LoginFormState } from "@/pages/login/types/LoginFormState";
- import { useEmailValidator, usePasswordValidator } from "@/pages/login/composables";
- import { useAuthStore } from "@/store/auth";
- import { useRouter } from "vue-router";
- import {storeToRefs} from "pinia";
 
- const authStore = useAuthStore()
- const router = useRouter()
+  import {reactive, watch} from "vue"
+  import { LoginFormState } from "@/pages/login/types/LoginFormState";
+  import { useEmailValidator, usePasswordValidator } from "@/pages/login/composables";
+  import { useAuthStore } from "@/store/auth";
+  import { useRouter } from "vue-router";
+  import { storeToRefs } from "pinia";
 
- const { user, loginError } = storeToRefs(authStore)
+  const authStore = useAuthStore()
+  const router = useRouter()
 
- const loginForm = reactive<LoginFormState>({
-   email: '',
-   password: '',
-   isValidEmail: true,
-   isValidPassword: true,
-   errorMessage: null
- })
+  const { user, loginError } = storeToRefs(authStore)
 
- useEmailValidator(loginForm)
- usePasswordValidator(loginForm)
+  const loginForm = reactive<LoginFormState>({
+    email: '',
+    password: '',
+    isValidEmail: true,
+    isValidPassword: true,
+    errorMessage: null
+  })
 
- const resetErrorMessage = (): void => {
-   loginForm.errorMessage = null
- }
+  useEmailValidator(loginForm)
+  usePasswordValidator(loginForm)
 
- const login = (): void => {
-   authStore.login(loginForm.email, loginForm.password)
- }
+  const resetErrorMessage = (): void => {
+    loginForm.errorMessage = null
+  }
+
+  const login = (): void => {
+    authStore.login(loginForm.email, loginForm.password)
+  }
 
   watch(loginError.value, (error) => {
     loginForm.errorMessage = null
