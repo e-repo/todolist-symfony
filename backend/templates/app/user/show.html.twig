@@ -29,7 +29,7 @@
                         <button type="submit" class="btn btn-success">{% trans %}Activate{% endtrans %}</button>
                     </form>
                 {% endif %}
-                <a href="{{ path('tasks.create', {id: user.id.value}) }}" class="btn btn-success">{% trans from 'task' %}Add task{% endtrans %}</a>
+                <a href="{{ path('tasks.create', {uuid: user.id.value}) }}" class="btn btn-success">{% trans from 'task' %}Add task{% endtrans %}</a>
             </div>
         </div>
     </div>

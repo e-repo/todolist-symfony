@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Class Network
  * @ORM\Entity()
  * @ORM\Table(
- *      name="user_user_networks",
+ *      name="user_network",
  *      uniqueConstraints={@ORM\UniqueConstraint(columns={"network", "identity"})}
  * )
  */

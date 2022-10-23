@@ -186,7 +186,7 @@ class UserFetcher extends ServiceEntityRepository
                 'role',
                 'status'
             )
-            ->from('user');
+            ->from('"user"');
 
         if ($filter->name) {
             $qb->andWhere($qb->expr()->like('LOWER(CONCAT(name_first, \' \', name_last))', ':name'));

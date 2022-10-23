@@ -43,7 +43,7 @@ class TaskFetcher extends ServiceEntityRepository
         try {
             $result = $this->createQueryBuilder('t')
                 ->select('COUNT(t.id)')
-                ->where('t.user = :userId')
+                ->where('t.userId = :userId')
                 ->setParameter(':userId', $userId)
                 ->getQuery()
                 ->getSingleScalarResult();

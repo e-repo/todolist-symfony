@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Class Image
  * @ORM\Entity()
  * @ORM\Table(
- *     name="user_user_images",
+ *     name="user_image",
  *     uniqueConstraints={@ORM\UniqueConstraint(columns={"filename"})}
  * )
  */

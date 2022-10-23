@@ -3,6 +3,6 @@
         <a href="{{ path('users.show', {id: user.id.value}) }}" class="nav-link active">{{ user.name.full }}</a>
     </li>
     <li class="nav-item">
-        <a href="{{ path('tasks.user', {id: user.id.value}) }}" class="nav-link">{% trans from 'task' %}Tasks{% endtrans %}</a>
+        <a href="{{ path('tasks.user', {uuid: user.id.value}) }}" class="nav-link">{% trans from 'task' %}Tasks{% endtrans %}</a>
     </li>
 </ul>
