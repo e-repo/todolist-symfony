@@ -117,6 +117,9 @@ export const useAuthStore: StoreDefinition = defineStore('auth', {
         token(): string | null {
             return this.user.token
         },
+        refreshToken(): string | null {
+            return this.user.refreshToken
+        },
         isAuth(): boolean {
             return this.user.isAuth
         }

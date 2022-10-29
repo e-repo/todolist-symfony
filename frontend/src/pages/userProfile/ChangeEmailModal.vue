@@ -85,19 +85,13 @@
       }
     }
 
-    let resource: Promise<any> = usePatchResource(API_V1.PROFILE_CHANGE_EMAIL,
-      {
-        uuid: route.params.id,
-        email: emailForm.email.fieldValue
-      },
-      {
-        headers: {
-          Authorization: useCreateAuthHeader(authStore.token)
-        },
-        refreshTokenAction: authStore.tryRefreshToken,
-        router,
-      }
-    )
+    const url = API_V1.PROFILE_CHANGE_EMAIL
+    const data = {
+      uuid: route.params.id,
+      email: emailForm.email.fieldValue
+    }
+    const authHeader = useCreateAuthHeader(authStore.token)
+    let resource: Promise<any> = usePatchResource(url, data, authHeader, authStore.tryRefreshToken, router)
 
     resource
       .then(response => {

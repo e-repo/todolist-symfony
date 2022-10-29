@@ -102,20 +102,14 @@
       }
     }
 
-    let resource: Promise<any> = usePutResource(API_V1.PROFILE_CHANGE_NAME,
-      {
-        uuid: route.params.id,
-        firstName: userNameFrom.first.fieldValue,
-        lastName: userNameFrom.last.fieldValue
-      },
-      {
-        headers: {
-          Authorization: useCreateAuthHeader(authStore.token)
-        },
-        refreshTokenAction: authStore.tryRefreshToken,
-        router,
-      }
-    )
+    const url = API_V1.PROFILE_CHANGE_NAME
+    const data = {
+      uuid: route.params.id,
+      firstName: userNameFrom.first.fieldValue,
+      lastName: userNameFrom.last.fieldValue
+    }
+    const authHeader = useCreateAuthHeader(authStore.token)
+    let resource: Promise<any> = usePutResource(url, data, authHeader, authStore.tryRefreshToken, router)
 
     resource
       .then(response => {

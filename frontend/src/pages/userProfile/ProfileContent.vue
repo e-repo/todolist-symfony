@@ -183,14 +183,8 @@
 
   const loadProfile = (): void => {
     const profileUrl = API_V1.USER_PROFILE(route.params.id as string)
-
-    let resource: Promise<any> = useGetResource(profileUrl, {
-      headers: {
-        Authorization: useCreateAuthHeader(authStore.token)
-      },
-      refreshTokenAction: authStore.tryRefreshToken,
-      router,
-    })
+    const authHeader = useCreateAuthHeader(authStore.token)
+    let resource: Promise<any> = useGetResource(profileUrl, authHeader, authStore.tryRefreshToken, router)
 
     resource
       .then(response => {

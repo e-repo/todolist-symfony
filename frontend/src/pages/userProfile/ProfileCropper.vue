@@ -105,21 +105,13 @@
     cropper.getCroppedCanvas().toBlob((blob: Blob | null) => {
       if (null === blob) return
 
+      const url = API_V1.PROFILE_IMAGE_UPLOAD
+      const authHeader = useCreateAuthHeader(authStore.token)
       const formData = new FormData()
+
       formData.append('image', blob, profileImageName.value)
       formData.append('uuid', String(route.params.id))
-
-      usePostResource(API_V1.PROFILE_IMAGE_UPLOAD,
-        formData,
-        {
-          headers: {
-            Authorization: useCreateAuthHeader(authStore.token),
-            'Content-Type': 'multipart/form-data'
-          }
-        },
-        authStore.tryRefreshToken,
-        router
-      )
+      usePostResource(url, formData, authHeader, authStore.tryRefreshToken, router)
     })
   }
 

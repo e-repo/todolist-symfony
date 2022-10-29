@@ -41,6 +41,7 @@
   import { TableFilters, UsersState } from "@/pages/users/types"
   import { UsersTableColumn } from "@/pages/users/enums/UsersTableColumn"
   import { useRouter, useRoute } from "vue-router"
+  import { useCreateAuthHeader, useGetResource } from "@/components/composables";
 
   const authStore = useAuthStore()
   const router = useRouter()
@@ -134,18 +135,15 @@
 
     const usersUrl = '' !== url ? url : API_V1.USER_LIST
 
-    axios
-        .get(usersUrl, {
-          headers: {
-            Authorization: `Bearer ${authStore.token}`
-          },
-          params: searchParams
-        }).then(response => {
-          users.usersData = response.data.data
-          users.usersMeta = response.data.meta
-        }).catch((error) => {
-          authStore.tryRefreshToken(error, router)
-        })
+    const authHeader = useCreateAuthHeader(authStore.token)
+    const header = {...authHeader, ...{params: searchParams}}
+    let resource: Promise<any> = useGetResource(usersUrl, header, authStore.tryRefreshToken, router)
+
+    resource
+      .then(response => {
+        users.usersData = response.data
+        users.usersMeta = response.meta
+      })
   }
 
   const loadRoles = () => {
