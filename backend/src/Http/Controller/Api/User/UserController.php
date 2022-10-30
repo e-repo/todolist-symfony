@@ -5,154 +5,69 @@ declare(strict_types=1);
 namespace App\Http\Controller\Api\User;
 
 use App\Domain\Auth\User\UseCase;
-use App\Domain\Auth\User\Entity\User\Id;
 use App\Domain\Auth\User\Entity\User\User;
-use App\Domain\Auth\User\Read\Filter\Filter;
-use App\Domain\Auth\User\Read\UserFetcher;
-use App\Domain\Auth\User\Repository\ImageRepository;
 use App\Domain\Auth\User\Repository\UserRepository;
 use App\Domain\Auth\User\Service\NewEmailConfirmTokenizer;
+use App\Http\Controller\Api\User\Action\GetUserImageListAction;
+use App\Http\Controller\Api\User\Action\GetUserListAction;
+use App\Http\Controller\Api\User\Action\UploadUserImageAction;
 use App\Http\Payload\Api\User\ChangeEmailPayload;
 use App\Http\Payload\Api\User\ChangeNamePayload;
+use App\Http\Payload\Api\User\UserImageListPayload;
+use App\Http\Payload\Api\User\UserImagePayload;
 use App\Http\Payload\Api\User\UserListPayload;
 use App\Http\Service\JsonApi\JsonApiHelper;
 use App\Http\Service\JsonApi\ResponseBuilder\ResponseDataBuilder;
 use App\Infrastructure\Security\RolesHelper;
 use App\Infrastructure\Upload\UploadHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mime\MimeTypesInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Validator\Constraints\File;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\ConstraintViolation;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @Route("/api/v1/user", name="user")
  */
 class UserController extends AbstractController
 {
-    private const PER_PAGE = 15;
-    private UserFetcher $fetcher;
     private JsonApiHelper $apiHelper;
     private UrlGeneratorInterface $urlGenerator;
     private RolesHelper $rolesHelper;
     private UserRepository $userRepository;
-    private ValidatorInterface $validator;
-    private MimeTypesInterface $mimeTypes;
 
     /**
-     * @param UserFetcher $fetcher
      * @param UserRepository $userRepository
      * @param JsonApiHelper $apiHelper
      * @param UrlGeneratorInterface $urlGenerator
      * @param RolesHelper $rolesHelper
-     * @param ValidatorInterface $validator
-     * @param MimeTypesInterface $mimeTypes
      */
     public function __construct(
-        UserFetcher $fetcher,
         UserRepository $userRepository,
         JsonApiHelper $apiHelper,
         UrlGeneratorInterface $urlGenerator,
-        RolesHelper $rolesHelper,
-        ValidatorInterface $validator,
-        MimeTypesInterface $mimeTypes
+        RolesHelper $rolesHelper
     )
     {
-        $this->fetcher = $fetcher;
         $this->apiHelper = $apiHelper;
         $this->urlGenerator = $urlGenerator;
         $this->rolesHelper = $rolesHelper;
         $this->userRepository = $userRepository;
-        $this->validator = $validator;
-        $this->mimeTypes = $mimeTypes;
     }
 
     /**
      * @Route("/list", name=".list", methods={"GET"})
      * @param UserListPayload $payload
+     * @param GetUserListAction $listAction
      * @return JsonResponse
      */
-    public function getUserList(UserListPayload $payload): JsonResponse
+    public function getUserList(
+        UserListPayload $payload,
+        GetUserListAction $listAction
+    ): JsonResponse
     {
-        $filter = (new Filter())
-            ->setId($payload->id)
-            ->setName($payload->name)
-            ->setEmail($payload->email)
-            ->setStatus($payload->status)
-            ->setRole($payload->role);
-
-        $pagination = $this->fetcher->all(
-            $filter,
-            $payload->page ?? 1,
-            self::PER_PAGE,
-            $payload->sort ?? 'date',
-            $payload->direction ?? 'desk'
-        );
-
-        $total = $pagination->getTotalItemCount();
-        $numberOfPages = (int)\ceil($total/self::PER_PAGE);
-
-        $linkSelf = $this->urlGenerator->generate(
-            'user.list',
-            ['page' => $pagination->getCurrentPageNumber()],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        $linkFirst = $this->urlGenerator->generate(
-            'user.list',
-            ['page' => 1],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        $responseDataBuilder = ResponseDataBuilder::create()
-            ->setLinksSelf($linkSelf)
-            ->setLinksFirst($linkFirst)
-            ->setMetaAttribute('totalPage', $numberOfPages)
-            ->setMetaAttribute('currentPage', $pagination->getCurrentPageNumber())
-            ->setMetaAttribute('perPage', self::PER_PAGE)
-            ->setDataAllParams($pagination->getItems());
-
-        if ($numberOfPages > 1) {
-            $linkLast = $this->urlGenerator->generate(
-                'user.list',
-                ['page' => $numberOfPages],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            $responseDataBuilder
-                ->setLinksLast($linkLast);
-        }
-
-        if ($pagination->getCurrentPageNumber() < $numberOfPages) {
-            $linkNext = $this->urlGenerator->generate(
-                'user.list',
-                ['page' => $pagination->getCurrentPageNumber() + 1],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            $responseDataBuilder
-                ->setLinksNext($linkNext);
-        }
-
-        if ($pagination->getCurrentPageNumber() > 1) {
-            $linkPrev = $this->urlGenerator->generate(
-                'user.list',
-                ['page' => $pagination->getCurrentPageNumber() - 1],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            $responseDataBuilder
-                ->setLinksPrev($linkPrev);
-        }
-
-        return $this->apiHelper->createJsonResponse($responseDataBuilder);
+        return $listAction->handle($payload);
     }
 
     /**
@@ -349,67 +264,33 @@ class UserController extends AbstractController
     /**
      * @Route("/image-upload", name="_profile.image-upload", methods={"POST"})
      * @param Request $request
-     * @param UseCase\Image\Attach\Handler $handler
-     * @param ImageRepository $imageRepository
-     * @param UploadHelper $uploadHelper
+     * @param UploadUserImageAction $userImageAction
      * @return JsonResponse
      */
     public function uploadProfileImage(
-        Request                                            $request,
-        UseCase\Image\Attach\Handler $handler,
-        ImageRepository                                    $imageRepository,
-        UploadHelper                                       $uploadHelper
+        Request $request,
+        UploadUserImageAction $userImageAction
     ): JsonResponse
     {
-        /** @var UploadedFile $uploadedFile */
-        $uploadedFile = $request->files->get('image');
-
-        $violations = $this->validator->validate($uploadedFile, [
-            new NotBlank(),
-            new File([
-                'maxSize' => '2M',
-                'mimeTypes' => \array_merge($this->mimeTypes->getMimeTypes('jpeg'), $this->mimeTypes->getMimeTypes('png'))
-            ])
-        ]);
-
-        if ($violations->count() > 0) {
-            $responseDataBuilder = ResponseDataBuilder::create();
-
-            /** @var ConstraintViolation $violation */
-            foreach ($violations as $violation) {
-                $responseDataBuilder
-                    ->setErrorsTitle('Image validation error.')
-                    ->setErrorsDetail($violation->getMessage());
-            }
-
-            return $this->apiHelper->createJsonResponse($responseDataBuilder, Response::HTTP_BAD_REQUEST);
-        }
-
-        $command = new UseCase\Image\Attach\Command($uploadedFile, $request->get('uuid'));
-
-        try {
-            $handler->handle($command);
-        } catch (\Exception $e) {
-            $responseDataBuilder = ResponseDataBuilder::create()
-                ->setErrorsTitle('Image save error.')
-                ->setErrorsDetail($e->getMessage());
-
-            return $this->apiHelper->createJsonResponse($responseDataBuilder, Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        $linkSelf = $this->urlGenerator->generate(
-            'user_profile.change_name',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
+        return $userImageAction->handle(
+            new UserImagePayload(
+                $request->get('uuid'),
+                $request->files->get('image')
+            )
         );
+    }
 
-        $activeImage = $imageRepository->findActiveImageByUserId(new Id($request->get('uuid')));
-
-        $responseDataBuilder = ResponseDataBuilder::create()
-            ->setLinksSelf($linkSelf)
-            ->setDataType('Image save successfully.')
-            ->setDataAttribute('imagePath', $uploadHelper->getPublicPath($activeImage->getFilePath()));
-
-        return $this->apiHelper->createJsonResponse($responseDataBuilder);
+    /**
+     * @Route("/image/list", name="_image.list", methods={"GET"})
+     * @param UserImageListPayload $payload
+     * @param GetUserImageListAction $imageListAction
+     * @return JsonResponse
+     */
+    public function getUserImages(
+        UserImageListPayload $payload,
+        GetUserImageListAction $imageListAction
+    ): JsonResponse
+    {
+        return $imageListAction->handle($payload);
     }
 }
