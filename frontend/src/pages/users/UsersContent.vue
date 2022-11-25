@@ -148,34 +148,34 @@
 
   const loadRoles = () => {
     axios
-        .get(API_V1.USER_ROLE_LIST, {
-          headers: {
-            Authorization: `Bearer ${authStore.token}`
-          },
-        }).then(response => {
-          const roles = response.data
-          const [rolesData] = roles.data
+      .get(API_V1.USER_ROLE_LIST, {
+        headers: {
+          Authorization: `Bearer ${authStore.token}`
+        },
+      }).then(response => {
+        const roles = response.data
+        const [rolesData] = roles.data
 
-          users.userRoles = rolesData.attributes.roles
-        }).catch((error) => {
-          authStore.tryRefreshToken(error, router)
-        })
+        users.userRoles = rolesData.attributes.roles
+      }).catch((error) => {
+        authStore.tryRefreshToken(error, router)
+      })
   }
 
   const loadStatuses = () => {
     axios
-        .get(API_V1.USER_STATUS_LIST, {
-          headers: {
-            Authorization: `Bearer ${authStore.token}`
-          },
-        }).then(response => {
-          const statuses = response.data
-          const [statusesData] = statuses.data
+      .get(API_V1.USER_STATUS_LIST, {
+        headers: {
+          Authorization: `Bearer ${authStore.token}`
+        },
+      }).then(response => {
+        const statuses = response.data
+        const [statusesData] = statuses.data
 
-          users.userStatuses = statusesData.attributes.statuses
-        }).catch((error) => {
-          authStore.tryRefreshToken(error, router)
-        })
+        users.userStatuses = statusesData.attributes.statuses
+      }).catch((error) => {
+        authStore.tryRefreshToken(error, router)
+      })
   }
 
   onMounted(() => {

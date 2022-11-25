@@ -12,8 +12,32 @@
       </div>
 
     </div>
-    <div class="col text-center">
-      Список изображений профиля пользователя.
+    <div
+      class="col"
+      v-if="images.length > 0"
+    >
+      <div class="col">
+        <div class="d-flex">
+          <div
+              v-for="(image, index) in images"
+              :key="index"
+              class="card text-center ms-1 me-1 mb-1"
+              style="width: 14rem;"
+          >
+            <img :src="getImagePath(image.filepath)" class="card-img-top" alt="User thumbnail">
+            <div class="card-body">
+              <h6 class="card-title">{{ image.originalFilename }}</h6>
+              <button
+                type="button"
+                @click="setImageToActive(image)"
+                class="btn btn-primary"
+              >
+                To main
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="row mb-4">
@@ -54,15 +78,19 @@
   import 'cropperjs/dist/cropper.css';
   import Cropper from 'cropperjs';
 
-  import { onMounted, ref, defineProps, watch } from 'vue'
-  import { useCreateAuthHeader, usePostResource } from "@/components/composables";
+  import { onMounted, ref, defineProps, watch, defineEmits } from 'vue'
+  import { useCreateAuthHeader, useGetResource, usePatchResource, usePostResource } from "@/components/composables";
   import { API_V1 } from "@/conf/api";
   import { useRoute, useRouter } from "vue-router";
   import { useAuthStore } from "@/store/auth";
+  import { Image } from "@/pages/userProfile/types";
+  import { useToAbsolutePath } from "@/components/composables/formatters";
 
   const props = defineProps({
     imagePath: { type: String, required: true }
   })
+
+  const emit = defineEmits(['changedImageActive'])
 
   let cropper: Cropper|null = null
 
@@ -74,6 +102,11 @@
   const profileImagePath = ref(props.imagePath)
   const profileImage = ref()
   const cropperInput = ref()
+  let images = ref<Image[]>([])
+
+  const getImagePath = (relativePath: string): string => {
+    return useToAbsolutePath(relativePath)
+  }
 
   watch(() => props.imagePath, (path) => {
     if (path) {
@@ -97,6 +130,22 @@
     initCropper()
   }
 
+  const setImageToActive = (image: Image) => {
+    const url = API_V1.PROFILE_IMAGE_SET_ACTIVE
+    const authHeader = useCreateAuthHeader(authStore.token)
+    const data = {
+      userUuid: route.params.id,
+      imageUuid: image.uuid
+    }
+    let resource: Promise<any> = usePatchResource(url, data, authHeader, authStore.tryRefreshToken, router)
+
+    resource
+      .then(() => {
+        emit('changedImageActive')
+        initImageGallery()
+      })
+  }
+
   const uploadCropperImage = () => {
     if (null === cropper) {
       throw new Error('Cropper not initialized.')
@@ -111,7 +160,11 @@
 
       formData.append('image', blob, profileImageName.value)
       formData.append('uuid', String(route.params.id))
-      usePostResource(url, formData, authHeader, authStore.tryRefreshToken, router)
+
+      let resource: Promise<any> = usePostResource(url, formData, authHeader, authStore.tryRefreshToken, router)
+
+      resource
+        .then(() => initImageGallery())
     })
   }
 
@@ -123,8 +176,26 @@
     })
   }
 
+  const initImageGallery = (): void => {
+    const url = API_V1.USER_IMAGE_LIST
+    const authHeader = useCreateAuthHeader(authStore.token)
+    const data = {
+      params: {
+        uuid: route.params.id,
+        onlyInactive: true
+      }
+    }
+    let resource: Promise<any> = useGetResource(url, {...authHeader, ...data}, authStore.tryRefreshToken, router)
+
+    resource
+      .then(response => {
+        images.value = response.data
+      })
+  }
+
   onMounted(() => {
     initCropper()
+    initImageGallery()
   })
 </script>
 

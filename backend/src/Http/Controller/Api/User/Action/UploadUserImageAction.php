@@ -64,7 +64,7 @@ class UploadUserImageAction implements BaseActionInterface
         $violations = $this->validator->validate($uploadedFile, [
             new NotBlank(),
             new File([
-                'maxSize' => '2M',
+                'maxSize' => '5M',
                 'mimeTypes' => \array_merge($this->mimeTypes->getMimeTypes('jpeg'), $this->mimeTypes->getMimeTypes('png'))
             ])
         ]);
@@ -105,7 +105,7 @@ class UploadUserImageAction implements BaseActionInterface
         $responseDataBuilder = ResponseDataBuilder::create()
             ->setLinksSelf($linkSelf)
             ->setDataType('Image save successfully.')
-            ->setDataAttribute('imagePath', $this->uploadHelper->getPublicPath($activeImage->getFilePath()));
+            ->setDataAttribute('imagePath', $this->uploadHelper->getRelativePath($activeImage->getFilePath()));
 
         return $this->apiHelper->createJsonResponse($responseDataBuilder);
     }

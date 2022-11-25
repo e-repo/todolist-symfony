@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Auth\User\Read\Filter;
 
-class Filter
+class ListFilter
 {
     public ?string $name = null;
     public ?string $email = null;

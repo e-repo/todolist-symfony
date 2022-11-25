@@ -26,4 +26,9 @@ class Flusher
     {
         $this->em->flush();
     }
+
+    public function persist(object $entity): void
+    {
+        $this->em->persist($entity);
+    }
 }

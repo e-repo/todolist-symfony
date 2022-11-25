@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace App\Http\Controller\Api\User;
 
-use App\Domain\Auth\User\UseCase;
 use App\Domain\Auth\User\Entity\User\User;
+use App\Domain\Auth\User\Error\Image\ImageNotBelongsToUserException;
+use App\Domain\Auth\User\Error\Image\UserImageNotFoundException;
 use App\Domain\Auth\User\Repository\UserRepository;
 use App\Domain\Auth\User\Service\NewEmailConfirmTokenizer;
+use App\Domain\Auth\User\UseCase;
 use App\Http\Controller\Api\User\Action\GetUserImageListAction;
 use App\Http\Controller\Api\User\Action\GetUserListAction;
 use App\Http\Controller\Api\User\Action\UploadUserImageAction;
+use App\Http\Controller\Api\User\Response\ImageResponseDto;
 use App\Http\Payload\Api\User\ChangeEmailPayload;
 use App\Http\Payload\Api\User\ChangeNamePayload;
+use App\Http\Payload\Api\User\UserImageActivatePayload;
 use App\Http\Payload\Api\User\UserImageListPayload;
 use App\Http\Payload\Api\User\UserImagePayload;
 use App\Http\Payload\Api\User\UserListPayload;
@@ -26,6 +30,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
  * @Route("/api/v1/user", name="user")
@@ -33,18 +38,21 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class UserController extends AbstractController
 {
     private JsonApiHelper $apiHelper;
+    private NormalizerInterface $normalizer;
     private UrlGeneratorInterface $urlGenerator;
     private RolesHelper $rolesHelper;
     private UserRepository $userRepository;
 
     /**
      * @param UserRepository $userRepository
+     * @param NormalizerInterface $normalizer
      * @param JsonApiHelper $apiHelper
      * @param UrlGeneratorInterface $urlGenerator
      * @param RolesHelper $rolesHelper
      */
     public function __construct(
         UserRepository $userRepository,
+        NormalizerInterface $normalizer,
         JsonApiHelper $apiHelper,
         UrlGeneratorInterface $urlGenerator,
         RolesHelper $rolesHelper
@@ -54,6 +62,7 @@ class UserController extends AbstractController
         $this->urlGenerator = $urlGenerator;
         $this->rolesHelper = $rolesHelper;
         $this->userRepository = $userRepository;
+        $this->normalizer = $normalizer;
     }
 
     /**
@@ -130,8 +139,7 @@ class UserController extends AbstractController
 
         $linkSelf = $this->urlGenerator->generate(
             'user_profile',
-            ['id' => $user->getId()->getValue()],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ['id' => $user->getId()->getValue()]
         );
 
         $responseDataBuilder = ResponseDataBuilder::create()
@@ -148,7 +156,7 @@ class UserController extends AbstractController
             $responseDataBuilder
                 ->setDataRelationships([
                     'image' => [
-                        'path' => $uploadHelper->getPublicPath($userActiveImage->getFilePath()),
+                        'path' => $uploadHelper->getRelativePath($userActiveImage->getFilePath()),
                         'data' => [
                             'uuid' => $userActiveImage->getId(),
                             'fileName' => $userActiveImage->getFilename(),
@@ -292,5 +300,59 @@ class UserController extends AbstractController
     ): JsonResponse
     {
         return $imageListAction->handle($payload);
+    }
+
+    /**
+     * @Route("/image/set-active", name="_image.set-active", methods={"PATCH"})
+     * @param UserImageActivatePayload $payload
+     * @param UseCase\Image\Activate\Handler $handler
+     * @param UploadHelper $uploadHelper
+     * @return JsonResponse
+     */
+    public function setActiveImage(
+        UserImageActivatePayload $payload,
+        UseCase\Image\Activate\Handler $handler,
+        UploadHelper $uploadHelper
+    ): JsonResponse
+    {
+        $responseDataBuilder = ResponseDataBuilder::create();
+
+        try {
+            $imageDto = $handler->handle(new UseCase\Image\Activate\Command($payload->userUuid, $payload->imageUuid));
+
+            $imageResponseDto = (new ImageResponseDto())
+                ->setUuid($imageDto->getUuid())
+                ->setFilename($imageDto->getFilename())
+                ->setOriginalFilename($imageDto->getOriginFilename())
+                ->setFilepath($uploadHelper->getRelativePath($imageDto->getFilepath()))
+                ->setIsActive($imageDto->isActive());
+
+            $linkSelf = $this->urlGenerator->generate(
+                'user_image.set-active'
+            );
+
+            $responseDataBuilder
+                ->setLinksSelf($linkSelf)
+                ->setDataType('Changing active image for user')
+                ->setDataAllParams($this->normalizer->normalize($imageResponseDto));
+        } catch (UserImageNotFoundException $e) {
+            $responseDataBuilder
+                ->setErrorsTitle($e->getMessage())
+                ->setErrorsDetail(sprintf('Image by id \'%s\'', $e->getParam('imageUuid')))
+                ->setErrorsStatus(Response::HTTP_NOT_FOUND);
+
+            return $this->apiHelper->createJsonResponse($responseDataBuilder, Response::HTTP_NOT_FOUND);
+        } catch (ImageNotBelongsToUserException $e) {
+            $responseDataBuilder
+                ->setErrorsTitle($e->getMessage())
+                ->setErrorsDetail(sprintf('Image does\'t belongs to user %s', $e->getUserUuid()))
+                ->setErrorsStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+            return $this->apiHelper->createJsonResponse($responseDataBuilder, Response::HTTP_UNPROCESSABLE_ENTITY);
+        } catch (\Throwable $e) {
+            return $this->apiHelper->createJsonResponseFromError($e);
+        }
+
+        return $this->apiHelper->createJsonResponse($responseDataBuilder);
     }
 }

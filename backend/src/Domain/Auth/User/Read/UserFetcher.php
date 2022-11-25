@@ -6,7 +6,7 @@ namespace App\Domain\Auth\User\Read;
 
 use App\Domain\Auth\User\Entity\User\Id;
 use App\Domain\Auth\User\Entity\User\User;
-use App\Domain\Auth\User\Read\Filter\Filter;
+use App\Domain\Auth\User\Read\Filter\ListFilter;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Connection;
 use Doctrine\Persistence\ManagerRegistry;
@@ -24,7 +24,11 @@ class UserFetcher extends ServiceEntityRepository
      * @param Connection $connection
      * @param PaginatorInterface $paginator
      */
-    public function __construct(ManagerRegistry $managerRegistry, Connection $connection, PaginatorInterface $paginator)
+    public function __construct(
+        ManagerRegistry $managerRegistry,
+        Connection $connection,
+        PaginatorInterface $paginator
+    )
     {
         parent::__construct($managerRegistry, User::class);
         $this->connection = $connection;
@@ -175,7 +179,7 @@ class UserFetcher extends ServiceEntityRepository
         return $result > 0;
     }
 
-    public function all(Filter $filter, int $page, int $size, string $sort, string $direction): PaginationInterface
+    public function all(ListFilter $filter, int $page, int $size, string $sort, string $direction): PaginationInterface
     {
         $qb = $this->connection->createQueryBuilder()
             ->select(

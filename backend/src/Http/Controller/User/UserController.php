@@ -44,7 +44,7 @@ class UserController extends AbstractController
      */
     public function index(Request $request, UserFetcher $fetcher): Response
     {
-        $filter = new \App\Domain\Auth\User\Read\Filter\Filter();
+        $filter = new \App\Domain\Auth\User\Read\Filter\ListFilter();
 
         $form = $this->createForm(\App\Domain\Auth\User\Read\Filter\Form::class, $filter);
         $form->handleRequest($request);

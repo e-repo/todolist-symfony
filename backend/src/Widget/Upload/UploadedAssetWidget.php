@@ -31,6 +31,6 @@ class UploadedAssetWidget extends AbstractExtension
 
     public function uploadedAssetPath(string $path): string
     {
-        return $this->uploadHelper->getPublicPath($path);
+        return $this->uploadHelper->getRelativePath($path);
     }
 }

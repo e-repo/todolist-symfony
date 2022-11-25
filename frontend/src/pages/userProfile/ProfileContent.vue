@@ -12,7 +12,10 @@
         </div>
       </div>
 
-      <profile-cropper :image-path="profileImagePath"></profile-cropper>
+      <profile-cropper
+        :image-path="profileImagePath"
+        @changedImageActive="loadProfile()"
+      ></profile-cropper>
 
       <div class="row mt-4">
         <div class="col-6">
@@ -136,6 +139,7 @@
   import { useRouter, useRoute } from "vue-router";
   import { useCreateAuthHeader, useGetResource } from "@/components/composables";
   import { UserProfile } from "@/pages/userProfile/types";
+  import { useToAbsolutePath } from "@/components/composables/formatters";
 
   const authStore = useAuthStore()
   const router = useRouter()
@@ -193,7 +197,7 @@
         const profileImage = responseData?.relationships?.image
 
         setProfileData(profileData)
-        profileImagePath.value = profileImage.path
+        profileImagePath.value = useToAbsolutePath(profileImage.path)
       })
   }
 

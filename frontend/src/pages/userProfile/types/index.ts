@@ -20,3 +20,11 @@ export interface UserNameForm {
 export interface ChangingEmailForm {
     email: FormField
 }
+
+export interface Image {
+    filename: string;
+    filepath: string;
+    isActive: boolean;
+    originalFilename: string;
+    uuid: string
+}

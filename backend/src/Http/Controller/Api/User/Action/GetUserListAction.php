@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controller\Api\User\Action;
 
-use App\Domain\Auth\User\Read\Filter\Filter;
+use App\Domain\Auth\User\Read\Filter\ListFilter;
 use App\Domain\Auth\User\Read\UserFetcher;
 use App\Http\Payload\Api\User\UserListPayload;
 use App\Http\Service\ArgumentResolver\BasePayloadInterface;
@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class GetUserListAction implements BaseActionInterface
 {
-    private const PER_PAGE = 15;
+    private const DEFAULT_PER_PAGE = 15;
 
     private UrlGeneratorInterface $urlGenerator;
     private UserFetcher $fetcher;
@@ -39,7 +39,7 @@ class GetUserListAction implements BaseActionInterface
      */
     public function handle(BasePayloadInterface $payload): JsonResponse
     {
-        $filter = (new Filter())
+        $filter = (new ListFilter())
             ->setName($payload->name)
             ->setEmail($payload->email)
             ->setStatus($payload->status)
@@ -48,24 +48,22 @@ class GetUserListAction implements BaseActionInterface
         $pagination = $this->fetcher->all(
             $filter,
             $payload->page ?? 1,
-            $payload->perPage ?? self::PER_PAGE,
+            $payload->perPage ?? self::DEFAULT_PER_PAGE,
             $payload->sort ?? 'date',
-            $payload->direction ?? 'desk'
+            $payload->direction ?? 'desc'
         );
 
         $total = $pagination->getTotalItemCount();
-        $numberOfPages = (int)\ceil($total/self::PER_PAGE);
+        $numberOfPages = (int)\ceil($total/self::DEFAULT_PER_PAGE);
 
         $linkSelf = $this->urlGenerator->generate(
             'user.list',
-            ['page' => $pagination->getCurrentPageNumber()],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ['page' => $pagination->getCurrentPageNumber()]
         );
 
         $linkFirst = $this->urlGenerator->generate(
             'user.list',
-            ['page' => 1],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ['page' => 1]
         );
 
         $responseDataBuilder = ResponseDataBuilder::create()
@@ -73,14 +71,13 @@ class GetUserListAction implements BaseActionInterface
             ->setLinksFirst($linkFirst)
             ->setMetaAttribute('totalPage', $numberOfPages)
             ->setMetaAttribute('currentPage', $pagination->getCurrentPageNumber())
-            ->setMetaAttribute('perPage', self::PER_PAGE)
+            ->setMetaAttribute('perPage', self::DEFAULT_PER_PAGE)
             ->setDataAllParams($pagination->getItems());
 
         if ($numberOfPages > 1) {
             $linkLast = $this->urlGenerator->generate(
                 'user.list',
-                ['page' => $numberOfPages],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ['page' => $numberOfPages]
             );
 
             $responseDataBuilder
@@ -90,8 +87,7 @@ class GetUserListAction implements BaseActionInterface
         if ($pagination->getCurrentPageNumber() < $numberOfPages) {
             $linkNext = $this->urlGenerator->generate(
                 'user.list',
-                ['page' => $pagination->getCurrentPageNumber() + 1],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ['page' => $pagination->getCurrentPageNumber() + 1]
             );
 
             $responseDataBuilder
@@ -101,8 +97,7 @@ class GetUserListAction implements BaseActionInterface
         if ($pagination->getCurrentPageNumber() > 1) {
             $linkPrev = $this->urlGenerator->generate(
                 'user.list',
-                ['page' => $pagination->getCurrentPageNumber() - 1],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ['page' => $pagination->getCurrentPageNumber() - 1]
             );
 
             $responseDataBuilder

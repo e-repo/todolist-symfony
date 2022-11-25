@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class PayloadArgumentResolver implements ArgumentValueResolverInterface
 {
-    private const ALLOW_SCALAR_TYPES = ['string', 'int', 'float', 'bool'];
+    private const ALLOW_SCALAR_TYPES = ['string', 'int', 'integer', 'float', 'bool', 'boolean'];
     private const ALLOW_COMPOUND_TYPES = ['array'];
 
     private SerializerInterface $serializer;
@@ -65,11 +65,14 @@ class PayloadArgumentResolver implements ArgumentValueResolverInterface
         $allowTypes = \array_merge(self::ALLOW_SCALAR_TYPES, self::ALLOW_COMPOUND_TYPES);
 
         if ([] === $queryParams) {
-            return $classReflection->newInstance();
+            $payload = $classReflection->newInstance();
+            $this->checkPayload($payload);
+
+            return $payload;
         }
 
         $classReflectionProperties = $classReflection->getProperties();
-        $instance = $classReflection->newInstance();
+        $payload = $classReflection->newInstance();
 
         foreach ($classReflectionProperties as $property) {
             if (false === isset($queryParams[$property->name])) {
@@ -80,7 +83,7 @@ class PayloadArgumentResolver implements ArgumentValueResolverInterface
             $property->setAccessible(true);
 
             if (null === $propertyType) {
-                $property->setValue($instance, $queryParams[$property->name]);
+                $property->setValue($payload, $queryParams[$property->name]);
                 continue;
             }
 
@@ -95,14 +98,16 @@ class PayloadArgumentResolver implements ArgumentValueResolverInterface
             }
 
             if (\in_array($propertyType->getName(), self::ALLOW_COMPOUND_TYPES)) {
-                $property->setValue($instance, $this->castToCompoundType($value));
+                $property->setValue($payload, $this->castToCompoundType($value));
                 continue;
             }
 
-            $property->setValue($instance, $this->castToScalarType($value, $propertyType->getName()));
+            $property->setValue($payload, $this->castToScalarType($value, $propertyType->getName()));
         }
 
-        return $instance;
+        $this->checkPayload($payload);
+
+        return $payload;
     }
 
     private function prepareQueryParam($paramValue)
@@ -149,8 +154,6 @@ class PayloadArgumentResolver implements ArgumentValueResolverInterface
 
     private function jsonContentToPayload(string $jsonContent, string $payloadClassName): object
     {
-        $responseDataBuilder = ResponseDataBuilder::create();
-
         try {
             $payload = $this->serializer->deserialize(
                 $jsonContent,
@@ -158,22 +161,36 @@ class PayloadArgumentResolver implements ArgumentValueResolverInterface
                 'json'
             );
 
-            $violations = $this->validator->validate($payload);
-            if ($violations->count() > 0) {
-                /** @var ConstraintViolation $violation */
-                foreach ($violations as $violation) {
-                    $responseDataBuilder
-                        ->setErrorsTitle('Data validation error.')
-                        ->setErrorsDetail($violation->getMessage());
-                }
-
-                throw new JsonApiHttpException(Response::HTTP_UNPROCESSABLE_ENTITY, $responseDataBuilder);
-            }
+            $this->checkPayload($payload);
 
             return $payload;
         } catch (NotEncodableValueException $e) {
-            $responseDataBuilder
+            $responseDataBuilder = ResponseDataBuilder::create()
                 ->setErrorsDetail('Syntax error.');
+
+            throw new JsonApiHttpException(Response::HTTP_UNPROCESSABLE_ENTITY, $responseDataBuilder);
+        }
+    }
+
+    private function checkPayload(BasePayloadInterface $payload): void
+    {
+        $violations = $this->validator->validate($payload);
+        if ($violations->count() > 0) {
+            $responseDataBuilder = ResponseDataBuilder::create();
+
+            /** @var ConstraintViolation $violation */
+            foreach ($violations as $violation) {
+                $message = \sprintf(
+                    \mb_substr($violation->getMessage(), 0, -1) . ': %s = \'%s\'',
+                    $violation->getPropertyPath(),
+                    $violation->getInvalidValue()
+                );
+
+                $responseDataBuilder
+                    ->setErrorsTitle('Data validation error.')
+                    ->setErrorsDetail($message);
+            }
+
             throw new JsonApiHttpException(Response::HTTP_UNPROCESSABLE_ENTITY, $responseDataBuilder);
         }
     }

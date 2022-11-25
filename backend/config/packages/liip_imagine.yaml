@@ -16,10 +16,22 @@ liip_imagine:
     # define your filter sets under this option
     filter_sets:
         # Prototype
-        squared_thumbnail_small:
+        squared_thumbnail_xs:
             filters:
                 thumbnail:
                     size: [ 200, 200 ]
+                    mode: outbound
+                    allow_upscale: true
+        squared_thumbnail_sm:
+            filters:
+                thumbnail:
+                    size: [ 400, 400 ]
+                    mode: outbound
+                    allow_upscale: true
+        squared_thumbnail_md:
+            filters:
+                thumbnail:
+                    size: [ 600, 600 ]
                     mode: outbound
                     allow_upscale: true
 
@@ -31,8 +43,9 @@ liip_imagine:
         flysystem_resolver:
             flysystem:
                 filesystem_service: oneup_flysystem.public_uploads_filesystem_filesystem
-                root_url: '%uploads_base_url%'
+                root_url: '/%uploads_dir_name%'
                 cache_prefix: media/cache
+                visibility: public
 
     # default cache resolver for saving thumbnails This tells the bundle to always use this resolver
     cache: flysystem_resolver

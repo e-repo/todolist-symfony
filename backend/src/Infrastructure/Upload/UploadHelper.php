@@ -8,6 +8,7 @@ use Gedmo\Sluggable\Util\Urlizer;
 use League\Flysystem\FilesystemInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Asset\Context\RequestStackContext;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -16,17 +17,17 @@ class UploadHelper
     private FilesystemInterface $filesystem;
     private LoggerInterface $logger;
     private RequestStackContext $requestStackContext;
-    private string $uploadedAssetsBaseUrl;
+    private ParameterBagInterface $parameterBag;
 
     /**
      * UploadHelper constructor.
+     * @param ParameterBagInterface $parameterBag
      * @param RequestStackContext $requestStackContext
      * @param FilesystemInterface $uploadsFilesystem
      * @param LoggerInterface $logger
-     * @param string $uploadedAssetsBaseUrl
      */
     public function __construct(
-        string $uploadedAssetsBaseUrl,
+        ParameterBagInterface $parameterBag,
         RequestStackContext $requestStackContext,
         FilesystemInterface $uploadsFilesystem,
         LoggerInterface $logger
@@ -35,7 +36,7 @@ class UploadHelper
         $this->filesystem = $uploadsFilesystem;
         $this->logger = $logger;
         $this->requestStackContext = $requestStackContext;
-        $this->uploadedAssetsBaseUrl = $uploadedAssetsBaseUrl;
+        $this->parameterBag = $parameterBag;
     }
 
     /**
@@ -100,14 +101,14 @@ class UploadHelper
         return Urlizer::transliterate($originalFileName) . \uniqid() . '.' . $file->guessExtension();
     }
 
-    public function getPublicPath(string $path): string
+    public function getRelativePath(string $path): string
     {
         /**
          * requestStackContext - для случаев, если н-р сайт был развернут в подкаталоге домена
          * (служба используется для определения подкаталога)
          */
         return \sprintf('%s/%s',
-            $this->requestStackContext->getBasePath() . $this->uploadedAssetsBaseUrl,
+            $this->requestStackContext->getBasePath() . '/' . $this->parameterBag->get('uploads_dir_name'),
             $path
         );
     }

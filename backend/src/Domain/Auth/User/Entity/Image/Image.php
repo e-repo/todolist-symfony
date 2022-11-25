@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Auth\User\Entity\Image;
 
 use App\Domain\Auth\User\Entity\User\User;
+use App\Domain\Auth\User\Error\Image\ImageAlreadyActiveException;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Doctrine\ORM\Mapping as ORM;
@@ -62,7 +63,12 @@ class Image
      */
     private \DateTimeImmutable $createdAt;
 
-    public function __construct(string $filename, UploadedFile $uploadedFile, User $user)
+    public function __construct(
+        string $filename,
+        UploadedFile $uploadedFile,
+        User $user,
+        bool $isActive = true
+    )
     {
         $this->id = Uuid::uuid4()->toString();
         $this->filename = $filename;
@@ -71,7 +77,7 @@ class Image
         $this->mimeType = $uploadedFile->getMimeType();
         $this->createdAt = new \DateTimeImmutable();
         $this->filepath = $this->getFileDirectory();
-        $this->setActive();
+        $this->isActive = $isActive;
     }
 
     /**
@@ -170,6 +176,11 @@ class Image
         return $this->filename === $filename;
     }
 
+    public function isImageBelongsToUser($userUuid): bool
+    {
+        return $this->getUser()->getId()->getValue() === $userUuid;
+    }
+
     /**
      * @return string
      */
@@ -217,6 +228,10 @@ class Image
 
     public function setActive(): void
     {
+        if (true === $this->isActive) {
+            throw new ImageAlreadyActiveException($this->getId());
+        }
+
         $this->isActive = true;
     }
 

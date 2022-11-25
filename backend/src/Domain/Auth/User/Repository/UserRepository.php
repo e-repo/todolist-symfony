@@ -5,7 +5,7 @@ namespace App\Domain\Auth\User\Repository;
 
 use App\Domain\Auth\User\Entity\User\Id;
 use App\Domain\Auth\User\Entity\User\User;
-use App\Domain\Service\EntityNotFoundException;
+use App\Domain\Service\Exception\EntityNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
 

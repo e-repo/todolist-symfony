@@ -53,7 +53,7 @@
             <div class="d-flex">
 
                 {% for image in user.images %}
-                    <img class="mr-1" src="{{ image.filePath|imagine_filter('squared_thumbnail_small') }}" alt="" height="100">
+                    <img class="mr-1" src="{{ image.filePath|imagine_filter('squared_thumbnail_xs') }}" alt="" height="100">
                 {% endfor %}
 
             </div>

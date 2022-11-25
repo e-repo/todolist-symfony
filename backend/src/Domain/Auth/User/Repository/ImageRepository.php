@@ -6,20 +6,26 @@ namespace App\Domain\Auth\User\Repository;
 
 use App\Domain\Auth\User\Entity\Image\Image;
 use App\Domain\Auth\User\Entity\User\Id;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ObjectRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 
-class ImageRepository
+/**
+ * @extends ServiceEntityRepository<Image>
+ *
+ * @method Image|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Image|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Image[]    findAll()
+ * @method Image[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class ImageRepository extends ServiceEntityRepository
 {
-    private ObjectRepository $repository;
-
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(ManagerRegistry $registry)
     {
-        $this->repository = $em->getRepository(Image::class);
+        parent::__construct($registry, Image::class);
     }
 
     public function findActiveImageByUserId(Id $id): ?Image
     {
-        return $this->repository->findOneBy(['user' => $id, 'isActive' => true]);
+        return $this->findOneBy(['user' => $id, 'isActive' => true]);
     }
 }
