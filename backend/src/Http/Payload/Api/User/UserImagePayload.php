@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class UserImagePayload implements BasePayloadInterface
 {
-    private string $uuid;
+    private string $userUuid;
     private UploadedFile $image;
 
     public function __construct(
@@ -18,13 +18,13 @@ class UserImagePayload implements BasePayloadInterface
         UploadedFile $image
     )
     {
-        $this->uuid = $uuid;
+        $this->userUuid = $uuid;
         $this->image = $image;
     }
 
-    public function getUuid(): string
+    public function getUserUuid(): string
     {
-        return $this->uuid;
+        return $this->userUuid;
     }
 
     public function getImage(): UploadedFile

@@ -82,7 +82,7 @@ class UploadUserImageAction implements BaseActionInterface
             return $this->apiHelper->createJsonResponse($responseDataBuilder, Response::HTTP_BAD_REQUEST);
         }
 
-        $command = new UseCase\Image\Attach\Command($uploadedFile, $payload->getUuid());
+        $command = new UseCase\Image\Attach\Command($uploadedFile, $payload->getUserUuid());
 
         try {
             $this->handler->handle($command);
@@ -100,7 +100,7 @@ class UploadUserImageAction implements BaseActionInterface
             UrlGeneratorInterface::ABSOLUTE_URL
         );
 
-        $activeImage = $this->imageRepository->findActiveImageByUserId(new Id($payload->getUuid()));
+        $activeImage = $this->imageRepository->findActiveImageByUserId(new Id($payload->getUserUuid()));
 
         $responseDataBuilder = ResponseDataBuilder::create()
             ->setLinksSelf($linkSelf)

@@ -5,18 +5,19 @@ import {
     RouteLocationRaw,
     Router,
     RouteRecordRaw
-} from "vue-router";
-import { Middleware, MiddlewarePayload, MiddlewareContext } from "@/router/middleware/types";
-import { useAuthStore } from "@/store/auth";
+} from "vue-router"
+import { Middleware, MiddlewarePayload, MiddlewareContext } from "@/router/middleware/types"
+import { useAuthStore } from "@/store/auth"
 
-import HomePage from "@/pages/home/HomePage.vue";
-import UsersPage from "@/pages/users/UsersPage.vue";
-import LoginPage from "@/pages/login/LoginPage.vue";
-import ProfilePage from "@/pages/userProfile/ProfilePage.vue";
+import HomePage from "@/pages/home/HomePage.vue"
+import UsersPage from "@/pages/users/UsersPage.vue"
+import LoginPage from "@/pages/login/LoginPage.vue"
+import ProfilePage from "@/pages/userProfile/ProfilePage.vue"
+import TaskPublishedPage from "@/pages/task/new/TaskPublishedPage.vue"
 
-import guest from "@/router/middleware/guest";
-import auth from "@/router/middleware/auth";
-import middlewarePipeline from "@/router/middleware/middlewarePipeline";
+import guest from "@/router/middleware/guest"
+import auth from "@/router/middleware/auth"
+import middlewarePipeline from "@/router/middleware/middlewarePipeline"
 
 const routes: RouteRecordRaw[] = [
     {
@@ -58,7 +59,17 @@ const routes: RouteRecordRaw[] = [
                 auth,
             ] as Middleware[]
         }
-    }
+    },
+    {
+        path: '/tasks/bar/published',
+        name: 'TaskPublishedPage',
+        component: TaskPublishedPage,
+        meta: {
+            middleware: [
+                auth,
+            ] as Middleware[]
+        }
+    },
 ];
 
 const router: Router = createRouter({

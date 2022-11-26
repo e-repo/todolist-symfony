@@ -24,19 +24,16 @@ class GetUserImageListAction implements BaseActionInterface
     private UrlGeneratorInterface $urlGenerator;
     private JsonApiHelper $apiHelper;
     private CacheManager $imagineCacheManager;
-    private UploadHelper $uploadHelper;
 
     /**
      * @param UrlGeneratorInterface $urlGenerator
      * @param ImageFetcher $imageFetcher
-     * @param UploadHelper $uploadHelper
      * @param JsonApiHelper $apiHelper
      * @param CacheManager $imagineCacheManager
      */
     public function __construct(
         UrlGeneratorInterface $urlGenerator,
         ImageFetcher $imageFetcher,
-        UploadHelper $uploadHelper,
         JsonApiHelper $apiHelper,
         CacheManager $imagineCacheManager
     )
@@ -45,7 +42,6 @@ class GetUserImageListAction implements BaseActionInterface
         $this->urlGenerator = $urlGenerator;
         $this->apiHelper = $apiHelper;
         $this->imagineCacheManager = $imagineCacheManager;
-        $this->uploadHelper = $uploadHelper;
     }
 
     /**
