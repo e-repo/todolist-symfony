@@ -20,15 +20,11 @@ class TaskListPayload implements BasePayloadInterface
      */
     public string $status;
     /**
-     * @Assert\DateTime("U")
+     * @Assert\DateTime("d.m.Y")
      */
-    public ?int $publishedStartDate = null;
-    /**
-     * @Assert\DateTime("U")
-     */
-    public ?int $publishedEndDate = null;
+    public string $onDate = '';
+    public string $sort = '';
+    public string $direction = '';
     public ?int $page = null;
     public ?int $perPage = null;
-    public ?string $sort = null;
-    public ?string $direction = null;
 }

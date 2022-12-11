@@ -6,11 +6,14 @@ namespace App\Http\Controller\Todos;
 
 use App\Domain\Todos\AuthAdapter\AuthAdapter;
 use App\Domain\Todos\Task\Entity\Task\Task;
+use App\Domain\Todos\Task\Read\Filter\TaskFilter;
+use App\Domain\Todos\Task\Read\Filter\Form;
 use App\Domain\Todos\Task\Read\TaskFetcher;
 use App\Domain\Todos\Task\UseCase;
 use App\Infrastructure\Security\Voter\Task\TaskAccess;
 use App\Infrastructure\Upload\UploadHelper;
 use Psr\Log\LoggerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,14 +21,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Mime\MimeTypesInterface;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
+ * @param Route
+ * @param IsGranted
+ *
  * @Route("/tasks", name="tasks")
  * Class TaskController
  * @package App\Controller\Todos
@@ -75,17 +80,16 @@ class TaskController extends AbstractController
     public function index(string $uuid, Request $request, TaskFetcher $fetcher): Response
     {
         $user = $this->authAdapter->getUserByUuid($uuid);
-        $filter = new \App\Domain\Todos\Task\Read\Filter\Filter($user->getId(), Task::STATUS_PUBLISHED);
+        $filter = (new TaskFilter($user->getId()))
+            ->setStatus(Task::STATUS_PUBLISHED);
 
-        $form = $this->createForm(\App\Domain\Todos\Task\Read\Filter\Form::class, $filter);
+        $form = $this->createForm(Form::class, $filter);
         $form->handleRequest($request);
 
-        $pagination = $fetcher->all(
+        $pagination = $fetcher->allByFilter(
             $filter,
             $request->get('page', 1),
-            self::PER_PAGE,
-            $request->get('sort', 'date'),
-            $request->get('direction', 'desc')
+            self::PER_PAGE
         );
 
         return $this->render('app/todos/index.html.twig', [
@@ -107,9 +111,9 @@ class TaskController extends AbstractController
     ): Response
     {
         $currentUser = $this->getUser();
-        $filter = new \App\Domain\Todos\Task\Read\FilterBar\Filter($currentUser->getId(), Task::STATUS_PUBLISHED);
+        $filter = new TaskFilter($currentUser->getId(), Task::STATUS_PUBLISHED);
 
-        $pagination = $fetcher->allForBar(
+        $pagination = $fetcher->allByFilter(
             $filter,
             $request->get('page', 1),
             $request->get('size', self::PER_PAGE_FOR_BAR)
@@ -130,9 +134,9 @@ class TaskController extends AbstractController
     public function barFulfilled(Request $request, TaskFetcher $fetcher): Response
     {
         $currentUser = $this->getUser();
-        $filter = new \App\Domain\Todos\Task\Read\FilterBar\Filter($currentUser->getId(), Task::STATUS_FULFILLED);
+        $filter = new TaskFilter($currentUser->getId(), Task::STATUS_FULFILLED);
 
-        $pagination = $fetcher->allForBar(
+        $pagination = $fetcher->allByFilter(
             $filter,
             $request->get('page', 1),
             $request->get('size', self::PER_PAGE_FOR_BAR)

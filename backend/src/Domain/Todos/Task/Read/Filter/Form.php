@@ -50,7 +50,7 @@ class Form extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Filter::class,
+            'data_class' => TaskFilter::class,
             'method' => 'GET',
             'csrf_protection' => false,
         ]);
