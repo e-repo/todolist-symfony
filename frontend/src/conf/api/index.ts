@@ -9,4 +9,6 @@ export const API_V1 = {
     PROFILE_CHANGE_NAME: '/api/v1/user/change-name',
     PROFILE_IMAGE_UPLOAD: '/api/v1/user/image-upload',
     PROFILE_IMAGE_SET_ACTIVE: '/api/v1/user/image/set-active',
+
+    TASK_LIST: '/api/v1/task/list',
 };

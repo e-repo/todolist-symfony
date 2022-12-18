@@ -122,6 +122,21 @@ export const useAuthStore: StoreDefinition = defineStore('auth', {
         },
         isAuth(): boolean {
             return this.user.isAuth
+        },
+        JWTPayload(): object | null {
+            if (null === this.user.token) {
+                return null
+            }
+
+            try {
+                return JSON.parse(
+                    atob(
+                        this.user.token.split('.')[1]
+                    )
+                );
+            } catch (e) {
+                return null;
+            }
         }
     },
 })

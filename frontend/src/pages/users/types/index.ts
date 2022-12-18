@@ -1,4 +1,4 @@
-export interface UsersData
+export interface User
 {
     id: string;
     name: string;
@@ -8,7 +8,7 @@ export interface UsersData
     date: string;
 }
 
-export interface UsersMeta
+export interface UserMeta
 {
     currentPage: number;
     perPage: number;
@@ -16,8 +16,8 @@ export interface UsersMeta
 }
 
 export interface UsersState {
-    usersData: UsersData[] | null;
-    usersMeta: UsersMeta | null;
+    usersData: User[] | null;
+    usersMeta: UserMeta | null;
     userRoles: string[] | null;
     userStatuses: string[] | null;
 }
