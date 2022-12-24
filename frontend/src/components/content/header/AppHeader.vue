@@ -1,6 +1,14 @@
 <template>
   <header class="header">
     <ul class="nav justify-content-end bg-light border-bottom">
+      <li v-if="route.name === 'TaskPublishedPage'">
+        <button
+          @click="addingTaskModalToggle = !addingTaskModalToggle"
+          class="btn btn-link text-decoration-none shadow-none text-dark"
+        >
+          <font-awesome-icon icon="plus" class="me-1" /> Add task
+        </button>
+      </li>
       <li v-click-outside="onClickOutside" class="nav-item position-relative">
         <button
           class="btn btn-link text-decoration-none shadow-none text-dark"
@@ -37,41 +45,40 @@
   </header>
 </template>
 
-<script>
-import { useAuthStore } from "@/store/auth"
+<script setup lang="ts">
+  import { useAuthStore } from "@/store/auth"
+  import { ref } from "vue"
+  import { useRouter, useRoute } from "vue-router"
 
-export default {
-  setup() {
-    const authStore = useAuthStore()
+  const authStore = useAuthStore()
+  const router = useRouter()
+  const route = useRoute()
 
-    return {
-      authStore,
-      userFromToken: authStore.findUserFromToken
-    }
-  },
-  data() {
-    return {
-      dropdownProfileToggle: false
-    }
-  },
-  methods: {
-    onClickOutside: function () {
-      if (true === this.dropdownProfileToggle) {
-        this.dropdownProfileToggle = ! this.dropdownProfileToggle
-      }
-    },
-    logout: function () {
-      this.authStore.logout()
-      this.$router.push({name: 'Login'})
-    },
-    username: function () {
-      return this.userFromToken ? `${this.userFromToken.first} ${this.userFromToken.last}` : '';
-    },
-    toProfilePage: function () {
-      this.$router.push({path: `/profile/${this.userFromToken.id}`})
+  const addingTaskModalToggle = ref<boolean>(false)
+  const dropdownProfileToggle = ref<boolean>(false)
+
+  console.log(addingTaskModalToggle.value)
+
+  const onClickOutside = (): void => {
+    if (true === dropdownProfileToggle.value) {
+      dropdownProfileToggle.value = ! dropdownProfileToggle.value
     }
   }
-}
+
+  const logout = (): void => {
+    authStore.logout()
+    router.push({name: 'Login'})
+  }
+
+  const username = (): string => {
+    return null !== authStore.findUserFromToken
+        ? `${authStore.findUserFromToken.first} ${authStore.findUserFromToken.last}`
+        : '';
+  }
+
+  const toProfilePage = (): Promise<any> => {
+    return router.push({path: `/profile/${authStore.findUserFromToken.id}`})
+  }
 </script>
 
 <style scoped>

@@ -1,36 +1,36 @@
 <template>
   <main class="main pt-3 pb-3">
     <div class="container-fluid">
-
       <div class="row">
         <div class="col">
           <bootstrap-alert
             :message="alertMessage"
             :is-alert-show="isAlertShow"
-            @alertHide="alertHide"
-          ></bootstrap-alert>
+            @alert-hide="alertHide"
+          />
         </div>
       </div>
 
       <profile-cropper
         :image-path="profileImagePath"
-        @changedImageActive="loadProfile()"
-      ></profile-cropper>
+        @changed-image-active="loadProfile()"
+      />
 
       <div class="row mt-4">
         <div class="col-6">
-
-          <div class="card" v-if="profile">
-
+          <div
+            v-if="profile"
+            class="card"
+          >
             <div class="card-header">
-              <div class="fw-bold">Profile:</div>
+              <div class="fw-bold">
+                Profile:
+              </div>
             </div>
 
             <div class="card-body">
               <table class="table table-hover table-bordered mb-0">
-
                 <tbody>
-
                   <tr>
                     <td>
                       Name:
@@ -74,8 +74,7 @@
                     <td>
                       {{ createdAt }}
                     </td>
-                    <td>
-                    </td>
+                    <td />
                   </tr>
 
                   <tr>
@@ -85,8 +84,7 @@
                     <td>
                       {{ profile.role }}
                     </td>
-                    <td>
-                    </td>
+                    <td />
                   </tr>
 
                   <tr>
@@ -96,33 +94,27 @@
                     <td>
                       {{ profile.status }}
                     </td>
-                    <td>
-                    </td>
+                    <td />
                   </tr>
-
                 </tbody>
-
               </table>
             </div>
-
           </div>
-
         </div>
       </div>
 
       <change-email-modal
-          :is-modal-show="changeEmailModalShow"
-          :userProfile="profile"
-          @modalHide="modalsHide"
-          @emailChangeMessage="emailChangeMessage"
-      ></change-email-modal>
+        :is-modal-show="changeEmailModalShow"
+        :user-profile="profile"
+        @modal-hide="modalsHide"
+        @email-change-message="emailChangeMessage"
+      />
 
       <change-name-modal
-        :is-modal-show="changeNameModalShow"
         v-model="profile"
-        @modalHide="modalsHide"
-      ></change-name-modal>
-
+        :is-modal-show="changeNameModalShow"
+        @modal-hide="modalsHide"
+      />
     </div>
   </main>
 </template>
@@ -152,6 +144,7 @@
     role: '',
     status: '',
   })
+
   const profileImagePath = ref(require('@/assets/img/profile/user_default_img.png'))
 
   const alertMessage = ref<string>('')
@@ -188,7 +181,7 @@
   const loadProfile = (): void => {
     const profileUrl = API_V1.USER_PROFILE(route.params.id as string)
     const authHeader = useCreateAuthHeader(authStore.token)
-    let resource: Promise<any> = useGetResource(profileUrl, authHeader, authStore.tryRefreshToken, router)
+    const resource: Promise<any> = useGetResource(profileUrl, authHeader, authStore.tryRefreshToken, router)
 
     resource
       .then(response => {

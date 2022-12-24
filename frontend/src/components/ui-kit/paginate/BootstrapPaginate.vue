@@ -1,41 +1,81 @@
 <template>
   <nav v-if="totalPage > 1">
     <ul class="pagination">
-      <li v-if="this.geFirstPageNumber()" class="page-item">
-        <button type="button" class="page-link text-dark" @click="loadPageEmit(this.geFirstPageNumber())">
-          <font-awesome-icon class="me-2" icon="angles-left" />
+      <li
+        v-if="geFirstPageNumber()"
+        class="page-item"
+      >
+        <button
+          type="button"
+          class="page-link text-dark"
+          @click="loadPageEmit(geFirstPageNumber())"
+        >
+          <font-awesome-icon
+            class="me-2"
+            icon="angles-left"
+          />
         </button>
       </li>
-      <li v-if="this.getPrevPageNumber()" class="page-item">
-        <button type="button" class="page-link text-dark" @click="loadPageEmit(this.getPrevPageNumber())">
-          <font-awesome-icon class="me-2" icon="angle-left" />
+      <li
+        v-if="getPrevPageNumber()"
+        class="page-item"
+      >
+        <button
+          type="button"
+          class="page-link text-dark"
+          @click="loadPageEmit(getPrevPageNumber())"
+        >
+          <font-awesome-icon
+            class="me-2"
+            icon="angle-left"
+          />
         </button>
       </li>
 
 
       <li
-          v-for="(page, index) in pageItems"
-          :key="index"
-          class="page-item"
-          :class="{'active': checkIsActive(page.number)}"
+        v-for="(page, index) in pageItems"
+        :key="index"
+        class="page-item"
+        :class="{'active': checkIsActive(page.number)}"
       >
         <button
-            type="button"
-            class="page-link text-dark"
-            @click="loadPageEmit(page.number)"
+          type="button"
+          class="page-link text-dark"
+          @click="loadPageEmit(page.number)"
         >
           {{ page.number }}
         </button>
       </li>
 
-      <li v-if="this.getNextPageNumber()" class="page-item">
-        <button type="button" class="page-link text-dark" @click="loadPageEmit(this.getNextPageNumber())">
-          <font-awesome-icon class="me-2" icon="angle-right" />
+      <li
+        v-if="getNextPageNumber()"
+        class="page-item"
+      >
+        <button
+          type="button"
+          class="page-link text-dark"
+          @click="loadPageEmit(getNextPageNumber())"
+        >
+          <font-awesome-icon
+            class="me-2"
+            icon="angle-right"
+          />
         </button>
       </li>
-      <li v-if="this.getLastPageNumber()" class="page-item" >
-        <button type="button" class="page-link text-dark" @click="loadPageEmit(this.getLastPageNumber())">
-          <font-awesome-icon class="me-2" icon="angles-right" />
+      <li
+        v-if="getLastPageNumber()"
+        class="page-item"
+      >
+        <button
+          type="button"
+          class="page-link text-dark"
+          @click="loadPageEmit(getLastPageNumber())"
+        >
+          <font-awesome-icon
+            class="me-2"
+            icon="angles-right"
+          />
         </button>
       </li>
     </ul>
@@ -55,6 +95,17 @@ export default {
     return {
       pageItems: []
     }
+  },
+  watch: {
+    totalPage() {
+      this.createPaginationItems()
+    },
+    currentPage() {
+      this.createPaginationItems()
+    }
+  },
+  mounted() {
+    this.createPaginationItems()
   },
   methods: {
     geFirstPageNumber: function () {
@@ -76,15 +127,15 @@ export default {
     createPaginationItems: function () {
       const pageSuit = Math.ceil((this.currentPage + 1) / this.numberPaginationItems)
       let offset = pageSuit * this.numberPaginationItems - this.numberPaginationItems
-      let pages = [];
+      const pages = [];
 
       offset = offset > 0 ? offset - 1 : offset;
 
       const maxNumberItems = offset + this.numberPaginationItems
       const itemsCount = this.totalPage <= maxNumberItems ? this.totalPage : maxNumberItems;
       for (let i = offset; i < itemsCount; i++) {
-        let pageNumber = i + 1;
-        let page = {
+        const pageNumber = i + 1;
+        const page = {
           number: pageNumber
         }
         pages.push(page)
@@ -98,17 +149,6 @@ export default {
     checkIsActive: function (pageNumber) {
       return pageNumber === this.currentPage
     }
-  },
-  watch: {
-    totalPage() {
-      this.createPaginationItems()
-    },
-    currentPage() {
-      this.createPaginationItems()
-    }
-  },
-  mounted() {
-    this.createPaginationItems()
   }
 }
 </script>

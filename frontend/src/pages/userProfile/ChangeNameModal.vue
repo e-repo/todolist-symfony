@@ -1,20 +1,25 @@
 <template>
   <div>
     <bootstrap-modal
-        :is-modal-show="isModalShow"
-        @modalHide="modalHide"
+      :is-modal-show="isModalShow"
+      @modalHide="modalHide"
     >
-      <template #title>Change name</template>
+      <template #title>
+        Change name
+      </template>
       <template #body>
         <form>
           <div class="mb-3">
-            <label for="new-email" class="form-label">First Name</label>
+            <label
+              for="new-email"
+              class="form-label"
+            >First Name</label>
             <div class="input-group has-validation">
               <input
+                v-model="userNameFrom.first.fieldValue"
                 type="text"
                 class="form-control"
                 :class="{'is-invalid': ! userNameFrom.first.isValid}"
-                v-model="userNameFrom.first.fieldValue"
               >
               <div class="invalid-feedback">
                 {{ userNameFrom.first.errorMessage }}
@@ -22,13 +27,16 @@
             </div>
           </div>
           <div class="mb-3">
-            <label for="new-email" class="form-label">Last Name</label>
+            <label
+              for="new-email"
+              class="form-label"
+            >Last Name</label>
             <div class="input-group has-validation">
               <input
+                v-model="userNameFrom.last.fieldValue"
                 type="text"
                 class="form-control"
                 :class="{'is-invalid': ! userNameFrom.last.isValid}"
-                v-model="userNameFrom.last.fieldValue"
               >
               <div class="invalid-feedback">
                 {{ userNameFrom.last.errorMessage }}
@@ -39,17 +47,21 @@
       </template>
       <template #footer>
         <button
-            type="button"
-            class="btn btn-outline-secondary"
-            @click="modalHide()"
+          type="button"
+          class="btn btn-outline-secondary"
+          @click="modalHide()"
         >
-          <slot name="close-btn-name">Close</slot>
+          <slot name="close-btn-name">
+            Close
+          </slot>
         </button>
         <button
-            type="button"
-            class="btn btn-success"
-            @click="changeName()"
-        >Save</button>
+          type="button"
+          class="btn btn-success"
+          @click="changeName()"
+        >
+          Save
+        </button>
       </template>
     </bootstrap-modal>
   </div>
@@ -96,7 +108,7 @@
 
   const modalHide = () => emit('modalHide')
   const changeName = (): void => {
-    for (let field in userNameFrom) {
+    for (const field in userNameFrom) {
       if (! userNameFrom[field as keyof UserNameForm].isValid) {
         return
       }
@@ -109,7 +121,7 @@
       lastName: userNameFrom.last.fieldValue
     }
     const authHeader = useCreateAuthHeader(authStore.token)
-    let resource: Promise<any> = usePutResource(url, data, authHeader, authStore.tryRefreshToken, router)
+    const resource: Promise<any> = usePutResource(url, data, authHeader, authStore.tryRefreshToken, router)
 
     resource
       .then(response => {

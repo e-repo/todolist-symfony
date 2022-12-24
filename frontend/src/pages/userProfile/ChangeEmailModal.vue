@@ -1,20 +1,25 @@
 <template>
   <div>
     <bootstrap-modal
-        :is-modal-show="isModalShow"
-        @modalHide="modalHide"
+      :is-modal-show="isModalShow"
+      @modalHide="modalHide"
     >
-      <template #title>Change email</template>
+      <template #title>
+        Change email
+      </template>
       <template #body>
         <form>
           <div class="mb-3">
-            <label for="new-email" class="form-label">Email address</label>
+            <label
+              for="new-email"
+              class="form-label"
+            >Email address</label>
             <div class="input-group has-validation">
               <input
+                v-model="emailForm.email.fieldValue"
                 type="email"
                 class="form-control"
                 :class="{'is-invalid': ! emailForm.email.isValid}"
-                v-model="emailForm.email.fieldValue"
               >
               <div class="invalid-feedback">
                 {{ emailForm.email.errorMessage }}
@@ -25,17 +30,21 @@
       </template>
       <template #footer>
         <button
-            type="button"
-            class="btn btn-outline-secondary"
-            @click="modalHide()"
+          type="button"
+          class="btn btn-outline-secondary"
+          @click="modalHide()"
         >
-          <slot name="close-btn-name">Close</slot>
+          <slot name="close-btn-name">
+            Close
+          </slot>
         </button>
         <button
-            type="button"
-            class="btn btn-success"
-            @click="changeEmail()"
-        >Save</button>
+          type="button"
+          class="btn btn-success"
+          @click="changeEmail()"
+        >
+          Save
+        </button>
       </template>
     </bootstrap-modal>
   </div>
@@ -79,7 +88,7 @@
   })
 
   const changeEmail = () => {
-    for (let field in emailForm) {
+    for (const field in emailForm) {
       if (! emailForm[field as keyof ChangingEmailForm].isValid) {
         return
       }
@@ -91,7 +100,7 @@
       email: emailForm.email.fieldValue
     }
     const authHeader = useCreateAuthHeader(authStore.token)
-    let resource: Promise<any> = usePatchResource(url, data, authHeader, authStore.tryRefreshToken, router)
+    const resource: Promise<any> = usePatchResource(url, data, authHeader, authStore.tryRefreshToken, router)
 
     resource
       .then(response => {

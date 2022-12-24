@@ -5,7 +5,6 @@
         v-if="tasks.length > 0"
         class="row"
       >
-
         <div
           v-for="(task, index) in tasks"
           :key="index"
@@ -13,27 +12,36 @@
         >
           <div class="card">
             <div class="card-header">
-              <h5 class="mb-0 font-weight-bold">{{ task.name }}</h5>
+              <h5 class="mb-0 font-weight-bold">
+                {{ task.name }}
+              </h5>
             </div>
             <div class="card-body">
-              <p class="card-text"><b>{{ task.description }}</b></p>
+              <p class="card-text">
+                <b>{{ task.description }}</b>
+              </p>
               <div class="text-sm-end">
                 {{ task.date }}
               </div>
             </div>
             <div class="card-footer d-flex justify-content-end">
-              <a href="#" class="btn btn-outline-primary m-1 js-fulfilled-task">
+              <a
+                href="#"
+                class="btn btn-outline-primary m-1 js-fulfilled-task"
+              >
                 <font-awesome-icon icon="pen" />
               </a>
-              <a href="#" class="btn btn-outline-success m-1 js-fulfilled-task">
+              <a
+                href="#"
+                class="btn btn-outline-success m-1 js-fulfilled-task"
+              >
                 <font-awesome-icon icon="check-double" />
               </a>
             </div>
           </div>
         </div>
-
       </div>
-      <app-preloader v-else></app-preloader>
+      <app-preloader v-else />
     </div>
   </main>
 </template>
@@ -65,7 +73,7 @@
     const header = {...authHeader, ...{params: defaultQueryParams}}
     const taskListUrl = API_V1.TASK_LIST
 
-    let resource: Promise<any> = useGetResource(taskListUrl, header, authStore.tryRefreshToken, router)
+    const resource: Promise<any> = useGetResource(taskListUrl, header, authStore.tryRefreshToken, router)
 
     resource
       .then(response => {

@@ -1,36 +1,40 @@
 <template>
   <div class="row mb-2">
     <div class="col-md-auto">
-
       <div class="cropper-wrap">
         <img
-          class="profile-image"
           ref="profileImage"
+          class="profile-image"
           :src="profileImagePath"
           :alt="profileImageName"
         >
       </div>
-
     </div>
     <div
-      class="col"
       v-if="images.length > 0"
+      class="col"
     >
       <div class="col">
         <div class="d-flex">
           <div
-              v-for="(image, index) in images"
-              :key="index"
-              class="card text-center ms-1 me-1 mb-1"
-              style="width: 14rem;"
+            v-for="(image, index) in images"
+            :key="index"
+            class="card text-center ms-1 me-1 mb-1"
+            style="width: 14rem;"
           >
-            <img :src="getImagePath(image.filepath)" class="card-img-top" alt="User thumbnail">
+            <img
+              :src="getImagePath(image.filepath)"
+              class="card-img-top"
+              alt="User thumbnail"
+            >
             <div class="card-body">
-              <h6 class="card-title">{{ image.originalFilename }}</h6>
+              <h6 class="card-title">
+                {{ image.originalFilename }}
+              </h6>
               <button
                 type="button"
-                @click="setImageToActive(image)"
                 class="btn btn-primary"
+                @click="setImageToActive(image)"
               >
                 To main
               </button>
@@ -42,17 +46,19 @@
   </div>
   <div class="row mb-4">
     <div class="col">
-
       <div class="d-flex">
         <div class="me-1">
-          <label class="btn btn-outline-dark" for="cropper-input">
+          <label
+            class="btn btn-outline-dark"
+            for="cropper-input"
+          >
             <input
-              @change="changeCropperImage()"
+              id="cropper-input"
               ref="cropperInput"
               type="file"
-              id="cropper-input"
               class="sr-only"
               accept="image/*"
+              @change="changeCropperImage()"
             >
             <span class="me-1">Load photo</span>
             <font-awesome-icon icon="download" />
@@ -60,16 +66,15 @@
         </div>
         <div>
           <button
-            @click="uploadCropperImage()"
             type="button"
             class="btn btn-outline-success"
+            @click="uploadCropperImage()"
           >
             <span class="me-1">Save</span>
             <font-awesome-icon icon="upload" />
           </button>
         </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -102,7 +107,7 @@
   const profileImagePath = ref(props.imagePath)
   const profileImage = ref()
   const cropperInput = ref()
-  let images = ref<Image[]>([])
+  const images = ref<Image[]>([])
 
   const getImagePath = (relativePath: string): string => {
     return useToAbsolutePath(relativePath)
@@ -137,7 +142,7 @@
       userUuid: route.params.id,
       imageUuid: image.uuid
     }
-    let resource: Promise<any> = usePatchResource(url, data, authHeader, authStore.tryRefreshToken, router)
+    const resource: Promise<any> = usePatchResource(url, data, authHeader, authStore.tryRefreshToken, router)
 
     resource
       .then(() => {
@@ -161,7 +166,7 @@
       formData.append('image', blob, profileImageName.value)
       formData.append('uuid', String(route.params.id))
 
-      let resource: Promise<any> = usePostResource(url, formData, authHeader, authStore.tryRefreshToken, router)
+      const resource: Promise<any> = usePostResource(url, formData, authHeader, authStore.tryRefreshToken, router)
 
       resource
         .then(() => initImageGallery())
@@ -185,7 +190,7 @@
         onlyInactive: true
       }
     }
-    let resource: Promise<any> = useGetResource(url, {...authHeader, ...data}, authStore.tryRefreshToken, router)
+    const resource: Promise<any> = useGetResource(url, {...authHeader, ...data}, authStore.tryRefreshToken, router)
 
     resource
       .then(response => {

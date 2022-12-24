@@ -1,31 +1,27 @@
 <template>
   <main class="main pt-3 pb-3">
     <div class="container-fluid">
-
       <div class="p-3 mt-2 border">
         <users-table-filters
-            :users="users"
-        ></users-table-filters>
+          :users="users"
+        />
       </div>
 
       <div class="row">
         <div class="col">
-
           <users-table
-              :users="users"
-              :users-columns-name="usersColumnsName"
-          ></users-table>
+            :users="users"
+            :users-columns-name="usersColumnsName"
+          />
 
           <bootstrap-paginate
-              v-if="users.usersMeta"
-              @load-page="toPage"
-              :total-page="users.usersMeta.totalPage"
-              :current-page="users.usersMeta.currentPage"
-          ></bootstrap-paginate>
-
+            v-if="users.usersMeta"
+            :total-page="users.usersMeta.totalPage"
+            :current-page="users.usersMeta.currentPage"
+            @load-page="toPage"
+          />
         </div>
       </div>
-
     </div>
   </main>
 </template>
@@ -49,7 +45,7 @@
 
   const pageNumber = ref<number | null>(null)
 
-  let filters: TableFilters = {
+  const filters: TableFilters = {
     name: '',
     email: '',
     role: '',
@@ -137,7 +133,7 @@
 
     const authHeader = useCreateAuthHeader(authStore.token)
     const header = {...authHeader, ...{params: searchParams}}
-    let resource: Promise<any> = useGetResource(usersUrl, header, authStore.tryRefreshToken, router)
+    const resource: Promise<any> = useGetResource(usersUrl, header, authStore.tryRefreshToken, router)
 
     resource
       .then(response => {
