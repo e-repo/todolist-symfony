@@ -2,7 +2,7 @@
   <div>
     <bootstrap-modal
       :is-modal-show="isModalShow"
-      @modalHide="modalHide"
+      @modal-hide="modalHide"
     >
       <template #title>
         Change name
@@ -16,13 +16,13 @@
             >First Name</label>
             <div class="input-group has-validation">
               <input
-                v-model="userNameFrom.first.fieldValue"
+                v-model="userNameForm.first.fieldValue"
                 type="text"
                 class="form-control"
-                :class="{'is-invalid': ! userNameFrom.first.isValid}"
+                :class="{'is-invalid': ! userNameForm.first.isValid}"
               >
               <div class="invalid-feedback">
-                {{ userNameFrom.first.errorMessage }}
+                {{ userNameForm.first.errorMessage }}
               </div>
             </div>
           </div>
@@ -33,13 +33,13 @@
             >Last Name</label>
             <div class="input-group has-validation">
               <input
-                v-model="userNameFrom.last.fieldValue"
+                v-model="userNameForm.last.fieldValue"
                 type="text"
                 class="form-control"
-                :class="{'is-invalid': ! userNameFrom.last.isValid}"
+                :class="{'is-invalid': ! userNameForm.last.isValid}"
               >
               <div class="invalid-feedback">
-                {{ userNameFrom.last.errorMessage }}
+                {{ userNameForm.last.errorMessage }}
               </div>
             </div>
           </div>
@@ -88,7 +88,7 @@
 
   const emit = defineEmits(['modalHide', 'update:modelValue'])
 
-  const userNameFrom: UserNameForm = reactive<UserNameForm>({
+  const userNameForm: UserNameForm = reactive<UserNameForm>({
     first: {
       fieldValue: '',
       isValid: true
@@ -99,17 +99,17 @@
     }
   })
 
-  useNameFormValidator(userNameFrom)
+  useNameFormValidator(userNameForm)
 
   watch(props.modelValue, (profileData: UserProfile) => {
-    userNameFrom.first.fieldValue = profileData.name.split(' ')[0].trim()
-    userNameFrom.last.fieldValue = profileData.name.split(' ')[1].trim()
+    userNameForm.first.fieldValue = profileData.name.split(' ')[0].trim()
+    userNameForm.last.fieldValue = profileData.name.split(' ')[1].trim()
   })
 
   const modalHide = () => emit('modalHide')
   const changeName = (): void => {
-    for (const field in userNameFrom) {
-      if (! userNameFrom[field as keyof UserNameForm].isValid) {
+    for (const field in userNameForm) {
+      if (! userNameForm[field as keyof UserNameForm].isValid) {
         return
       }
     }
@@ -117,8 +117,8 @@
     const url = API.V1.PROFILE_CHANGE_NAME
     const data = {
       uuid: route.params.id,
-      firstName: userNameFrom.first.fieldValue,
-      lastName: userNameFrom.last.fieldValue
+      firstName: userNameForm.first.fieldValue,
+      lastName: userNameForm.last.fieldValue
     }
     const authHeader = useCreateAuthHeader(authStore.token)
     const resource: Promise<any> = usePutResource(url, data, authHeader, authStore.tryRefreshToken, router)

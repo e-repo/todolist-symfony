@@ -18,6 +18,20 @@ export interface AuthStore {
     user: AuthStoreUser,
 }
 
+export interface User
+{
+    id: string;
+    first: string;
+    last: string;
+    email: string;
+    roles: string[];
+}
+
+interface JWTPayload {
+    user: User;
+    username: string;
+}
+
 export const useAuthStore: StoreDefinition = defineStore('auth', {
     state: (): AuthStore => ({
         user: {
@@ -100,19 +114,12 @@ export const useAuthStore: StoreDefinition = defineStore('auth', {
         }
     },
     getters: {
-        findUserFromToken() {
-            if (null === this.user.token) {
-                return
-            }
-
-            const tokenParts = this.user.token.split('.')
-            const tokenPayload = JSON.parse(atob(tokenParts[1]))
-
-            if (! tokenPayload) {
+        findUserFromToken(): User | null {
+            if (null === this.JWTPayload) {
                 return null
             }
 
-            return tokenPayload.user
+            return this.JWTPayload.user
         },
         token(): string | null {
             return this.user.token
@@ -123,7 +130,7 @@ export const useAuthStore: StoreDefinition = defineStore('auth', {
         isAuth(): boolean {
             return this.user.isAuth
         },
-        JWTPayload(): object | null {
+        JWTPayload(): JWTPayload | null {
             if (null === this.user.token) {
                 return null
             }

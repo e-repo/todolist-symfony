@@ -48,10 +48,15 @@
         </ul>
       </li>
     </ul>
+    <add-task-modal
+      :is-modal-show="addingTaskModalToggle"
+      @modal-hide="modalHide()"
+    />
   </header>
 </template>
 
 <script setup lang="ts">
+  import AddTaskModal from "@/components/content/header/AddTaskModal.vue"
   import { useAuthStore } from "@/store/auth"
   import { ref } from "vue"
   import { useRouter, useRoute } from "vue-router"
@@ -63,7 +68,9 @@
   const addingTaskModalToggle = ref<boolean>(false)
   const dropdownProfileToggle = ref<boolean>(false)
 
-  console.log(addingTaskModalToggle.value)
+  const modalHide = (): void => {
+    addingTaskModalToggle.value = false
+  }
 
   const onClickOutside = (): void => {
     if (true === dropdownProfileToggle.value) {
@@ -73,7 +80,7 @@
 
   const logout = (): void => {
     authStore.logout()
-    router.push({name: 'Login'})
+    router.push({ name: 'Login' })
   }
 
   const username = (): string => {
@@ -83,7 +90,7 @@
   }
 
   const toProfilePage = (): Promise<any> => {
-    return router.push({path: `/profile/${authStore.findUserFromToken.id}`})
+    return router.push({ path: `/profile/${authStore.findUserFromToken.id}` })
   }
 </script>
 

@@ -75,7 +75,7 @@ const SIDEBAR_ICONS_BY_NAME = {
 
 export default {
   name: 'SidebarNav',
-  components: {AppPreloader},
+  components: { AppPreloader },
   props: {
     sidebarMenu: {
       type: Object
