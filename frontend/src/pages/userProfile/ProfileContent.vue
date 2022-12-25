@@ -126,7 +126,7 @@
   import ChangeEmailModal from '@/pages/userProfile/ChangeEmailModal.vue'
   import moment from "moment"
   import { useAuthStore } from "@/store/auth"
-  import { API_V1 } from "@/conf/api"
+  import { API } from "@/conf/api"
   import { onMounted, reactive, ref, computed } from "vue"
   import { useRouter, useRoute } from "vue-router"
   import { useCreateAuthHeader, useGetResource } from "@/components/composables"
@@ -179,7 +179,7 @@
   }
 
   const loadProfile = (): void => {
-    const profileUrl = API_V1.USER_PROFILE(route.params.id as string)
+    const profileUrl = API.V1.USER_PROFILE(route.params.id as string)
     const authHeader = useCreateAuthHeader(authStore.token)
     const resource: Promise<any> = useGetResource(profileUrl, authHeader, authStore.tryRefreshToken, router)
 

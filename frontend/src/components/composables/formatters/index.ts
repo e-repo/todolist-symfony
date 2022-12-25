@@ -1,5 +1,5 @@
 import moment from "moment"
-import { API_V1 } from "@/conf/api"
+import { API } from "@/conf/api"
 
 export function useDateTimeToFormat(dateTime: string, format: string = 'DD.MM.YYYY hh:mm:ss'): string
 {
@@ -8,5 +8,5 @@ export function useDateTimeToFormat(dateTime: string, format: string = 'DD.MM.YY
 
 export function useToAbsolutePath(path: string): string
 {
-    return API_V1.DOMAIN + path
+    return API.DOMAIN + path
 }

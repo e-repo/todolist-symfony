@@ -85,7 +85,7 @@
 
   import { onMounted, ref, defineProps, watch, defineEmits } from 'vue'
   import { useCreateAuthHeader, useGetResource, usePatchResource, usePostResource } from "@/components/composables"
-  import { API_V1 } from "@/conf/api"
+  import { API } from "@/conf/api"
   import { useRoute, useRouter } from "vue-router"
   import { useAuthStore } from "@/store/auth"
   import { Image } from "@/pages/userProfile/types"
@@ -136,7 +136,7 @@
   }
 
   const setImageToActive = (image: Image) => {
-    const url = API_V1.PROFILE_IMAGE_SET_ACTIVE
+    const url = API.V1.PROFILE_IMAGE_SET_ACTIVE
     const authHeader = useCreateAuthHeader(authStore.token)
     const data = {
       userUuid: route.params.id,
@@ -159,7 +159,7 @@
     cropper.getCroppedCanvas().toBlob((blob: Blob | null) => {
       if (null === blob) return
 
-      const url = API_V1.PROFILE_IMAGE_UPLOAD
+      const url = API.V1.PROFILE_IMAGE_UPLOAD
       const authHeader = useCreateAuthHeader(authStore.token)
       const formData = new FormData()
 
@@ -182,7 +182,7 @@
   }
 
   const initImageGallery = (): void => {
-    const url = API_V1.USER_IMAGE_LIST
+    const url = API.V1.USER_IMAGE_LIST
     const authHeader = useCreateAuthHeader(authStore.token)
     const data = {
       params: {

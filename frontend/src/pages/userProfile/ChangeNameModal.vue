@@ -72,7 +72,7 @@
   import { defineEmits, defineProps, PropType, reactive, watch } from "vue"
   import { UserNameForm, UserProfile } from "@/pages/userProfile/types"
   import { useCreateAuthHeader, usePutResource } from "@/components/composables"
-  import { API_V1 } from "@/conf/api"
+  import { API } from "@/conf/api"
   import { useRoute, useRouter } from "vue-router"
   import { useAuthStore } from "@/store/auth"
   import { useNameFormValidator } from "@/pages/userProfile/composables"
@@ -114,7 +114,7 @@
       }
     }
 
-    const url = API_V1.PROFILE_CHANGE_NAME
+    const url = API.V1.PROFILE_CHANGE_NAME
     const data = {
       uuid: route.params.id,
       firstName: userNameFrom.first.fieldValue,

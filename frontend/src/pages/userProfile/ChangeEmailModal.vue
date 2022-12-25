@@ -57,7 +57,7 @@
   import { defineEmits, defineProps, PropType, reactive, watch } from "vue"
   import { ChangingEmailForm, UserProfile } from "@/pages/userProfile/types"
   import { useCreateAuthHeader, usePatchResource } from "@/components/composables"
-  import { API_V1 } from "@/conf/api"
+  import { API } from "@/conf/api"
   import { useEmailFormValidator } from "@/pages/userProfile/composables"
 
   const authStore = useAuthStore()
@@ -94,7 +94,7 @@
       }
     }
 
-    const url = API_V1.PROFILE_CHANGE_EMAIL
+    const url = API.V1.PROFILE_CHANGE_EMAIL
     const data = {
       uuid: route.params.id,
       email: emailForm.email.fieldValue

@@ -31,7 +31,7 @@
   import UsersTable from "@/pages/users/UsersTable.vue"
   import UsersTableFilters from "@/pages/users/UsersTableFilters.vue"
   import axios from "axios"
-  import { API_V1 } from "@/conf/api"
+  import { API } from "@/conf/api"
   import { useAuthStore } from "@/store/auth"
   import { reactive, ref, watch, onMounted } from "vue"
   import { TableFilters, UsersState } from "@/pages/users/types"
@@ -129,7 +129,7 @@
         ? { ...filters, ...defaultParams }
         : {}
 
-    const usersUrl = '' !== url ? url : API_V1.USER_LIST
+    const usersUrl = '' !== url ? url : API.V1.USER_LIST
 
     const authHeader = useCreateAuthHeader(authStore.token)
     const header = { ...authHeader, ...{ params: searchParams } }
@@ -144,7 +144,7 @@
 
   const loadRoles = () => {
     axios
-      .get(API_V1.USER_ROLE_LIST, {
+      .get(API.V1.USER_ROLE_LIST, {
         headers: {
           Authorization: `Bearer ${authStore.token}`
         },
@@ -160,7 +160,7 @@
 
   const loadStatuses = () => {
     axios
-      .get(API_V1.USER_STATUS_LIST, {
+      .get(API.V1.USER_STATUS_LIST, {
         headers: {
           Authorization: `Bearer ${authStore.token}`
         },
