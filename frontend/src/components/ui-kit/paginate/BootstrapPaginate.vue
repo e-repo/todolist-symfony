@@ -83,7 +83,7 @@
 </template>
 
 <script>
-const NUMBER_PAGINATION_ITEMS = 5;
+const NUMBER_PAGINATION_ITEMS = 5
 
 export default {
   props: {
@@ -127,21 +127,21 @@ export default {
     createPaginationItems: function () {
       const pageSuit = Math.ceil((this.currentPage + 1) / this.numberPaginationItems)
       let offset = pageSuit * this.numberPaginationItems - this.numberPaginationItems
-      const pages = [];
+      const pages = []
 
-      offset = offset > 0 ? offset - 1 : offset;
+      offset = offset > 0 ? offset - 1 : offset
 
       const maxNumberItems = offset + this.numberPaginationItems
-      const itemsCount = this.totalPage <= maxNumberItems ? this.totalPage : maxNumberItems;
+      const itemsCount = this.totalPage <= maxNumberItems ? this.totalPage : maxNumberItems
       for (let i = offset; i < itemsCount; i++) {
-        const pageNumber = i + 1;
+        const pageNumber = i + 1
         const page = {
           number: pageNumber
         }
         pages.push(page)
       }
 
-      this.pageItems = pages;
+      this.pageItems = pages
     },
     loadPageEmit: function (pageNumber = null) {
       this.$emit('loadPage', pageNumber)

@@ -3,19 +3,25 @@
     <ul class="nav justify-content-end bg-light border-bottom">
       <li v-if="route.name === 'TaskPublishedPage'">
         <button
-          @click="addingTaskModalToggle = !addingTaskModalToggle"
           class="btn btn-link text-decoration-none shadow-none text-dark"
+          @click="addingTaskModalToggle = !addingTaskModalToggle"
         >
-          <font-awesome-icon icon="plus" class="me-1" /> Add task
+          <font-awesome-icon
+            icon="plus"
+            class="me-1"
+          /> Add task
         </button>
       </li>
-      <li v-click-outside="onClickOutside" class="nav-item position-relative">
+      <li
+        v-click-outside="onClickOutside"
+        class="nav-item position-relative"
+      >
         <button
           class="btn btn-link text-decoration-none shadow-none text-dark"
           type="button"
           @click="dropdownProfileToggle = ! dropdownProfileToggle"
         >
-          {{ this.username() }}
+          {{ username() }}
         </button>
         <ul
           class="dropdown-menu"
@@ -27,7 +33,7 @@
               href="#"
               @click.prevent="toProfilePage()"
             >
-                User profile
+              User profile
             </a>
           </li>
           <li>
@@ -73,7 +79,7 @@
   const username = (): string => {
     return null !== authStore.findUserFromToken
         ? `${authStore.findUserFromToken.first} ${authStore.findUserFromToken.last}`
-        : '';
+        : ''
   }
 
   const toProfilePage = (): Promise<any> => {

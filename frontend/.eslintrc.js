@@ -10,6 +10,8 @@ module.exports = {
     ],
     plugins: ["@typescript-eslint"],
     rules: {
+        "semi": ["error", "never"],
+        "object-curly-spacing": ["error", "always"],
         "@typescript-eslint/no-var-requires": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-inferrable-types": "off",

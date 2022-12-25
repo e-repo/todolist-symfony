@@ -1,5 +1,5 @@
 import moment from "moment"
-import { API_V1 } from "@/conf/api";
+import { API_V1 } from "@/conf/api"
 
 export function useDateTimeToFormat(dateTime: string, format: string = 'DD.MM.YYYY hh:mm:ss'): string
 {

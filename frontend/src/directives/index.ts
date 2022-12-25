@@ -1,5 +1,5 @@
-import VClickOutside from "@/directives/VClickOutside";
+import VClickOutside from "@/directives/VClickOutside"
 
 export default [
     VClickOutside
-];
+]

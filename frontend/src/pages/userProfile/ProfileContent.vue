@@ -124,14 +124,14 @@
   import BootstrapAlert from '@/components/ui-kit/alert/BootstrapAlert.vue'
   import ChangeNameModal from '@/pages/userProfile/ChangeNameModal.vue'
   import ChangeEmailModal from '@/pages/userProfile/ChangeEmailModal.vue'
-  import moment from "moment";
+  import moment from "moment"
   import { useAuthStore } from "@/store/auth"
-  import { API_V1 } from "@/conf/api";
-  import { onMounted, reactive, ref, computed } from "vue";
-  import { useRouter, useRoute } from "vue-router";
-  import { useCreateAuthHeader, useGetResource } from "@/components/composables";
-  import { UserProfile } from "@/pages/userProfile/types";
-  import { useToAbsolutePath } from "@/components/composables/formatters";
+  import { API_V1 } from "@/conf/api"
+  import { onMounted, reactive, ref, computed } from "vue"
+  import { useRouter, useRoute } from "vue-router"
+  import { useCreateAuthHeader, useGetResource } from "@/components/composables"
+  import { UserProfile } from "@/pages/userProfile/types"
+  import { useToAbsolutePath } from "@/components/composables/formatters"
 
   const authStore = useAuthStore()
   const router = useRouter()
@@ -185,7 +185,7 @@
 
     resource
       .then(response => {
-        const responseData = response.data[0];
+        const responseData = response.data[0]
         const profileData = responseData?.attributes
         const profileImage = responseData?.relationships?.image
 

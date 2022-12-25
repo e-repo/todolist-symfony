@@ -7,17 +7,29 @@
       class="l-sidebar_control cursor-pointer"
       @click="emitSidebarToggle"
     >
-      <font-awesome-icon v-if="toggle" icon="xmark" />
-      <font-awesome-icon v-else icon="bars" />
+      <font-awesome-icon
+        v-if="toggle"
+        icon="xmark"
+      />
+      <font-awesome-icon
+        v-else
+        icon="bars"
+      />
     </div>
     <div class="container-fluid">
       <div class="logo">
-        <a class="logo__link text-decoration-none text-warning" href="#">
-          <font-awesome-icon class="me-2" icon="tractor" />
+        <a
+          class="logo__link text-decoration-none text-warning"
+          href="#"
+        >
+          <font-awesome-icon
+            class="me-2"
+            icon="tractor"
+          />
           Evening production
         </a>
       </div>
-      <sidebar-nav :sidebarMenu="sidebarMenu"></sidebar-nav>
+      <sidebar-nav :sidebar-menu="sidebarMenu" />
     </div>
   </aside>
 </template>
@@ -46,10 +58,13 @@ export default {
       sidebarMenu: null,
     }
   },
+  mounted() {
+    this.loadSidebarMenu()
+  },
   methods: {
     emitSidebarToggle: function () {
-      this.toggle = ! this.toggle;
-      this.$emit('sidebarToggle', this.toggle);
+      this.toggle = ! this.toggle
+      this.$emit('sidebarToggle', this.toggle)
     },
     loadSidebarMenu: function () {
       if (true === this.user.isAuth) {
@@ -65,9 +80,6 @@ export default {
             })
       }
     }
-  },
-  mounted() {
-    this.loadSidebarMenu()
   }
 }
 </script>

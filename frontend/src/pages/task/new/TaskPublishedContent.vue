@@ -47,13 +47,13 @@
 </template>
 
 <script setup lang="ts">
-  import AppPreloader from "@/components/ui-kit/preloader/AppPreloader.vue";
+  import AppPreloader from "@/components/ui-kit/preloader/AppPreloader.vue"
   import { useAuthStore } from "@/store/auth"
   import { useRouter } from "vue-router"
-  import { onMounted, ref } from "vue";
-  import { Task } from "@/pages/task/types";
-  import {useCreateAuthHeader, useGetResource} from "@/components/composables";
-  import {API_V1} from "@/conf/api";
+  import { onMounted, ref } from "vue"
+  import { Task } from "@/pages/task/types"
+  import { useCreateAuthHeader, useGetResource } from "@/components/composables"
+  import { API_V1 } from "@/conf/api"
 
   const authStore = useAuthStore()
   const router = useRouter()
@@ -70,7 +70,7 @@
       status: 'published',
       userUuid: authStore.JWTPayload.user.id,
     }
-    const header = {...authHeader, ...{params: defaultQueryParams}}
+    const header = { ...authHeader, ...{ params: defaultQueryParams } }
     const taskListUrl = API_V1.TASK_LIST
 
     const resource: Promise<any> = useGetResource(taskListUrl, header, authStore.tryRefreshToken, router)

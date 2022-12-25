@@ -78,10 +78,10 @@
 </template>
 
 <script setup lang="ts">
-  import { defineProps, PropType, reactive } from "vue";
-  import { useRoleNames } from "@/pages/users/composables";
-  import { useRouter } from "vue-router";
-  import { TableFilters, UsersState } from "@/pages/users/types";
+  import { defineProps, PropType, reactive } from "vue"
+  import { useRoleNames } from "@/pages/users/composables"
+  import { useRouter } from "vue-router"
+  import { TableFilters, UsersState } from "@/pages/users/types"
 
   const filters = reactive<TableFilters>({
     name: '',

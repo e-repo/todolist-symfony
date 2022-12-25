@@ -70,16 +70,16 @@ const routes: RouteRecordRaw[] = [
             ] as Middleware[]
         }
     },
-];
+]
 
 const router: Router = createRouter({
     routes,
     history: createWebHistory(process.env.BASE_URL)
-});
+})
 
 router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized): RouteLocationRaw | void => {
     if (! to.meta.middleware) {
-        return;
+        return
     }
 
     const middleware = to.meta.middleware as Middleware[]

@@ -1,31 +1,34 @@
 <template>
   <div class="wrapper">
     <form class="sign-in">
-
       <div
-          class="alert alert-danger d-flex justify-content-between"
-          v-if="loginForm.errorMessage"
+        v-if="loginForm.errorMessage"
+        class="alert alert-danger d-flex justify-content-between"
       >
         <span>{{ loginForm.errorMessage }}</span>
-        <button type="button" class="btn-close" @click="resetErrorMessage()"></button>
+        <button
+          type="button"
+          class="btn-close"
+          @click="resetErrorMessage()"
+        />
       </div>
 
       <div class="form-floating mb-3">
         <input
-          type="email"
-          class="form-control"
           id="email-input"
           v-model="loginForm.email"
+          type="email"
+          class="form-control"
           :class="{'is-invalid': loginForm.errorMessage || loginForm.isValidEmail === false}"
         >
         <label for="email-input">Email address</label>
       </div>
       <div class="form-floating">
         <input
-          type="password"
-          class="form-control"
           id="floatingPassword"
           v-model="loginForm.password"
+          type="password"
+          class="form-control"
           :class="{'is-invalid': loginForm.errorMessage || loginForm.isValidPassword === false}"
         >
         <label for="floatingPassword">Password</label>
@@ -33,26 +36,25 @@
 
       <div class="mt-3 text-end">
         <button
-            type="button"
-            class="btn btn-outline-primary"
-            @click="login()"
+          type="button"
+          class="btn btn-outline-primary"
+          @click="login()"
         >
           Sign in
         </button>
       </div>
-
     </form>
   </div>
 </template>
 
 <script setup lang="ts">
 
-  import {reactive, watch} from "vue"
-  import { LoginFormState } from "@/pages/login/types/LoginFormState";
-  import { useEmailValidator, usePasswordValidator } from "@/pages/login/composables";
-  import { useAuthStore } from "@/store/auth";
-  import { useRouter } from "vue-router";
-  import { storeToRefs } from "pinia";
+  import { reactive, watch } from "vue"
+  import { LoginFormState } from "@/pages/login/types/LoginFormState"
+  import { useEmailValidator, usePasswordValidator } from "@/pages/login/composables"
+  import { useAuthStore } from "@/store/auth"
+  import { useRouter } from "vue-router"
+  import { storeToRefs } from "pinia"
 
   const authStore = useAuthStore()
   const router = useRouter()
@@ -88,7 +90,7 @@
 
   watch(user.value, (user) => {
     if (true === user.isAuth) {
-      router.push({name: 'Home'})
+      router.push({ name: 'Home' })
     }
   })
 

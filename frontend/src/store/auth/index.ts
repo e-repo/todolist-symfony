@@ -1,6 +1,6 @@
 import { defineStore, StoreDefinition } from 'pinia'
 import axios from "axios"
-import { Router } from "vue-router";
+import { Router } from "vue-router"
 
 interface AuthStoreUser {
     isAuth: boolean,
@@ -92,9 +92,9 @@ export const useAuthStore: StoreDefinition = defineStore('auth', {
         logout() {
             const localStorage = window.localStorage
 
-            this.user.isAuth = false;
-            this.user.token = null;
-            this.user.refreshToken = null;
+            this.user.isAuth = false
+            this.user.token = null
+            this.user.refreshToken = null
 
             localStorage.removeItem('user')
         }
@@ -102,7 +102,7 @@ export const useAuthStore: StoreDefinition = defineStore('auth', {
     getters: {
         findUserFromToken() {
             if (null === this.user.token) {
-                return;
+                return
             }
 
             const tokenParts = this.user.token.split('.')
@@ -133,9 +133,9 @@ export const useAuthStore: StoreDefinition = defineStore('auth', {
                     atob(
                         this.user.token.split('.')[1]
                     )
-                );
+                )
             } catch (e) {
-                return null;
+                return null
             }
         }
     },

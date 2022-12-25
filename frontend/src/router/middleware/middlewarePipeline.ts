@@ -1,4 +1,4 @@
-import { Middleware, NextMiddlewareCallable, MiddlewareContext } from "@/router/middleware/types";
+import { Middleware, NextMiddlewareCallable, MiddlewareContext } from "@/router/middleware/types"
 
 export default function middlewarePipeline(
     context: MiddlewareContext,
@@ -14,6 +14,6 @@ export default function middlewarePipeline(
     return () => {
         const nextPipeline = middlewarePipeline(context, middleware, index + 1)
 
-        nextMiddleware({...context, nextMiddleware: nextPipeline})
+        nextMiddleware({ ...context, nextMiddleware: nextPipeline })
     }
 }

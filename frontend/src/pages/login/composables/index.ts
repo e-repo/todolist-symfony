@@ -1,5 +1,5 @@
-import { LoginFormState } from "@/pages/login/types/LoginFormState";
-import {isReactive, watchEffect} from "vue";
+import { LoginFormState } from "@/pages/login/types/LoginFormState"
+import { isReactive, watchEffect } from "vue"
 
 export function useEmailValidator(loginFrom: LoginFormState): void {
     if (! isReactive(loginFrom)) {

@@ -51,14 +51,14 @@
 </template>
 
 <script setup lang="ts">
-  import BootstrapModal from "@/components/ui-kit/modal/BootstrapModal.vue";
-  import { useAuthStore } from "@/store/auth";
-  import { useRoute, useRouter } from "vue-router";
-  import { defineEmits, defineProps, PropType, reactive, watch } from "vue";
-  import { ChangingEmailForm, UserProfile } from "@/pages/userProfile/types";
-  import { useCreateAuthHeader, usePatchResource } from "@/components/composables";
-  import { API_V1 } from "@/conf/api";
-  import { useEmailFormValidator } from "@/pages/userProfile/composables";
+  import BootstrapModal from "@/components/ui-kit/modal/BootstrapModal.vue"
+  import { useAuthStore } from "@/store/auth"
+  import { useRoute, useRouter } from "vue-router"
+  import { defineEmits, defineProps, PropType, reactive, watch } from "vue"
+  import { ChangingEmailForm, UserProfile } from "@/pages/userProfile/types"
+  import { useCreateAuthHeader, usePatchResource } from "@/components/composables"
+  import { API_V1 } from "@/conf/api"
+  import { useEmailFormValidator } from "@/pages/userProfile/composables"
 
   const authStore = useAuthStore()
   const router = useRouter()

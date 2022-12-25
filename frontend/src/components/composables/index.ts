@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig } from "axios"
-import { Router } from "vue-router";
+import { Router } from "vue-router"
 
 export function useCreateAuthHeader(jwt: string): AxiosRequestConfig {
     return {

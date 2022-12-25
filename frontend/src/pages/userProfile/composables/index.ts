@@ -1,5 +1,5 @@
-import {ChangingEmailForm, UserNameForm} from "@/pages/userProfile/types";
-import { isReactive, watchEffect } from "vue";
+import { ChangingEmailForm, UserNameForm } from "@/pages/userProfile/types"
+import { isReactive, watchEffect } from "vue"
 
 export function useEmailFormValidator(emailForm: ChangingEmailForm): void {
     if (! isReactive(emailForm)) {

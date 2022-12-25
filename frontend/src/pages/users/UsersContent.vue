@@ -37,7 +37,7 @@
   import { TableFilters, UsersState } from "@/pages/users/types"
   import { UsersTableColumn } from "@/pages/users/enums/UsersTableColumn"
   import { useRouter, useRoute } from "vue-router"
-  import { useCreateAuthHeader, useGetResource } from "@/components/composables";
+  import { useCreateAuthHeader, useGetResource } from "@/components/composables"
 
   const authStore = useAuthStore()
   const router = useRouter()
@@ -70,7 +70,7 @@
 
   const toPage = (newPageNumber: number | null = null): void => {
     if (null === newPageNumber) {
-      return;
+      return
     }
 
     pageNumber.value = newPageNumber
@@ -132,7 +132,7 @@
     const usersUrl = '' !== url ? url : API_V1.USER_LIST
 
     const authHeader = useCreateAuthHeader(authStore.token)
-    const header = {...authHeader, ...{params: searchParams}}
+    const header = { ...authHeader, ...{ params: searchParams } }
     const resource: Promise<any> = useGetResource(usersUrl, header, authStore.tryRefreshToken, router)
 
     resource
@@ -176,7 +176,7 @@
 
   onMounted(() => {
     if (! authStore.isAuth) {
-      return;
+      return
     }
 
     loadUsers(route.query)

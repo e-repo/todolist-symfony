@@ -10,12 +10,12 @@
       type="button"
       class="btn-close"
       @click="hide()"
-    ></button>
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-  import { defineProps, defineEmits } from "vue";
+  import { defineProps, defineEmits } from "vue"
 
   defineProps({
     isAlertShow: { type: Boolean, default: false },

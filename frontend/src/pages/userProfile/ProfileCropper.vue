@@ -80,16 +80,16 @@
 </template>
 
 <script setup lang="ts">
-  import 'cropperjs/dist/cropper.css';
-  import Cropper from 'cropperjs';
+  import 'cropperjs/dist/cropper.css'
+  import Cropper from 'cropperjs'
 
   import { onMounted, ref, defineProps, watch, defineEmits } from 'vue'
-  import { useCreateAuthHeader, useGetResource, usePatchResource, usePostResource } from "@/components/composables";
-  import { API_V1 } from "@/conf/api";
-  import { useRoute, useRouter } from "vue-router";
-  import { useAuthStore } from "@/store/auth";
-  import { Image } from "@/pages/userProfile/types";
-  import { useToAbsolutePath } from "@/components/composables/formatters";
+  import { useCreateAuthHeader, useGetResource, usePatchResource, usePostResource } from "@/components/composables"
+  import { API_V1 } from "@/conf/api"
+  import { useRoute, useRouter } from "vue-router"
+  import { useAuthStore } from "@/store/auth"
+  import { Image } from "@/pages/userProfile/types"
+  import { useToAbsolutePath } from "@/components/composables/formatters"
 
   const props = defineProps({
     imagePath: { type: String, required: true }
@@ -190,7 +190,7 @@
         onlyInactive: true
       }
     }
-    const resource: Promise<any> = useGetResource(url, {...authHeader, ...data}, authStore.tryRefreshToken, router)
+    const resource: Promise<any> = useGetResource(url, { ...authHeader, ...data }, authStore.tryRefreshToken, router)
 
     resource
       .then(response => {

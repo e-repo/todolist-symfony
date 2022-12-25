@@ -1,38 +1,49 @@
 <template>
   <Transition name="modal">
-  <div v-if="isModalShow" class="modal d-block" tabindex="-1">
     <div
-      class="modal-dialog"
-      :class="size"
+      v-if="isModalShow"
+      class="modal d-block"
+      tabindex="-1"
     >
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">
-            <slot name="title">Modal title</slot>
-          </h5>
-          <button
-            type="button"
-            class="btn-close"
-            @click="hide()"
-          ></button>
-        </div>
-        <div class="modal-body">
-          <slot name="body">Modal body</slot>
-        </div>
-        <div class="modal-footer">
-          <slot name="footer"></slot>
+      <div
+        class="modal-dialog"
+        :class="size"
+      >
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <slot name="title">
+                Modal title
+              </slot>
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              @click="hide()"
+            />
+          </div>
+          <div class="modal-body">
+            <slot name="body">
+              Modal body
+            </slot>
+          </div>
+          <div class="modal-footer">
+            <slot name="footer" />
+          </div>
         </div>
       </div>
     </div>
-  </div>
   </Transition>
   <Transition name="fade">
-    <div v-if="isModalShow" class="modal-backdrop"></div>
+    <div
+      v-if="isModalShow"
+      class="modal-backdrop"
+    />
   </Transition>
 </template>
 
 <script setup lang="ts">
-  import { defineProps, defineEmits } from "vue";
+  import { defineProps, defineEmits } from "vue"
 
   const emit = defineEmits(['modalHide'])
   const hide = () => emit("modalHide")
