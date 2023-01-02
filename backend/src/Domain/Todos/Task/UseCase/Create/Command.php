@@ -19,4 +19,22 @@ class Command
     public string $name;
 
     public ?string $description = null;
+
+    public function setUserUuid(string $userId): Command
+    {
+        $this->userId = $userId;
+        return $this;
+    }
+
+    public function setName(string $name): Command
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    public function setDescription(?string $description): Command
+    {
+        $this->description = $description;
+        return $this;
+    }
 }

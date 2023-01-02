@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controller\Api\Task;
 
+use App\Http\Controller\Api\Task\Action\CreateTaskAction;
 use App\Http\Controller\Api\Task\Action\GetTaskListAction;
+use App\Http\Payload\Api\Task\TaskCreatePayload;
 use App\Http\Payload\Api\Task\TaskListPayload;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,5 +30,19 @@ class TaskController extends AbstractController
     ): JsonResponse
     {
         return $listAction->handle($payload);
+    }
+
+    /**
+     * @Route("/create", name=".create", methods={"POST"})
+     * @param TaskCreatePayload $payload
+     * @param CreateTaskAction $createTaskAction
+     * @return JsonResponse
+     */
+    public function createTask(
+        TaskCreatePayload $payload,
+        CreateTaskAction $createTaskAction
+    ): JsonResponse
+    {
+        return $createTaskAction->handle($payload);
     }
 }

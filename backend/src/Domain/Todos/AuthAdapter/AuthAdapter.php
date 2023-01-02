@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Domain\Todos\AuthAdapter;
 
 use App\Domain\Auth\Api\AuthApiInterface;
+use App\Domain\Service\Exception\EntityNotFoundException;
 use App\Domain\Todos\AuthAdapter\Dto\UserDto;
+use App\Domain\Todos\AuthAdapter\Exception\UserNotFoundException;
 
 class AuthAdapter
 {
@@ -21,9 +23,18 @@ class AuthAdapter
         $this->authApi = $authApi;
     }
 
+    /**
+     * @param string $uuid
+     * @return UserDto
+     * @throws UserNotFoundException
+     */
     public function getUserByUuid(string $uuid): UserDto
     {
-        $user = $this->authApi->findByUuid($uuid);
+        try {
+            $user = $this->authApi->getByUuid($uuid);
+        } catch (EntityNotFoundException $e) {
+            throw new UserNotFoundException($e->getMessage(), $uuid);
+        }
 
         return new UserDto(
             $user->getId(),

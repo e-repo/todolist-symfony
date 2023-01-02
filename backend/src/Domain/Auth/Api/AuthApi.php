@@ -6,6 +6,7 @@ namespace App\Domain\Auth\Api;
 
 use App\Domain\Auth\Api\Dto\UserPresenterDto;
 use App\Domain\Auth\User\Repository\UserRepository;
+use App\Domain\Service\Exception\EntityNotFoundException;
 
 class AuthApi implements AuthApiInterface
 {
@@ -21,7 +22,12 @@ class AuthApi implements AuthApiInterface
         $this->userRepository = $userRepository;
     }
 
-    public function findByUuid(string $uuid): UserPresenterDto
+    /**
+     * @param string $uuid
+     * @return UserPresenterDto
+     * @throws EntityNotFoundException
+     */
+    public function getByUuid(string $uuid): UserPresenterDto
     {
         $user = $this->userRepository->getByUuid($uuid);
 

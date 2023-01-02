@@ -3,23 +3,30 @@
 
 namespace App\Domain\Auth\User\Repository;
 
+use App\Domain\Auth\User\Entity\Image\Image;
 use App\Domain\Auth\User\Entity\User\Id;
 use App\Domain\Auth\User\Entity\User\User;
 use App\Domain\Service\Exception\EntityNotFoundException;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ObjectRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 
-class UserRepository
+/**
+ * @extends ServiceEntityRepository<Image>
+ *
+ * @method User|null find($id, $lockMode = null, $lockVersion = null)
+ * @method User|null findOneBy(array $criteria, array $orderBy = null)
+ * @method User[]    findAll()
+ * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class UserRepository extends ServiceEntityRepository
 {
-    private ObjectRepository $repository;
-
     /**
      * UserRepository constructor.
-     * @param EntityManagerInterface $em
+     * @param ManagerRegistry $registry
      */
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(ManagerRegistry $registry)
     {
-        $this->repository = $em->getRepository(User::class);
+        parent::__construct($registry, User::class);
     }
 
     /**
@@ -30,7 +37,7 @@ class UserRepository
      */
     public function findByResetToken(string $token): ?User
     {
-        return $this->repository->findOneBy(['resetToken.token' => $token]);
+        return $this->findOneBy(['resetToken.token' => $token]);
     }
 
     /**
@@ -50,7 +57,7 @@ class UserRepository
      */
     public function findById(string $uuid): ?User
     {
-        return $this->repository->find(new Id($uuid));
+        return $this->find(new Id($uuid));
     }
 
     /**
@@ -59,7 +66,7 @@ class UserRepository
      */
     public function getByEmail(string $email): User
     {
-        if (! $user = $this->repository->findOneBy(['email' => $email])) {
+        if (! $user = $this->findOneBy(['email' => $email])) {
             throw new EntityNotFoundException('User is not found.');
         }
         return $user;
@@ -68,15 +75,21 @@ class UserRepository
     /**
      * @param Id $id
      * @return User|object
+     * @throws EntityNotFoundException
      */
     public function getById(Id $id): User
     {
-        if (! $user = $this->repository->find($id)) {
+        if (! $user = $this->find($id)) {
             throw new EntityNotFoundException('User is not found.');
         }
         return $user;
     }
 
+    /**
+     * @param string $uuid
+     * @return User
+     * @throws EntityNotFoundException
+     */
     public function getByUuid(string $uuid): User
     {
         return $this->getById(new Id($uuid));
