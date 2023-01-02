@@ -48,6 +48,13 @@
       <template #footer>
         <button
           type="button"
+          class="btn btn-outline-danger"
+          @click="modalClean()"
+        >
+          Clean
+        </button>
+        <button
+          type="button"
           class="btn btn-outline-secondary"
           @click="modalHide()"
         >
@@ -72,13 +79,32 @@
   import { defineProps, defineEmits, reactive } from "vue"
   import { TaskForm } from "@/components/content/header/types"
   import { useTaskFormValidator } from "@/components/content/header/composebles"
+  import { useReactiveTaskList } from "@/pages/task/new/composables"
+  import { useCreateAuthHeader, usePostResource } from "@/components/composables"
+  import { API } from "@/conf/api"
+  import { useAuthStore } from "@/store/auth"
+  import { useRouter } from "vue-router"
 
-  const props = defineProps({
+  const authStore = useAuthStore()
+  const router = useRouter()
+  const tasks = useReactiveTaskList()
+
+  defineProps({
     isModalShow: { type: Boolean, default: false },
   })
   const emit = defineEmits(['modalHide'])
 
   const modalHide = (): void => emit('modalHide')
+
+  const modalClean = (): void => {
+    taskForm.name.fieldValue = ''
+    taskForm.name.isValid = true
+    taskForm.name.isChanged = false
+
+    taskForm.description.fieldValue = ''
+    taskForm.description.isValid = true
+    taskForm.description.isChanged = false
+  }
 
   const taskForm: TaskForm = reactive<TaskForm>({
     name: {
@@ -101,6 +127,30 @@
         return
       }
     }
-    console.log('adding task!')
+
+    const url = API.V1.TASK_CREATE
+    const authHeader = useCreateAuthHeader(authStore.token)
+    const data = {
+      userUuid: authStore.findUserFromToken.id,
+      name: taskForm.name.fieldValue,
+      description: taskForm.description.fieldValue
+    }
+
+    const resource: Promise<any> = usePostResource(url, data, authHeader, authStore.tryRefreshToken, router)
+
+    resource
+      .then((response) => {
+        const task = response.data[0]?.attributes
+
+        tasks.value.push({
+          id: task.uuid,
+          name: task.name,
+          description: task.description,
+          status: task.status,
+          date: task.date
+        })
+
+        modalHide()
+      })
   }
 </script>

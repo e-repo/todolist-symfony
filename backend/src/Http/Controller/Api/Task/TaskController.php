@@ -11,6 +11,7 @@ use App\Http\Payload\Api\Task\TaskListPayload;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
 /**
  * @param Route
@@ -37,6 +38,7 @@ class TaskController extends AbstractController
      * @param TaskCreatePayload $payload
      * @param CreateTaskAction $createTaskAction
      * @return JsonResponse
+     * @throws ExceptionInterface
      */
     public function createTask(
         TaskCreatePayload $payload,

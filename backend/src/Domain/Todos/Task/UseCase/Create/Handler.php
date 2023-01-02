@@ -6,6 +6,7 @@ namespace App\Domain\Todos\Task\UseCase\Create;
 
 use App\Domain\Service\Flusher;
 use App\Domain\Todos\AuthAdapter\AuthAdapter;
+use App\Domain\Todos\Task\Dto\TaskDto;
 use App\Domain\Todos\Task\Entity\Task\Content;
 use App\Domain\Todos\Task\Entity\Task\Id;
 use App\Domain\Todos\Task\Entity\Task\Task;
@@ -34,7 +35,7 @@ class Handler
         $this->authAdapter = $authAdapter;
     }
 
-    public function handle(Command $command): void
+    public function handle(Command $command): TaskDto
     {
         $user = $this->authAdapter->getUserByUuid($command->userId);
         $content = new Content($command->name, $command->description);
@@ -48,5 +49,13 @@ class Handler
 
         $this->em->persist($task);
         $this->flusher->flush();
+
+        return (new TaskDto())
+            ->setUuid($task->getId()->getValue())
+            ->setUserUuid($task->getUserUuid())
+            ->setName($task->getName())
+            ->setDescription($task->getDescription())
+            ->setDate($task->getDate())
+            ->setStatus($task->getStatus());
     }
 }

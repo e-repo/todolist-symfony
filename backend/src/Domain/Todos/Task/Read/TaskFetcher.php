@@ -61,7 +61,7 @@ class TaskFetcher extends ServiceEntityRepository
                 'name',
                 'description',
                 'status',
-                'date'
+                'to_char(date, \'DD.MM.YYYY HH24:MI:SS\') as date'
             )
             ->where('user_id = :userId')
             ->andWhere('deleted_at IS NULL')

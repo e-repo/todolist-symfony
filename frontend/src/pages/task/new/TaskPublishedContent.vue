@@ -8,7 +8,7 @@
         <div
           v-for="(task, index) in tasks"
           :key="index"
-          class="col-3"
+          class="col-3 mb-4"
         >
           <div class="card">
             <div class="card-header">
@@ -50,15 +50,14 @@
   import AppPreloader from "@/components/ui-kit/preloader/AppPreloader.vue"
   import { useAuthStore } from "@/store/auth"
   import { useRouter } from "vue-router"
-  import { onMounted, ref } from "vue"
-  import { Task } from "@/pages/task/types"
+  import { onMounted } from "vue"
   import { useCreateAuthHeader, useGetResource } from "@/components/composables"
   import { API } from "@/conf/api"
+  import { useReactiveTaskList } from "@/pages/task/new/composables"
 
   const authStore = useAuthStore()
   const router = useRouter()
-
-  const tasks = ref<Task[]>([])
+  const tasks = useReactiveTaskList()
 
   const loadTask = (): void => {
     if (null === authStore.JWTPayload) {

@@ -15,27 +15,33 @@ use App\Http\Service\JsonApi\ResponseBuilder\ResponseDataBuilder;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class CreateTaskAction implements BaseActionInterface
 {
     private JsonApiHelper $apiHelper;
     private Handler $createHandler;
     private UrlGeneratorInterface $urlGenerator;
+    private NormalizerInterface $normalizer;
 
     public function __construct(
-        Handler $createHandler,
+        Handler               $createHandler,
         UrlGeneratorInterface $urlGenerator,
-        JsonApiHelper $apiHelper
+        NormalizerInterface   $normalizer,
+        JsonApiHelper         $apiHelper
     )
     {
         $this->apiHelper = $apiHelper;
         $this->createHandler = $createHandler;
         $this->urlGenerator = $urlGenerator;
+        $this->normalizer = $normalizer;
     }
 
     /**
      * @param BasePayloadInterface|TaskCreatePayload $payload
      * @return JsonResponse
+     * @throws ExceptionInterface
      */
     public function handle(BasePayloadInterface $payload): JsonResponse
     {
@@ -47,13 +53,19 @@ class CreateTaskAction implements BaseActionInterface
                 ->setName($payload->name)
                 ->setDescription($payload->description);
 
-            $this->createHandler->handle($command);
+            $task = $this->createHandler->handle($command);
 
             $selfLink = $this->urlGenerator->generate('task.create', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
             $responseDataBuilder
                 ->setLinksSelf($selfLink)
-                ->setDataType('Task created');
+                ->setDataType('Task created')
+                ->setDataAttribute('uuid', $task->getUuid())
+                ->setDataAttribute('userUuid', $task->getUserUuid())
+                ->setDataAttribute('name', $task->getName())
+                ->setDataAttribute('description', $task->getDescription())
+                ->setDataAttribute('status', $task->getStatus())
+                ->setDataAttribute('date', $task->getDate()->format('d.m.Y H:i:s'));
 
             return $this->apiHelper->createJsonResponse($responseDataBuilder);
         } catch (UserNotFoundException $e) {

@@ -87,9 +87,9 @@ const NUMBER_PAGINATION_ITEMS = 5
 
 export default {
   props: {
-    totalPage: {type: Number, default: 1},
-    currentPage: {type: Number, default: 1},
-    numberPaginationItems: {type: Number, default: NUMBER_PAGINATION_ITEMS},
+    totalPage: { type: Number, default: 1 },
+    currentPage: { type: Number, default: 1 },
+    numberPaginationItems: { type: Number, default: NUMBER_PAGINATION_ITEMS },
   },
   data() {
     return {

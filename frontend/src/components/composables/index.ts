@@ -1,7 +1,8 @@
 import axios, { AxiosRequestConfig } from "axios"
 import { Router } from "vue-router"
 
-export function useCreateAuthHeader(jwt: string): AxiosRequestConfig {
+export function useCreateAuthHeader(jwt: string): AxiosRequestConfig
+{
     return {
         headers: {
             Authorization: `Bearer ${jwt}`
