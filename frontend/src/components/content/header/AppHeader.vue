@@ -9,7 +9,8 @@
           <font-awesome-icon
             icon="plus"
             class="me-1"
-          /> Add task
+          /> 
+          Add task
         </button>
       </li>
       <li

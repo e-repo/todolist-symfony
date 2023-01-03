@@ -12,7 +12,7 @@ class Command
     /**
      * @Assert\NotBlank
      */
-    public string $taskId;
+    public string $taskUuid;
     /**
      * @Assert\NotBlank
      * @Assert\Length(min=3)
@@ -26,8 +26,26 @@ class Command
      */
     public function createFromTask(Task $task)
     {
-        $this->taskId = $task->getId()->getValue();
+        $this->taskUuid = $task->getId()->getValue();
         $this->name = $task->getName();
         $this->description = $task->getDescription();
+    }
+
+    public function setTaskUuid(string $taskUuid): self
+    {
+        $this->taskUuid = $taskUuid;
+        return $this;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
+        return $this;
     }
 }

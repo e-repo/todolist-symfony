@@ -12,7 +12,9 @@ export const API = {
         PROFILE_IMAGE_SET_ACTIVE: '/api/v1/user/image/set-active',
 
         TASK_LIST: '/api/v1/task/list',
+        TASK_INFO: (id: string) => `/api/v1/task/${id}`,
         TASK_CREATE: '/api/v1/task/create',
+        TASK_UPDATE: '/api/v1/task/update',
     },
     V2: {}
 }

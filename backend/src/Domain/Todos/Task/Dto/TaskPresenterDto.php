@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Todos\Task\Dto;
 
-class TaskDto
+class TaskPresenterDto
 {
     private string $uuid;
     private string $userUuid;
@@ -43,37 +43,37 @@ class TaskDto
         return $this->description;
     }
 
-    public function setUuid(string $uuid): TaskDto
+    public function setUuid(string $uuid): TaskPresenterDto
     {
         $this->uuid = $uuid;
         return $this;
     }
 
-    public function setUserUuid(string $userUuid): TaskDto
+    public function setUserUuid(string $userUuid): TaskPresenterDto
     {
         $this->userUuid = $userUuid;
         return $this;
     }
 
-    public function setName(string $name): TaskDto
+    public function setName(string $name): TaskPresenterDto
     {
         $this->name = $name;
         return $this;
     }
 
-    public function setStatus(string $status): TaskDto
+    public function setStatus(string $status): TaskPresenterDto
     {
         $this->status = $status;
         return $this;
     }
 
-    public function setDescription(?string $description): TaskDto
+    public function setDescription(?string $description): TaskPresenterDto
     {
         $this->description = $description;
         return $this;
     }
 
-    public function setDate(\DateTimeImmutable $date): TaskDto
+    public function setDate(\DateTimeImmutable $date): TaskPresenterDto
     {
         $this->date = $date;
         return $this;

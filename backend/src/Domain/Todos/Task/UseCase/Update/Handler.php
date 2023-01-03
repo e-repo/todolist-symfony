@@ -27,7 +27,7 @@ class Handler
      */
     public function handle(Command $command): void
     {
-        $task = $this->taskRepository->get(new Id($command->taskId));
+        $task = $this->taskRepository->get(new Id($command->taskUuid));
 
         $content = new Content($command->name, $command->description);
         $task->changeContent($content);

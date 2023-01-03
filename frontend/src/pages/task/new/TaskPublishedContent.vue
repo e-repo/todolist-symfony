@@ -25,23 +25,29 @@
               </div>
             </div>
             <div class="card-footer d-flex justify-content-end">
-              <a
-                href="#"
+              <button
                 class="btn btn-outline-primary m-1 js-fulfilled-task"
+                @click="showEditModal(task.id)"
               >
                 <font-awesome-icon icon="pen" />
-              </a>
-              <a
-                href="#"
+              </button>
+              <button
                 class="btn btn-outline-success m-1 js-fulfilled-task"
               >
                 <font-awesome-icon icon="check-double" />
-              </a>
+              </button>
             </div>
           </div>
         </div>
       </div>
       <app-preloader v-else />
+
+      <edit-task-modal
+        :is-modal-show="editingTaskToggle"
+        :task="task"
+        @modal-hide="modalHide()"
+        @task-updated="loadTask()"
+      />
     </div>
   </main>
 </template>
@@ -50,14 +56,49 @@
   import AppPreloader from "@/components/ui-kit/preloader/AppPreloader.vue"
   import { useAuthStore } from "@/store/auth"
   import { useRouter } from "vue-router"
-  import { onMounted } from "vue"
+  import { onMounted, ref } from "vue"
   import { useCreateAuthHeader, useGetResource } from "@/components/composables"
   import { API } from "@/conf/api"
   import { useReactiveTaskList } from "@/pages/task/new/composables"
+  import EditTaskModal from "@/pages/task/new/EditTaskModal.vue"
+  import { Task } from "@/pages/task/types"
 
   const authStore = useAuthStore()
   const router = useRouter()
   const tasks = useReactiveTaskList()
+
+  const editingTaskToggle = ref<boolean>(false)
+  const task = ref<Task>({
+    id: '',
+    name: '',
+    description: '',
+    status: '',
+    date: ''
+  })
+
+  const modalHide = (): void => {
+    editingTaskToggle.value = false
+  }
+
+  const showEditModal = (taskId: string): void => {
+    const taskInfoUrl = API.V1.TASK_INFO(taskId)
+    const header = useCreateAuthHeader(authStore.token)
+
+    const resource: Promise<any> = useGetResource(taskInfoUrl, header, authStore.tryRefreshToken, router)
+
+    resource
+      .then(response => {
+        const taskInfo = response.data[0].attributes
+
+        task.value.id           = taskInfo.uuid
+        task.value.name         = taskInfo.name
+        task.value.description  = taskInfo.description
+        task.value.status       = taskInfo.status
+        task.value.date         = taskInfo.date
+      })
+
+    editingTaskToggle.value = true
+  }
 
   const loadTask = (): void => {
     if (null === authStore.JWTPayload) {
