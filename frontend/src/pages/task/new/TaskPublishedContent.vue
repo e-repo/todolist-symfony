@@ -36,6 +36,12 @@
               >
                 <font-awesome-icon icon="check-double" />
               </button>
+              <button
+                class="btn btn-outline-danger m-1 js-fulfilled-task"
+                @click="deleteTask(task.id)"
+              >
+                <font-awesome-icon icon="trash" />
+              </button>
             </div>
           </div>
         </div>
@@ -57,7 +63,7 @@
   import { useAuthStore } from "@/store/auth"
   import { useRouter } from "vue-router"
   import { onMounted, ref } from "vue"
-  import { useCreateAuthHeader, useGetResource } from "@/components/composables"
+  import { useCreateAuthHeader, useDeleteResource, useGetResource } from "@/components/composables"
   import { API } from "@/conf/api"
   import { useReactiveTaskList } from "@/pages/task/new/composables"
   import EditTaskModal from "@/pages/task/new/EditTaskModal.vue"
@@ -78,6 +84,18 @@
 
   const modalHide = (): void => {
     editingTaskToggle.value = false
+  }
+
+  const deleteTask = (taskId: string): void => {
+    const taskDeleteUrl = API.V1.TASK_DELETE(taskId)
+    const header = useCreateAuthHeader(authStore.token)
+
+    const resource: Promise<any> = useDeleteResource(taskDeleteUrl, header, authStore.tryRefreshToken, router)
+
+    resource
+      .then(() => {
+        loadTask()
+      })
   }
 
   const showEditModal = (taskId: string): void => {

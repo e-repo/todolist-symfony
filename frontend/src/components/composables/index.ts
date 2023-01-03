@@ -23,6 +23,19 @@ export function useGetResource(
         .catch(error => refreshTokenCallback(error, router))
 }
 
+export function useDeleteResource(
+    url: string,
+    config: AxiosRequestConfig,
+    refreshTokenCallback: (error: object, router: Router | null) => void,
+    router: Router
+): Promise<any>
+{
+    return axios
+        .delete(url, config)
+        .then(response => response.data)
+        .catch(error => refreshTokenCallback(error, router))
+}
+
 export function usePatchResource(
     url: string,
     data: object = {},

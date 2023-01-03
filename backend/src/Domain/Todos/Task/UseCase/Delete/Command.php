@@ -11,10 +11,10 @@ class Command
     /**
      * @Assert\NotBlank
      */
-    public string $taskId;
+    public string $taskUuid;
 
-    public function __construct(string $taskId)
+    public function __construct(string $taskUuid)
     {
-        $this->taskId = $taskId;
+        $this->taskUuid = $taskUuid;
     }
 }

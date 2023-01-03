@@ -14,7 +14,7 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import {
     faTractor, faHouse, faUserGroup, faList, faAngleLeft,
     faXmark, faBars, faAnglesLeft, faAnglesRight, faAngleRight,
-    faPen, faDownload, faUpload, faCheckDouble, faPlus
+    faPen, faDownload, faUpload, faCheckDouble, faPlus, faTrash
 } from '@fortawesome/free-solid-svg-icons'
 
 /* import font awesome icon component */
@@ -24,7 +24,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 library.add(
     faTractor, faHouse, faUserGroup, faList, faAngleLeft,
     faAngleRight, faXmark, faBars, faAnglesLeft, faAnglesRight,
-    faPen, faDownload, faUpload, faCheckDouble, faPlus
+    faPen, faDownload, faUpload, faCheckDouble, faPlus,
+    faTrash
 )
 
 const app = createApp(App)
