@@ -15,7 +15,8 @@ export const API = {
         TASK_INFO: (id: string) => `/api/v1/task/${id}`,
         TASK_CREATE: '/api/v1/task/create',
         TASK_UPDATE: '/api/v1/task/update',
-        TASK_DELETE: (id: string) => `/api/v1/task/${id}`
+        TASK_DELETE: (id: string) => `/api/v1/task/${id}`,
+        TASK_FULFILLED: (id: string) => `/api/v1/task/fulfilled/${id}`,
     },
     V2: {}
 }

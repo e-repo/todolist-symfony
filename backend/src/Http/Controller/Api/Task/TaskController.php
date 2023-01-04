@@ -6,8 +6,7 @@ namespace App\Http\Controller\Api\Task;
 
 use App\Domain\Todos\Task\Query\GetTask\GetTaskHandler;
 use App\Domain\Todos\Task\Query\GetTask\GetTaskQuery;
-use App\Domain\Todos\Task\UseCase\Delete\Command;
-use App\Domain\Todos\Task\UseCase\Delete\Handler;
+use App\Domain\Todos\Task\UseCase;
 use App\Http\Controller\Api\Task\Action\CreateTaskAction;
 use App\Http\Controller\Api\Task\Action\GetTaskListAction;
 use App\Http\Controller\Api\Task\Action\UpdateTaskAction;
@@ -119,17 +118,17 @@ class TaskController extends AbstractController
     /**
      * @Route("/{uuid}", name=".delete", methods={"DELETE"})
      * @param string $uuid
-     * @param Handler $deleteHandler
+     * @param UseCase\Delete\Handler $deleteHandler
      * @return JsonResponse
      */
     public function deleteTask(
         string $uuid,
-        Handler $deleteHandler
+        UseCase\Delete\Handler $deleteHandler
     ): JsonResponse
     {
         $responseDataBuilder = ResponseDataBuilder::create();
 
-        $command = new Command($uuid);
+        $command = new UseCase\Delete\Command($uuid);
 
         try {
             $deleteHandler->handle($command);
@@ -143,6 +142,52 @@ class TaskController extends AbstractController
             $responseDataBuilder
                 ->setLinksSelf($selfLink)
                 ->setDataType('Task deleted');
+
+            return $this->apiHelper->createJsonResponse($responseDataBuilder);
+        } catch (EntityNotFoundException $e) {
+            $responseDataBuilder
+                ->setErrorsTitle(Response::$statusTexts[Response::HTTP_NOT_FOUND])
+                ->setErrorsDetail($e->getMessage())
+                ->setErrorsStatus(Response::HTTP_NOT_FOUND);
+
+            return $this->apiHelper->createJsonResponse($responseDataBuilder, Response::HTTP_NOT_FOUND);
+        }  catch (\Exception $e) {
+            $responseDataBuilder
+                ->setErrorsTitle(Response::$statusTexts[Response::HTTP_UNPROCESSABLE_ENTITY])
+                ->setErrorsDetail($e->getMessage())
+                ->setErrorsStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+            return $this->apiHelper->createJsonResponse($responseDataBuilder, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+    }
+
+    /**
+     * @Route("/fulfilled/{uuid}", name=".fulfilled", methods={"PATCH"})
+     * @param string $uuid
+     * @param UseCase\Fulfilled\Handler $fulfilledHandler
+     * @return JsonResponse
+     */
+    public function fulfilledTask(
+        string $uuid,
+        UseCase\Fulfilled\Handler $fulfilledHandler
+    ): JsonResponse
+    {
+        $responseDataBuilder = ResponseDataBuilder::create();
+
+        $command = new UseCase\Fulfilled\Command($uuid);
+
+        try {
+            $fulfilledHandler->handle($command);
+
+            $selfLink = $this->urlGenerator->generate(
+                'task.fulfilled',
+                ['uuid' => $uuid],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
+            $responseDataBuilder
+                ->setLinksSelf($selfLink)
+                ->setDataType('Task fulfilled');
 
             return $this->apiHelper->createJsonResponse($responseDataBuilder);
         } catch (EntityNotFoundException $e) {

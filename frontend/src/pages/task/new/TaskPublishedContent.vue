@@ -33,6 +33,7 @@
               </button>
               <button
                 class="btn btn-outline-success m-1 js-fulfilled-task"
+                @click="fulfilled(task.id)"
               >
                 <font-awesome-icon icon="check-double" />
               </button>
@@ -63,7 +64,7 @@
   import { useAuthStore } from "@/store/auth"
   import { useRouter } from "vue-router"
   import { onMounted, ref } from "vue"
-  import { useCreateAuthHeader, useDeleteResource, useGetResource } from "@/components/composables"
+  import { useCreateAuthHeader, useDeleteResource, useGetResource, usePatchResource } from "@/components/composables"
   import { API } from "@/conf/api"
   import { useReactiveTaskList } from "@/pages/task/new/composables"
   import EditTaskModal from "@/pages/task/new/EditTaskModal.vue"
@@ -91,6 +92,18 @@
     const header = useCreateAuthHeader(authStore.token)
 
     const resource: Promise<any> = useDeleteResource(taskDeleteUrl, header, authStore.tryRefreshToken, router)
+
+    resource
+      .then(() => {
+        loadTask()
+      })
+  }
+
+  const fulfilled = (taskId: string): void => {
+    const taskFulfilledUrl = API.V1.TASK_FULFILLED(taskId)
+    const header = useCreateAuthHeader(authStore.token)
+
+    const resource: Promise<any> = usePatchResource(taskFulfilledUrl, {}, header, authStore.tryRefreshToken, router)
 
     resource
       .then(() => {
