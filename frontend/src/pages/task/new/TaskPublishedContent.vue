@@ -2,7 +2,15 @@
   <main class="main pt-3 pb-3">
     <div class="container-fluid">
       <div
-        v-if="tasks.length > 0"
+        v-if="tasks === null"
+        class="row"
+      >
+        <h4 class="text-center">
+          Task not found.
+        </h4>
+      </div>
+      <div
+        v-else-if="tasks.length > 0"
         class="row"
       >
         <div
@@ -134,6 +142,8 @@
   const loadTask = (): void => {
     if (null === authStore.JWTPayload) {
       tasks.value = []
+
+      return
     }
 
     const authHeader = useCreateAuthHeader(authStore.token)
@@ -148,6 +158,12 @@
 
     resource
       .then(response => {
+        if (! response.data) {
+          tasks.value = null
+
+          return
+        }
+
         tasks.value = response.data
       })
   }

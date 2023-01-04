@@ -14,6 +14,7 @@ import UsersPage from "@/pages/users/UsersPage.vue"
 import LoginPage from "@/pages/login/LoginPage.vue"
 import ProfilePage from "@/pages/userProfile/ProfilePage.vue"
 import TaskPublishedPage from "@/pages/task/new/TaskPublishedPage.vue"
+import TaskFulfilledPage from "@/pages/task/fulfilled/TaskFulfilledPage.vue"
 
 import guest from "@/router/middleware/guest"
 import auth from "@/router/middleware/auth"
@@ -64,6 +65,16 @@ const routes: RouteRecordRaw[] = [
         path: '/tasks/bar/published',
         name: 'TaskPublishedPage',
         component: TaskPublishedPage,
+        meta: {
+            middleware: [
+                auth,
+            ] as Middleware[]
+        }
+    },
+    {
+        path: '/tasks/bar/fulfilled',
+        name: 'TaskFulfilledPage',
+        component: TaskFulfilledPage,
         meta: {
             middleware: [
                 auth,
