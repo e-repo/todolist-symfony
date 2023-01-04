@@ -14,7 +14,7 @@ class Form extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('email', Type\EmailType::class);
+            ->add('newEmail', Type\EmailType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver)
