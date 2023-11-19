@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Auth\User\UseCase\Email\Request;
+namespace App\Domain\Auth\User\UseCase\Email\ChangeRequest;
 
 use Symfony\Component\Validator\Constraints as Assert;
 

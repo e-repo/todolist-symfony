@@ -173,13 +173,13 @@ class UserController extends AbstractController
     /**
      * @Route("/change-email", name="_profile.change_email", methods={"PATCH"})
      * @param ChangeEmailPayload $payload
-     * @param UseCase\Email\Request\Handler $handler
+     * @param UseCase\Email\ChangeRequest\Handler $handler
      * @param NewEmailConfirmTokenizer $tokenizer
      * @return JsonResponse
      */
     public function changeEmail(
         ChangeEmailPayload $payload,
-        UseCase\Email\Request\Handler $handler,
+        UseCase\Email\ChangeRequest\Handler $handler,
         NewEmailConfirmTokenizer $tokenizer
     ): JsonResponse
     {
@@ -202,7 +202,7 @@ class UserController extends AbstractController
             ]
         );
 
-        $command = (new UseCase\Email\Request\Command())
+        $command = (new UseCase\Email\ChangeRequest\Command())
             ->setId($user->getId()->getValue())
             ->setNewEmail($payload->email)
             ->setToken($token)

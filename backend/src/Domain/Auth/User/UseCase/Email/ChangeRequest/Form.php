@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Auth\User\UseCase\Email\Request;
+namespace App\Domain\Auth\User\UseCase\Email\ChangeRequest;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type;

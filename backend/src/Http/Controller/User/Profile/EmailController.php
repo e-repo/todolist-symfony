@@ -45,14 +45,14 @@ class EmailController extends AbstractController
      * @IsGranted("ROLE_USER")
      * @Route("", name="profile.email")
      * @param Request $request
-     * @param UseCase\Email\Request\Handler $handler
+     * @param UseCase\Email\ChangeRequest\Handler $handler
      * @param NewEmailConfirmTokenizer $tokenizer
      * @return Response
      */
     public function request(
-        Request                                             $request,
-        UseCase\Email\Request\Handler $handler,
-        NewEmailConfirmTokenizer                            $tokenizer
+        Request $request,
+        UseCase\Email\ChangeRequest\Handler $handler,
+        NewEmailConfirmTokenizer $tokenizer
     ): Response
     {
         $token = $tokenizer->generate();
@@ -62,12 +62,12 @@ class EmailController extends AbstractController
             UrlGeneratorInterface::ABSOLUTE_URL
         );
 
-        $command = (new UseCase\Email\Request\Command())
+        $command = (new UseCase\Email\ChangeRequest\Command())
             ->setId($this->getUser()->getId())
             ->setToken($token)
             ->setConfirmUrl($confirmUrl);
 
-        $form = $this->createForm(UseCase\Email\Request\Form::class, $command);
+        $form = $this->createForm(UseCase\Email\ChangeRequest\Form::class, $command);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
